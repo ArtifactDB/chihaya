@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['subset_2ehpp_0',['subset.hpp',['../subset_8hpp.html',1,'']]]
+  ['present_0',['present',['../structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f',1,'chihaya::ListDetails']]]
 ];
