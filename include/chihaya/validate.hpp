@@ -4,6 +4,7 @@
 #include "subset.hpp"
 #include "combine.hpp"
 #include "external.hpp"
+#include "transpose.hpp"
 #include "utils.hpp"
 
 /**
@@ -53,6 +54,8 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
                 output = validate_subset(handle, name);
             } else if (otype == "combine") {
                 output = validate_combine(handle, name);
+            } else if (otype == "transpose") {
+                output = validate_transpose(handle, name);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }

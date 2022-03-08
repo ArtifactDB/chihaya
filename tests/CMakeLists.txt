@@ -17,6 +17,7 @@ add_executable(
     src/external.cpp
     src/list.cpp
     src/combine.cpp
+    src/transpose.cpp
 )
 
 target_link_libraries(
