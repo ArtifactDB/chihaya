@@ -7,6 +7,7 @@
 #include "transpose.hpp"
 #include "utils.hpp"
 #include "dimnames.hpp"
+#include "subset_assignment.hpp"
 
 /**
  * @file validate.hpp
@@ -59,6 +60,8 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
                 output = validate_transpose(handle, name);
             } else if (otype == "dimnames") {
                 output = validate_dimnames(handle, name);
+            } else if (otype == "subset assignment") {
+                output = validate_subset_assignment(handle, name);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }

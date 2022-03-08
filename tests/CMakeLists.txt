@@ -14,6 +14,7 @@ enable_testing()
 add_executable(
     libtest 
     src/subset.cpp
+    src/subset_assignment.cpp
     src/external.cpp
     src/list.cpp
     src/combine.cpp
