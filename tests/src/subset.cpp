@@ -3,7 +3,7 @@
 #include "utils.h"
 
 TEST(Subset, NoOp) {
-    std::string path = "test_subset.h5";
+    std::string path = "Test_subset.h5";
 
     // Mocking up a file.
     {
@@ -20,7 +20,7 @@ TEST(Subset, NoOp) {
 }
 
 TEST(Subset, AllSubsets) {
-    std::string path = "temp_subset.h5";
+    std::string path = "Test_subset.h5";
 
     // Mocking up a file.
     {
@@ -39,7 +39,7 @@ TEST(Subset, AllSubsets) {
 }
 
 TEST(Subset, OneSubset) {
-    std::string path = "temp_subset.h5";
+    std::string path = "Test_subset.h5";
 
     // Mocking up a file.
     {
@@ -57,7 +57,7 @@ TEST(Subset, OneSubset) {
 }
 
 TEST(Subset, Errors) {
-    std::string path = "temp_subset.h5";
+    std::string path = "Test_subset.h5";
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -85,6 +85,24 @@ TEST(Subset, Errors) {
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
         lhandle.unlink("2"); // removing the above.
+        lhandle.createGroup("0");
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a dataset");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        auto lhandle = ghandle.openGroup("index");
+        lhandle.unlink("0"); // removing the above.
+        add_vector<double>(lhandle, "0", { 1, 3, 0, 2, 9 });
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a 1-dimensional integer dataset");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        auto lhandle = ghandle.openGroup("index");
+        lhandle.unlink("0"); // removing the above.
         add_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9, 100 });
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out of range for element '0'");
