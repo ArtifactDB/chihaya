@@ -1,6 +1,13 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "H5Cpp.h"
+#include <iostream>
+#include <map>
+#include <vector>
+#include <string>
+#include <type_traits>
+
 inline H5::Group super_group_opener(const H5::Group& parent, const std::string& name, const std::map<std::string, std::string>& attributes) {
     auto ghandle = parent.createGroup(name);
     for (const auto& p : attributes) {
@@ -50,6 +57,8 @@ inline H5::Group list_opener(const H5::Group& parent, const std::string& name, i
     return ghandle;
 }
 
+template <class T> struct dependent_false : std::false_type {};
+
 template<typename T>
 void add_vector(const H5::Group& handle, const std::string& name, const std::vector<T>& values) {
     hsize_t n = values.size();
@@ -61,7 +70,7 @@ void add_vector(const H5::Group& handle, const std::string& name, const std::vec
         auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
         dhandle.write(values.data(), H5::PredType::NATIVE_DOUBLE);
     } else {
-        static_assert("vector type should be either an 'int' or 'double'"); 
+        static_assert(dependent_false<T>::value, "vector type should be either an 'int' or 'double'"); 
     }
 }
 
@@ -75,7 +84,7 @@ void add_scalar(const H5::Group& handle, const std::string& name, T value) {
         auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
         dhandle.write(&value, H5::PredType::NATIVE_DOUBLE);
     } else {
-        static_assert("vector type should be either an 'int' or 'double'"); 
+        static_assert(dependent_false<T>::value, "scalar type should be either an 'int' or 'double'"); 
     }
 }
 
@@ -87,7 +96,11 @@ void expect_error(Function op, std::string message) {
             std::cout << message << std::endl;
         } catch (std::exception& e) {
             std::string msg(e.what());
-            EXPECT_TRUE(msg.find(message) != std::string::npos);
+            bool found = (msg.find(message) != std::string::npos);
+            if (!found) {
+                std::cout << "expected \"" << message << "\" (got \"" << msg << "\")" << std::endl;
+            }
+            EXPECT_TRUE(found);
             throw;
         }
     });
