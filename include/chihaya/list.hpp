@@ -8,6 +8,12 @@
 
 #include "utils.hpp"
 
+/**
+ * @file list.hpp
+ *
+ * @brief Definition of a list in HDF5.
+ */
+
 namespace chihaya {
 
 /**
@@ -18,7 +24,7 @@ namespace chihaya {
  * - `delayed_type` should be a scalar string `"list"`.
  * - `delayed_length` should be a scalar integer specifying the list length.
  * 
- * Children of this group represent the list elements and are named by their positional index, i.e., `[0, N)` where `N` is the length of the list.
+ * Children of this group represent the list elements and are named by their positional index.
  * List elements are allowed to be missing; the intepretation of the absence of an element is context-dependent.
  */
 struct ListDetails {
@@ -30,7 +36,7 @@ struct ListDetails {
     /**
      * Elements present in the list.
      * Keys represent the list index while values represent the name of the HDF5 group (a string representation of the index).
-     * Keys will lie in `[0, N)` where `N` is the length of the list;
+     * Keys will lie in `[0, length)`; 
      * each key will appear no more than once, and possibly zero times if the element at that index is missing.
      */
     std::map<int, std::string> present;

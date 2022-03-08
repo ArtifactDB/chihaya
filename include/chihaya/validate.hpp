@@ -4,6 +4,7 @@
 #include "subset.hpp"
 #include "combine.hpp"
 #include "external.hpp"
+#include "utils.hpp"
 
 /**
  * @file validate.hpp
