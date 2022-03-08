@@ -81,14 +81,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acd490791b8509e913bc74d27aff51c9e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="subset_8hpp.html#acd490791b8509e913bc74d27aff51c9e">chihaya::validate_subset</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
-<tr class="separator:acd490791b8509e913bc74d27aff51c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d5d52b5f86f113d2c029157d8b5b8c9"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="subset_8hpp.html#a0d5d52b5f86f113d2c029157d8b5b8c9">chihaya::validate_subset</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
+<tr class="separator:a0d5d52b5f86f113d2c029157d8b5b8c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validation for delayed subsetting operations. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="acd490791b8509e913bc74d27aff51c9e" name="acd490791b8509e913bc74d27aff51c9e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acd490791b8509e913bc74d27aff51c9e">&#9670;&nbsp;</a></span>validate_subset()</h2>
+<a id="a0d5d52b5f86f113d2c029157d8b5b8c9" name="a0d5d52b5f86f113d2c029157d8b5b8c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d5d52b5f86f113d2c029157d8b5b8c9">&#9670;&nbsp;</a></span>validate_subset()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -97,7 +97,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; size_t &gt; chihaya::validate_subset </td>
+          <td class="memname">ArrayDetails chihaya::validate_subset </td>
           <td>(</td>
           <td class="paramtype">const H5::Group &amp;&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -128,7 +128,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A vector containing the dimensions of the array after subsetting. Otherwise, if the validation failed, an error is raised.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the subsetted array. Otherwise, if the validation failed, an error is raised.</dd></dl>
 <p>A delayed subsetting operation is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
@@ -136,7 +136,7 @@ Functions</h2></td></tr>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
-<li>A <code>seed</code> group. This is the seed on which the subsetting is applied, which may be an array or anothed delayed operation. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
+<li>A <code>seed</code> group. This is the seed on which the subsetting is applied, which may be an array or anothed delayed operation. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
 <li>An <code>index</code> group. This is expected to be a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each entry is named after a dimension of <code>seed</code> using 0-based indexing, i.e., entry <code>"0"</code> corresponds to the first dimension. Entries may be missing to indicate that no subsetting is to be performed on a dimension, i.e., the full extent of the dimension is preserved in the result array. Each (non-missing) entry should be a 1-dimensional integer dataset specifying the subset of indices to retain in its corresponding dimension. All indices should use 0-based indexing and be less than the extent of the corresponding dimension. </li>
 </ul>
 

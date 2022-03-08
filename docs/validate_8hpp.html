@@ -81,16 +81,16 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a5115cce022671a22e8d234479e969b72"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">chihaya::validate</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
-<tr class="separator:a5115cce022671a22e8d234479e969b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25beeb02f040a33b1d9bccc60c68781a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a25beeb02f040a33b1d9bccc60c68781a">chihaya::validate</a> (const std::string &amp;path, std::string name)</td></tr>
-<tr class="separator:a25beeb02f040a33b1d9bccc60c68781a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80c86118f9e2bc69d0432426e2198944"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">chihaya::validate</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
+<tr class="separator:a80c86118f9e2bc69d0432426e2198944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a8c3fd26f340d08cba588b0a4baa61ca8">chihaya::validate</a> (const std::string &amp;path, std::string name)</td></tr>
+<tr class="separator:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Main validation function. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a5115cce022671a22e8d234479e969b72" name="a5115cce022671a22e8d234479e969b72"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5115cce022671a22e8d234479e969b72">&#9670;&nbsp;</a></span>validate() <span class="overload">[1/2]</span></h2>
+<a id="a80c86118f9e2bc69d0432426e2198944" name="a80c86118f9e2bc69d0432426e2198944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80c86118f9e2bc69d0432426e2198944">&#9670;&nbsp;</a></span>validate() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -99,7 +99,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; size_t &gt; chihaya::validate </td>
+          <td class="memname">ArrayDetails chihaya::validate </td>
           <td>(</td>
           <td class="paramtype">const H5::Group &amp;&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -130,12 +130,12 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of dimensions of the array after all delayed operations have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>handle</code> (and its children) have been applied. </dd></dl>
 
 </div>
 </div>
-<a id="a25beeb02f040a33b1d9bccc60c68781a" name="a25beeb02f040a33b1d9bccc60c68781a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25beeb02f040a33b1d9bccc60c68781a">&#9670;&nbsp;</a></span>validate() <span class="overload">[2/2]</span></h2>
+<a id="a8c3fd26f340d08cba588b0a4baa61ca8" name="a8c3fd26f340d08cba588b0a4baa61ca8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c3fd26f340d08cba588b0a4baa61ca8">&#9670;&nbsp;</a></span>validate() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +144,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; size_t &gt; chihaya::validate </td>
+          <td class="memname">ArrayDetails chihaya::validate </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>path</em>, </td>
@@ -175,7 +175,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Vector of dimensions of the array after all delayed operations have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>handle</code> (and its children) have been applied. </dd></dl>
 
 </div>
 </div>

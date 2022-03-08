@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['present_0',['present',['../structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f',1,'chihaya::ListDetails']]]
+  ['length_0',['length',['../structchihaya_1_1ListDetails.html#a4929c96edd7e8087d850088bcba459ab',1,'chihaya::ListDetails']]],
+  ['listdetails_1',['ListDetails',['../structchihaya_1_1ListDetails.html',1,'chihaya']]]
 ];

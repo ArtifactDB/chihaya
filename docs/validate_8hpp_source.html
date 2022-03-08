@@ -79,9 +79,9 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>chihaya {</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">   24</a></span><span class="keyword">inline</span> std::vector&lt;size_t&gt; <a class="code hl_function" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">   24</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">auto</span> dtype = load_string_attribute(handle, <span class="stringliteral">&quot;delayed_type&quot;</span>, <span class="stringliteral">&quot; for a delayed object&quot;</span>);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::vector&lt;size_t&gt; output;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> output;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (dtype == <span class="stringliteral">&quot;array&quot;</span>) {</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">try</span> {</div>
@@ -90,7 +90,7 @@ $(function() {
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="comment">// Checking external.</span></div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">const</span> std::string external_prefix = <span class="stringliteral">&quot;external &quot;</span>;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">if</span> (atype.size() &gt; external_prefix.size() &amp;&amp; atype.substr(0, external_prefix.size()) == external_prefix) {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                output = <a class="code hl_function" href="external_8hpp.html#a03e84c7f0767df3f5139e7760a674e01">validate_external</a>(handle, name);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                output = <a class="code hl_function" href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">validate_external</a>(handle, name);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unknown array type &#39;&quot;</span>) + atype + <span class="stringliteral">&quot;&#39; at &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
@@ -106,7 +106,7 @@ $(function() {
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="comment">// Checking subset.</span></div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">if</span> (otype == <span class="stringliteral">&quot;subset&quot;</span>) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                output = <a class="code hl_function" href="subset_8hpp.html#acd490791b8509e913bc74d27aff51c9e">validate_subset</a>(handle, name);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                output = <a class="code hl_function" href="subset_8hpp.html#a0d5d52b5f86f113d2c029157d8b5b8c9">validate_subset</a>(handle, name);</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unknown operation type &#39;&quot;</span>) + otype + <span class="stringliteral">&quot;&#39; at &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            }</div>
@@ -122,20 +122,21 @@ $(function() {
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> output;</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="validate_8hpp.html#a25beeb02f040a33b1d9bccc60c68781a">   75</a></span><span class="keyword">inline</span> std::vector&lt;size_t&gt; <a class="code hl_function" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">validate</a>(<span class="keyword">const</span> std::string&amp; path, std::string name) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="validate_8hpp.html#a8c3fd26f340d08cba588b0a4baa61ca8">   75</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate</a>(<span class="keyword">const</span> std::string&amp; path, std::string name) {</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    H5::H5File handle(path, H5F_ACC_RDONLY);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">auto</span> ghandle = handle.openGroup(name);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">validate</a>(ghandle, name);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate</a>(ghandle, name);</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aexternal_8hpp_html"><div class="ttname"><a href="external_8hpp.html">external.hpp</a></div><div class="ttdoc">Validation for external arrays.</div></div>
-<div class="ttc" id="aexternal_8hpp_html_a03e84c7f0767df3f5139e7760a674e01"><div class="ttname"><a href="external_8hpp.html#a03e84c7f0767df3f5139e7760a674e01">chihaya::validate_external</a></div><div class="ttdeci">std::vector&lt; size_t &gt; validate_external(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> external.hpp:37</div></div>
+<div class="ttc" id="aexternal_8hpp_html_a475328cf510920ba9e8762408f3fc100"><div class="ttname"><a href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">chihaya::validate_external</a></div><div class="ttdeci">ArrayDetails validate_external(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> external.hpp:42</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:32</div></div>
 <div class="ttc" id="asubset_8hpp_html"><div class="ttname"><a href="subset_8hpp.html">subset.hpp</a></div><div class="ttdoc">Validation for delayed subsetting operations.</div></div>
-<div class="ttc" id="asubset_8hpp_html_acd490791b8509e913bc74d27aff51c9e"><div class="ttname"><a href="subset_8hpp.html#acd490791b8509e913bc74d27aff51c9e">chihaya::validate_subset</a></div><div class="ttdeci">std::vector&lt; size_t &gt; validate_subset(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> subset.hpp:52</div></div>
-<div class="ttc" id="avalidate_8hpp_html_a5115cce022671a22e8d234479e969b72"><div class="ttname"><a href="validate_8hpp.html#a5115cce022671a22e8d234479e969b72">chihaya::validate</a></div><div class="ttdeci">std::vector&lt; size_t &gt; validate(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> validate.hpp:24</div></div>
+<div class="ttc" id="asubset_8hpp_html_a0d5d52b5f86f113d2c029157d8b5b8c9"><div class="ttname"><a href="subset_8hpp.html#a0d5d52b5f86f113d2c029157d8b5b8c9">chihaya::validate_subset</a></div><div class="ttdeci">ArrayDetails validate_subset(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> subset.hpp:52</div></div>
+<div class="ttc" id="avalidate_8hpp_html_a80c86118f9e2bc69d0432426e2198944"><div class="ttname"><a href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> validate.hpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

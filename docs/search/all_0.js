@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['delayed_20operations_20in_20hdf5_0',['Delayed operations in HDF5',['../index.html',1,'']]]
+  ['arraydetails_0',['ArrayDetails',['../structchihaya_1_1ArrayDetails.html',1,'chihaya']]],
+  ['arraytype_1',['ArrayType',['../utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2',1,'chihaya']]]
 ];

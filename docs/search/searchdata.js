@@ -1,11 +1,12 @@
 var indexSectionsWithContent =
 {
-  0: "delpsv",
-  1: "l",
-  2: "esv",
+  0: "adelpstuv",
+  1: "al",
+  2: "esuv",
   3: "v",
-  4: "lp",
-  5: "d"
+  4: "dlpt",
+  5: "a",
+  6: "d"
 };
 
 var indexSectionNames =
@@ -15,7 +16,8 @@ var indexSectionNames =
   2: "files",
   3: "functions",
   4: "variables",
-  5: "pages"
+  5: "enums",
+  6: "pages"
 };
 
 var indexSectionLabels =
@@ -25,6 +27,7 @@ var indexSectionLabels =
   2: "Files",
   3: "Functions",
   4: "Variables",
-  5: "Pages"
+  5: "Enumerations",
+  6: "Pages"
 };
 

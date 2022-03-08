@@ -81,35 +81,66 @@ $(function() {
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>chihaya {</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="external_8hpp.html#a03e84c7f0767df3f5139e7760a674e01">   37</a></span><span class="keyword">inline</span> std::vector&lt;size_t&gt; <a class="code hl_function" href="external_8hpp.html#a03e84c7f0767df3f5139e7760a674e01">validate_external</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;dimensions&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;dimensions&quot;</span>) != H5O_TYPE_DATASET) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;dimensions&#39; dataset for an external array&quot;</span>); </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">auto</span> dhandle = handle.openDataSet(<span class="stringliteral">&quot;dimensions&quot;</span>);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> dspace = dhandle.getSpace();</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (dspace.getSimpleExtentNdims() != 1 || dhandle.getTypeClass() != H5T_INTEGER) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;dimensions&#39; should be a 1-dimensional integer dataset for an external array&quot;</span>);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    hsize_t len;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    dspace.getSimpleExtentDims(&amp;len);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::vector&lt;int64_t&gt; dimensions(len);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    dhandle.read(dimensions.data(), H5::PredType::NATIVE_INT64);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> d : dimensions) {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span> (d &lt; 0) {</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;elements in &#39;dimensions&#39; should be non-negative for an external array&quot;</span>);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    } </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> std::vector&lt;size_t&gt;(dimensions.begin(), dimensions.end());</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">   42</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">validate_external</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;dimensions&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;dimensions&quot;</span>) != H5O_TYPE_DATASET) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;dimensions&#39; dataset for an external array&quot;</span>); </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span> dhandle = handle.openDataSet(<span class="stringliteral">&quot;dimensions&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">auto</span> dspace = dhandle.getSpace();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (dspace.getSimpleExtentNdims() != 1 || dhandle.getTypeClass() != H5T_INTEGER) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;dimensions&#39; should be a 1-dimensional integer dataset for an external array&quot;</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    hsize_t len;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    dspace.getSimpleExtentDims(&amp;len);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::vector&lt;int64_t&gt; dimensions(len);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    dhandle.read(dimensions.data(), H5::PredType::NATIVE_INT64);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> d : dimensions) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">if</span> (d &lt; 0) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;elements in &#39;dimensions&#39; should be non-negative for an external array&quot;</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    } </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aexternal_8hpp_html_a03e84c7f0767df3f5139e7760a674e01"><div class="ttname"><a href="external_8hpp.html#a03e84c7f0767df3f5139e7760a674e01">chihaya::validate_external</a></div><div class="ttdeci">std::vector&lt; size_t &gt; validate_external(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> external.hpp:37</div></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_enumeration" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> atype;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;type&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;type&quot;</span>) != H5O_TYPE_DATASET) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;type&#39; dataset for an external array&quot;</span>); </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">auto</span> thandle = handle.openDataSet(<span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (thandle.getSpace().getSimpleExtentNdims() != 0 || thandle.getTypeClass() != H5T_STRING) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;type&#39; should be a string scalar for an external array&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::string type;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        H5::StrType stype(0, H5T_VARIABLE);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        H5::DataSpace sspace(H5S_SCALAR);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        thandle.read(type, stype, sspace);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;BOOLEAN&quot;</span>) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            atype = BOOLEAN;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;INTEGER&quot;</span>) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            atype = INTEGER;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;FLOAT&quot;</span>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            atype = FLOAT;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;STRING&quot;</span>) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            atype = STRING;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unknown &#39;type&#39; (&quot;</span>) + type + <span class="stringliteral">&quot;) for an external array&quot;</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(atype, std::vector&lt;size_t&gt;(dimensions.begin(), dimensions.end()));</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aexternal_8hpp_html_a475328cf510920ba9e8762408f3fc100"><div class="ttname"><a href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">chihaya::validate_external</a></div><div class="ttdeci">ArrayDetails validate_external(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> external.hpp:42</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:32</div></div>
+<div class="ttc" id="autils_8hpp_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition:</b> utils.hpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

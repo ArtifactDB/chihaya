@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['listdetails_0',['ListDetails',['../structchihaya_1_1ListDetails.html',1,'chihaya']]]
+  ['arraydetails_0',['ArrayDetails',['../structchihaya_1_1ArrayDetails.html',1,'chihaya']]]
 ];
