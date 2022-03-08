@@ -94,7 +94,7 @@ Public Attributes</h2></td></tr>
 <li><code>delayed_type</code> should be a scalar string <code>"list"</code>.</li>
 <li><code>delayed_length</code> should be a scalar integer specifying the list length.</li>
 </ul>
-<p >Children of this group represent the list elements and are named by their positional index, i.e., <code>[0, N)</code> where <code>N</code> is the length of the list. List elements are allowed to be missing; the intepretation of the absence of an element is context-dependent. </p>
+<p >Children of this group represent the list elements and are named by their positional index. List elements are allowed to be missing; the intepretation of the absence of an element is context-dependent. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a4929c96edd7e8087d850088bcba459ab" name="a4929c96edd7e8087d850088bcba459ab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4929c96edd7e8087d850088bcba459ab">&#9670;&nbsp;</a></span>length</h2>
@@ -122,7 +122,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Elements present in the list. Keys represent the list index while values represent the name of the HDF5 group (a string representation of the index). Keys will lie in <code>[0, N)</code> where <code>N</code> is the length of the list; each key will appear no more than once, and possibly zero times if the element at that index is missing. </p>
+<p >Elements present in the list. Keys represent the list index while values represent the name of the HDF5 group (a string representation of the index). Keys will lie in <code>[0, length)</code>; each key will appear no more than once, and possibly zero times if the element at that index is missing. </p>
 
 </div>
 </div>
