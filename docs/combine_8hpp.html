@@ -128,7 +128,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the combined array. Otherwise, if the validation failed, an error is raised.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the combined object. Otherwise, if the validation failed, an error is raised.</dd></dl>
 <p>A delayed combining operation is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
@@ -136,9 +136,10 @@ Functions</h2></td></tr>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
-<li>A <code>seeds</code> group. This is expected to be a list (see <code>ListDetails</code>) of length equal to the number of seeds to be combined. Each seed should be a group describing another delayed operation or array. All seeds should have the same dimensionality and extents, with the exception of the <code>along</code> dimension.</li>
-<li>An <code>along</code> scalar integer dataset. This is a 0-based index that specifies the dimensions on which to combine arrays. It should be a non-negative value that is less than the dimensionality of each seed array. </li>
+<li>A <code>seeds</code> group. This is expected to be a list (see <code>ListDetails</code>) of length equal to the number of seeds to be combined. Each seed should be a group describing a delayed object, i.e., another delayed operation or array. All seeds should have the same dimensionality and extents, with the exception of the <code>along</code> dimension.</li>
+<li>An <code>along</code> scalar integer dataset. This is a 0-based index that specifies the dimensions on which to combine objects in <code>seeds</code>. It should be a non-negative value that is less than the dimensionality of each object.</li>
 </ul>
+<p >If all <code>seeds</code> have the same type, the output object will also be of that type. Otherwise, the type of the output object is set to the most advanced <code>ArrayType</code> among all <code>seeds</code> objects. For example, a mixture of <code>INTEGER</code> and <code>FLOAT</code> objects will result in a <code>FLOAT</code> output. </p>
 
 </div>
 </div>

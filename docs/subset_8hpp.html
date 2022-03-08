@@ -128,7 +128,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the subsetted array. Otherwise, if the validation failed, an error is raised.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the subsetted object. Otherwise, if the validation failed, an error is raised.</dd></dl>
 <p>A delayed subsetting operation is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
@@ -136,9 +136,10 @@ Functions</h2></td></tr>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
-<li>A <code>seed</code> group. This is the seed on which the subsetting is applied, which may be an array or anothed delayed operation. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>An <code>index</code> group. This is expected to be a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each entry is named after a dimension of <code>seed</code> using 0-based indexing, i.e., entry <code>"0"</code> corresponds to the first dimension. Entries may be missing to indicate that no subsetting is to be performed on a dimension, i.e., the full extent of the dimension is preserved in the result array. Each (non-missing) entry should be a 1-dimensional integer dataset specifying the subset of indices to retain in its corresponding dimension. All indices should use 0-based indexing and be less than the extent of the corresponding dimension. </li>
+<li>A <code>seed</code> group, containing the delayed object to be subsetted. This can be an array or anothed delayed operation. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
+<li>An <code>index</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry is named after a dimension of <code>seed</code> and contains the indices of interest along that dimension. The absence of an entry for a dimension indicates that no subsetting is to be performed, i.e., the full extent of that dimension is present in the result object. Each (non-missing) entry should be a 1-dimensional integer dataset containing 0-based indices that are less than the extent of its dimension.</li>
 </ul>
+<p >The type of the output object is the same as that of the <code>seed</code>; only the dimensions are changed. </p>
 
 </div>
 </div>
