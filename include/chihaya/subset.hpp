@@ -18,7 +18,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline std::vector<size_t> validate(const H5::Group& handle, const std::string&);
+inline ArrayDetails validate(const H5::Group& handle, const std::string&);
 /**
  * @endcond
  */
@@ -29,7 +29,7 @@ inline std::vector<size_t> validate(const H5::Group& handle, const std::string&)
  * @param handle An open handle on a HDF5 group representing a subset operation.
  * @param name Name of the group inside the file.
  *
- * @return A vector containing the dimensions of the array after subsetting.
+ * @return Details of the subsetted array.
  * Otherwise, if the validation failed, an error is raised.
  * 
  * A delayed subsetting operation is represented as a HDF5 group with the following attributes:
@@ -49,11 +49,11 @@ inline std::vector<size_t> validate(const H5::Group& handle, const std::string&)
  *   Each (non-missing) entry should be a 1-dimensional integer dataset specifying the subset of indices to retain in its corresponding dimension.
  *   All indices should use 0-based indexing and be less than the extent of the corresponding dimension.
  */
-inline std::vector<size_t> validate_subset(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a subset operation");
     }
-    auto seed_dims = validate(handle.openGroup("seed"), name + "/seed");
+    auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
 
     if (!handle.exists("index") || handle.childObjType("index") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'index' group for a subset operation"); 
@@ -68,6 +68,7 @@ inline std::vector<size_t> validate_subset(const H5::Group& handle, const std::s
         throw std::runtime_error(std::string("failed to load 'index' list for a subset operation:\n  ") + e.what());
     }
 
+    auto& seed_dims = seed_details.dimensions;
     if (list_params.length != seed_dims.size()) {
         throw std::runtime_error("length of 'index' should be equal to number of dimensions in 'seed' for a subset operation");
     }
@@ -97,7 +98,7 @@ inline std::vector<size_t> validate_subset(const H5::Group& handle, const std::s
         seed_dims[p.first] = buffer.size();
     }
 
-    return seed_dims;
+    return seed_details;
 }
 
 }

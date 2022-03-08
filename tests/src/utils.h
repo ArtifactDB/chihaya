@@ -25,13 +25,17 @@ inline H5::Group array_opener(const H5::Group& parent, const std::string& name, 
     return super_group_opener(parent, name, attrs);
 }
 
-inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions) {
+inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
     auto ghandle = array_opener(parent, name, "external array");
 
     hsize_t ndim = dimensions.size();
     H5::DataSpace dspace(1, &ndim);
     auto dhandle = ghandle.createDataSet("dimensions", H5::PredType::NATIVE_INT, dspace);
     dhandle.write(dimensions.data(), H5::PredType::NATIVE_INT);
+
+    H5::StrType stype(0, H5T_VARIABLE);
+    auto thandle = ghandle.createDataSet("type", stype, H5S_SCALAR);
+    thandle.write(type, stype, H5S_SCALAR);
 
     return ghandle;
 }

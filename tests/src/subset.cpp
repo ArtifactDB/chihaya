@@ -14,8 +14,9 @@ TEST(Subset, NoOp) {
     }
 
     auto output = chihaya::validate(path, "hello"); 
-    EXPECT_EQ(output[0], 13);
-    EXPECT_EQ(output[1], 19);
+    const auto& dims = output.dimensions;
+    EXPECT_EQ(dims[0], 13);
+    EXPECT_EQ(dims[1], 19);
 }
 
 TEST(Subset, AllSubsets) {
@@ -32,8 +33,9 @@ TEST(Subset, AllSubsets) {
     }
 
     auto output = chihaya::validate(path, "hello"); 
-    EXPECT_EQ(output[0], 6);
-    EXPECT_EQ(output[1], 7);
+    const auto& dims = output.dimensions;
+    EXPECT_EQ(dims[0], 6);
+    EXPECT_EQ(dims[1], 7);
 }
 
 TEST(Subset, OneSubset) {
@@ -49,8 +51,9 @@ TEST(Subset, OneSubset) {
     }
 
     auto output = chihaya::validate(path, "hello"); 
-    EXPECT_EQ(output[0], 13);
-    EXPECT_EQ(output[1], 7);
+    const auto& dims = output.dimensions;
+    EXPECT_EQ(dims[0], 13);
+    EXPECT_EQ(dims[1], 7);
 }
 
 TEST(Subset, Errors) {

@@ -19,11 +19,11 @@ namespace chihaya {
  * @param name Name of the group inside the file, to be used for meaningful error messages.
  * This can be set to an empty string to treat the current group as the root. 
  *
- * @return Vector of dimensions of the array after all delayed operations have been applied.
+ * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
-inline std::vector<size_t> validate(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
     auto dtype = load_string_attribute(handle, "delayed_type", " for a delayed object");
-    std::vector<size_t> output;
+    ArrayDetails output;
 
     if (dtype == "array") {
         try {
@@ -70,9 +70,9 @@ inline std::vector<size_t> validate(const H5::Group& handle, const std::string& 
  * @param path Path to a HDF5 file.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
  *
- * @return Vector of dimensions of the array after all delayed operations have been applied.
+ * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
-inline std::vector<size_t> validate(const std::string& path, std::string name) {
+inline ArrayDetails validate(const std::string& path, std::string name) {
     H5::H5File handle(path, H5F_ACC_RDONLY);
     auto ghandle = handle.openGroup(name);
     return validate(ghandle, name);
