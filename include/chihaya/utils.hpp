@@ -21,7 +21,7 @@ namespace chihaya {
  * Note that operations involving the same types are not guaranteed to preserve type,
  * e.g., `INTEGER` division is assumed to produce a `FLOAT`.
  */
-enum ArrayType { BOOLEAN, INTEGER, FLOAT, STRING };
+enum ArrayType { BOOLEAN = 0, INTEGER = 1, FLOAT = 2, STRING = 3 }; // giving explicit values for comparisons to work.
 
 /**
  * @brief Details about an array.

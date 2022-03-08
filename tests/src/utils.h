@@ -65,6 +65,20 @@ void add_vector(const H5::Group& handle, const std::string& name, const std::vec
     }
 }
 
+template<typename T>
+void add_scalar(const H5::Group& handle, const std::string& name, T value) {
+    H5::DataSpace dspace;
+    if constexpr(std::is_same<T, int>::value) {
+        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_INT, dspace); 
+        dhandle.write(&value, H5::PredType::NATIVE_INT);
+    } else if constexpr(std::is_same<T, double>::value) {
+        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
+        dhandle.write(&value, H5::PredType::NATIVE_DOUBLE);
+    } else {
+        static_assert("vector type should be either an 'int' or 'double'"); 
+    }
+}
+
 template<class Function>
 void expect_error(Function op, std::string message) {
     EXPECT_ANY_THROW({

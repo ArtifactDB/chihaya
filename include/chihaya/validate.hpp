@@ -2,6 +2,7 @@
 #define CHIHAYA_VALIDATE_HPP
 
 #include "subset.hpp"
+#include "combine.hpp"
 #include "external.hpp"
 
 /**
@@ -49,6 +50,8 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
             // Checking subset.
             if (otype == "subset") {
                 output = validate_subset(handle, name);
+            } else if (otype == "combine") {
+                output = validate_combine(handle, name);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }

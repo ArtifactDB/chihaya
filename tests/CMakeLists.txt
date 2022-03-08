@@ -16,6 +16,7 @@ add_executable(
     src/subset.cpp
     src/external.cpp
     src/list.cpp
+    src/combine.cpp
 )
 
 target_link_libraries(
