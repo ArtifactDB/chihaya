@@ -18,6 +18,7 @@ add_executable(
     src/list.cpp
     src/combine.cpp
     src/transpose.cpp
+    src/dimnames.cpp
 )
 
 target_link_libraries(

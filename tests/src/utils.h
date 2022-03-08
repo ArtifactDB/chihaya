@@ -74,6 +74,11 @@ void add_vector(const H5::Group& handle, const std::string& name, const std::vec
     }
 }
 
+inline void add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n) {
+    H5::DataSpace dspace(1, &n);
+    handle.createDataSet(name, H5::StrType(0, 10), dspace); 
+}
+
 template<typename T>
 void add_scalar(const H5::Group& handle, const std::string& name, T value) {
     H5::DataSpace dspace;
