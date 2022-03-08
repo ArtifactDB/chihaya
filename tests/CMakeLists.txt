@@ -27,6 +27,11 @@ target_link_libraries(
 find_package(HDF5 REQUIRED COMPONENTS C CXX)
 target_link_libraries(libtest hdf5::hdf5 hdf5::hdf5_cpp)
 
+set(CODE_COVERAGE OFF CACHE BOOL "Enable coverage testing")
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(libtest PRIVATE -O0 -g --coverage)
+    target_link_options(libtest PRIVATE --coverage)
+endif()
+
 include(GoogleTest)
 gtest_discover_tests(libtest)
-
