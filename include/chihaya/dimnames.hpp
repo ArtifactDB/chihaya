@@ -23,7 +23,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * @param handle An open handle on a HDF5 group representing a dimnames assignment operation.
  * @param name Name of the group inside the file.
  *
- * @return Details of the array after dimnames assignment.
+ * @return Details of the object after assigning dimnames.
  * Otherwise, if the validation failed, an error is raised.
  * 
  * A delayed subsetting operation is represented as a HDF5 group with the following attributes:
@@ -33,13 +33,11 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * Inside the group, we expect:
  *
- * - A `seed` group.
- *   Dimnames are to be assigned to this seed, which may be an array or anothed delayed operation.
+ * - A `seed` group, containing a delayed object for which dimnames are to be assigned.
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
- * - A `dimnames` group.
- *   This is expected to be a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
- *   Each entry is named after a dimension of `seed` using 0-based indexing, i.e., entry `"0"` corresponds to the first dimension.
- *   Entries may be missing to indicate that no names are attached to its dimension.
+ * - A `dimnames` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
+ *   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
+ *   Missing entries indicate that no names are attached to its dimension.
  *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
  */
 inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name) {

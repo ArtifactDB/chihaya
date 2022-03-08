@@ -29,7 +29,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * @param handle An open handle on a HDF5 group representing a subset operation.
  * @param name Name of the group inside the file.
  *
- * @return Details of the subsetted array.
+ * @return Details of the subsetted object.
  * Otherwise, if the validation failed, an error is raised.
  * 
  * A delayed subsetting operation is represented as a HDF5 group with the following attributes:
@@ -39,15 +39,15 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * Inside the group, we expect:
  *
- * - A `seed` group.
- *   This is the seed on which the subsetting is applied, which may be an array or anothed delayed operation.
+ * - A `seed` group, containing the delayed object to be subsetted. 
+ *   This can be an array or anothed delayed operation.
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
- * - An `index` group.
- *   This is expected to be a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
- *   Each entry is named after a dimension of `seed` using 0-based indexing, i.e., entry `"0"` corresponds to the first dimension.
- *   Entries may be missing to indicate that no subsetting is to be performed on a dimension, i.e., the full extent of the dimension is preserved in the result array.
- *   Each (non-missing) entry should be a 1-dimensional integer dataset specifying the subset of indices to retain in its corresponding dimension.
- *   All indices should use 0-based indexing and be less than the extent of the corresponding dimension.
+ * - An `index` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
+ *   Each child entry is named after a dimension of `seed` and contains the indices of interest along that dimension.
+ *   The absence of an entry for a dimension indicates that no subsetting is to be performed, i.e., the full extent of that dimension is present in the result object.
+ *   Each (non-missing) entry should be a 1-dimensional integer dataset containing 0-based indices that are less than the extent of its dimension.
+ *
+ * The type of the output object is the same as that of the `seed`; only the dimensions are changed.
  */
 inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {

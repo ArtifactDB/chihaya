@@ -29,7 +29,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * @param handle An open handle on a HDF5 group representing a combining operation.
  * @param name Name of the group inside the file.
  * 
- * @return Details of the combined array.
+ * @return Details of the combined object.
  * Otherwise, if the validation failed, an error is raised.
  *
  * A delayed combining operation is represented as a HDF5 group with the following attributes:
@@ -41,11 +41,15 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * - A `seeds` group.
  *   This is expected to be a list (see `ListDetails`) of length equal to the number of seeds to be combined.
- *   Each seed should be a group describing another delayed operation or array. 
+ *   Each seed should be a group describing a delayed object, i.e., another delayed operation or array. 
  *   All seeds should have the same dimensionality and extents, with the exception of the `along` dimension.
  * - An `along` scalar integer dataset.
- *   This is a 0-based index that specifies the dimensions on which to combine arrays.
- *   It should be a non-negative value that is less than the dimensionality of each seed array.
+ *   This is a 0-based index that specifies the dimensions on which to combine objects in `seeds`.
+ *   It should be a non-negative value that is less than the dimensionality of each object.
+ *
+ * If all `seeds` have the same type, the output object will also be of that type.
+ * Otherwise, the type of the output object is set to the most advanced `ArrayType` among all `seeds` objects.
+ * For example, a mixture of `INTEGER` and `FLOAT` objects will result in a `FLOAT` output.
  */
 inline ArrayDetails validate_combine(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("along") || handle.childObjType("along") != H5O_TYPE_DATASET) {

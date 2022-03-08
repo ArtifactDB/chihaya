@@ -28,7 +28,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * @param handle An open handle on a HDF5 group representing a transposition.
  * @param name Name of the group inside the file.
  *
- * @return Details of the transposed array.
+ * @return Details of the transposed object.
  * Otherwise, if the validation failed, an error is raised.
  * 
  * A delayed transposition is represented as a HDF5 group with the following attributes:
@@ -38,13 +38,14 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * Inside the group, we expect:
  *
- * - A `seed` group.
- *   This is the seed on which the transposition is applied, which may be an array or anothed delayed operation.
+ * - A `seed` group, containing the object on which the transposition is to be applied.
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
  * - A `permutation` integer 1-dimensional dataset.
  *   This should be of length equal to the dimensionality of `seed` and contain all integers in `[0, N)` where `N` is the dimensionality.
  *   This dataset describes the permutation to be applied to the dimensions to create the transposed array.
  *   For example, a `permutation` of `[1, 0]` will transpose a matrix, as the second dimension becomes the first and the first becomes the second.
+ *
+ * The type of the output is the same as that of `seed`; only the dimensions are altered.
  */
 inline ArrayDetails validate_transpose(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
