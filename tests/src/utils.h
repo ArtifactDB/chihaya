@@ -88,6 +88,10 @@ void add_scalar(const H5::Group& handle, const std::string& name, T value) {
     } else if constexpr(std::is_same<T, double>::value) {
         auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
         dhandle.write(&value, H5::PredType::NATIVE_DOUBLE);
+    } else if constexpr(std::is_same<T, std::string>::value) {
+        H5::StrType stype(0, H5T_VARIABLE);
+        auto dhandle = handle.createDataSet(name, stype, dspace); 
+        dhandle.write(value, stype);
     } else {
         static_assert(dependent_false<T>::value, "scalar type should be either an 'int' or 'double'"); 
     }

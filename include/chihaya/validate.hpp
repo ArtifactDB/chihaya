@@ -8,6 +8,11 @@
 #include "utils.hpp"
 #include "dimnames.hpp"
 #include "subset_assignment.hpp"
+#include "unary_arithmetic.hpp"
+#include "unary_comparison.hpp"
+#include "unary_logic.hpp"
+#include "unary_math.hpp"
+#include "unary_special_check.hpp"
 
 /**
  * @file validate.hpp
@@ -62,6 +67,16 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
                 output = validate_dimnames(handle, name);
             } else if (otype == "subset assignment") {
                 output = validate_subset_assignment(handle, name);
+            } else if (otype == "unary arithmetic") {
+                output = validate_unary_arithmetic(handle, name);
+            } else if (otype == "unary comparison") {
+                output = validate_unary_comparison(handle, name);
+            } else if (otype == "unary logic") {
+                output = validate_unary_logic(handle, name);
+            } else if (otype == "unary math") {
+                output = validate_unary_math(handle, name);
+            } else if (otype == "unary special check") {
+                output = validate_unary_special_check(handle, name);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }
