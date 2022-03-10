@@ -137,7 +137,7 @@ Functions</h2></td></tr>
 <p >Inside the group, we expect:</p>
 <ul>
 <li>A <code>seed</code> group, containing the object on which the transposition is to be applied. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>A <code>permutation</code> integer 1-dimensional dataset. This should be of length equal to the dimensionality of <code>seed</code> and contain all integers in <code>[0, N)</code> where <code>N</code> is the dimensionality. This dataset describes the permutation to be applied to the dimensions to create the transposed array. For example, a <code>permutation</code> of <code>[1, 0]</code> will transpose a matrix, as the second dimension becomes the first and the first becomes the second.</li>
+<li>A <code>permutation</code> integer 1-dimensional dataset. Assuming that <code>seed</code> has dimensionality <code>d</code>, this dataset should have length <code>d</code> and contain all integers in <code>[0, d)</code>. This dataset describes the permutation to be applied to the dimensions to create the transposed array. For example, a <code>permutation</code> of <code>[1, 0]</code> will transpose a matrix, as the second dimension becomes the first and the first becomes the second. The exact integer representation is left to the implementation.</li>
 </ul>
 <p >The type of the output is the same as that of <code>seed</code>; only the dimensions are altered. </p>
 

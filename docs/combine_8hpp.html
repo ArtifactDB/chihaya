@@ -137,7 +137,7 @@ Functions</h2></td></tr>
 <p >Inside the group, we expect:</p>
 <ul>
 <li>A <code>seeds</code> group. This is expected to be a list (see <code>ListDetails</code>) of length equal to the number of seeds to be combined. Each seed should be a group describing a delayed object, i.e., another delayed operation or array. All seeds should have the same dimensionality and extents, with the exception of the <code>along</code> dimension.</li>
-<li>An <code>along</code> scalar integer dataset. This is a 0-based index that specifies the dimensions on which to combine objects in <code>seeds</code>. It should be a non-negative value that is less than the dimensionality of each object.</li>
+<li>An <code>along</code> scalar integer dataset. This is a 0-based index that specifies the dimensions on which to combine objects in <code>seeds</code>. It should be a non-negative value that is less than the dimensionality of each object. The exact integer representation is left to the implementation.</li>
 </ul>
 <p >If all <code>seeds</code> have the same type, the output object will also be of that type. Otherwise, the type of the output object is set to the most advanced <code>ArrayType</code> among all <code>seeds</code> objects. For example, a mixture of <code>INTEGER</code> and <code>FLOAT</code> objects will result in a <code>FLOAT</code> output. </p>
 

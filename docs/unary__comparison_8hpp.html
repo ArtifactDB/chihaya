@@ -137,10 +137,10 @@ Functions</h2></td></tr>
 <p >Inside the group, we expect:</p>
 <ul>
 <li>A <code>seed</code> group, containing a delayed object for which comparison is to be applied. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>A <code>method</code> string scalar dataset, specifying the comparison method to use. This can be any one of <code>==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, or <code>!=</code>.</li>
-<li>A <code>side</code> string scalar dataset, describing the side of the <code>seed</code> object to apply the operation. This can be <code>"left"</code>, when <code>value</code> is applied to the left of <code>seed</code>, e.g., <code>value &gt; seed</code>; or <code>"right"</code>, when <code>value</code> is applied to the right of <code>seed</code>, e.g., <code>seed &gt; value</code>.</li>
-<li>A <code>value</code> dataset. This may be scalar or 1-dimensional. If 1-dimensional, it should have length equal to the extent specified in <code>along</code>. If <code>seed</code> contains strings, so should <code>value</code>; otherwise, both <code>seed</code> and <code>value</code> should be any of boolean, integer or float.</li>
-<li>An <code>along</code> integer scalar dataset, specifying the dimension on which to apply the operation with <code>value</code>.</li>
+<li>A <code>method</code> string scalar dataset, specifying the comparison method to use. This can be any one of <code>==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, or <code>!=</code>. The exact string representation is left to the implementation.</li>
+<li>A <code>side</code> string scalar dataset, describing the side of the <code>seed</code> object to apply the operation. This can be <code>"left"</code>, when <code>value</code> is applied to the left of <code>seed</code>, e.g., <code>value &gt; seed</code>; or <code>"right"</code>, when <code>value</code> is applied to the right of <code>seed</code>, e.g., <code>seed &gt; value</code>. The exact string representation is left to the implementation.</li>
+<li>A <code>value</code> dataset. This may be scalar or 1-dimensional. If 1-dimensional, it should have length equal to the extent specified in <code>along</code>. If <code>seed</code> contains strings, so should <code>value</code>; otherwise, both <code>seed</code> and <code>value</code> should be any of boolean, integer or float. The exact type representation is left to the implementation.</li>
+<li>An <code>along</code> integer scalar dataset, specifying the dimension on which to apply the operation with <code>value</code>. The exact integer representation is left to the implementation.</li>
 </ul>
 <p >The type of the output object is always boolean. </p>
 

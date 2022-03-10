@@ -151,17 +151,17 @@ Functions</h2></td></tr>
 <li><code>cosh</code>, <code>sinh</code>, <code>tanh</code>, <code>acosh</code>, <code>asinh</code>, <code>atanh</code>; the usual hyperbolic functions.</li>
 <li><code>log</code>, a log-transformation.</li>
 <li><code>round</code>, rounding to a certain number of decimal places.</li>
-<li><code>signif</code>, rounding to a certain number of significant digits.</li>
+<li><code>signif</code>, rounding to a certain number of significant digits. The exact string representation is left to the implementation.</li>
 </ul>
 </li>
 </ul>
 <p >If <code>method = "log"</code>, we may contain:</p>
 <ul>
-<li><code>base</code>, a scalar integer or float dataset containing the base of the log-transformation. If this is absent, it is assumed that the natural base will be used.</li>
+<li><code>base</code>, a scalar float dataset containing the base of the log-transformation. If this is absent, it is assumed that the natural base will be used. The exact float representation is left to the implementation.</li>
 </ul>
 <p >If <code>method = "round"</code> or <code>"signif"</code>, we expect:</p>
 <ul>
-<li><code>digits</code>, a scalar integer dataset specifying the number of digits to report.</li>
+<li><code>digits</code>, a scalar integer dataset specifying the number of digits to report. The exact integer representation is left to the implementation.</li>
 </ul>
 <p >The type of the output object is usually float. The only exceptions are for <code>abs</code>, which is either integer or float depending on the input (booleans are promoted to integer); and <code>sign</code>, which is always integer. </p>
 

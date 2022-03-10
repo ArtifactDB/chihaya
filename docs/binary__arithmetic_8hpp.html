@@ -138,7 +138,7 @@ Functions</h2></td></tr>
 <ul>
 <li>A <code>left</code> group, containing a delayed object on the left of the arithmetic operation. The <code>left</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions. This can be either boolean, integer or float.</li>
 <li>A <code>right</code> group, containing a delayed object on the right of the operation. The <code>right</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions. This can be either boolean, integer or float. It should have exactly the same dimensions as the <code>left</code> object.</li>
-<li>A <code>method</code> string scalar dataset, specifying the arithmetic method to use. This can be any one of <code>+</code>, <code>-</code>, <code>/</code>, <code>*</code>, <code>^</code>, <code>%%</code> (modulo) or <code>%/%</code> (integer division).</li>
+<li>A <code>method</code> string scalar dataset, specifying the arithmetic method to use. This can be any one of <code>+</code>, <code>-</code>, <code>/</code>, <code>*</code>, <code>^</code>, <code>%%</code> (modulo) or <code>%/%</code> (integer division). The exact string representation is left to the implementation.</li>
 </ul>
 <p >The type of the output object depends on the operation, the type of <code>left</code> and the type of <code>right</code>:</p>
 <ul>
