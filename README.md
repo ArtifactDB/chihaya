@@ -1,14 +1,27 @@
 # Delayed operations in HDF5
 
 This repository contains a specification for delayed array operations stored in a HDF5 file.
-The aim is to save the delayed operations in HDF5 to avoid duplication of data, by holding references to the untouched originals in user-defined databases.
-The same approach can also be used to delay operations that would otherwise incur a loss of sparsity.
+The concept of delayed operations is taken from Bioconductor's [**DelayedArray**](https://bioconductor.org/packages/DelayedArray) package,
+where any operations on a `DelayedArray` are cached in memory and evaluated on an as-needed basis.
+Our aim is to save these operations to file in a well-defined, cross-language format;
+this avoids the need to compute and store the results of such operations, which may be prohibitively expensive.
 
+Several use cases benefit from the serialization of delayed operations:
+
+- We have an immutable array dataset stored in a database.
+  Rather than making a copy for manipulation, we can hold a reference to the original and save the operations (slicing, arithmetic, etc.).
+  This avoids duplication of large datasets.
+- We have a dataset that can be represented in a small type, e.g., `uint8_t`s.
+  We apply a transformation that promotes the type, e.g., log-transformation to `float`s or `double`s.
+  By saving the delayed operation, we can maintain our compact representation to reduce the file size.
+- We have a sparse dataset that is subjected to sparsity-breaking operation, e.g., centering.
+  Rather than saving the dense matrix, we keep the efficient sparse representation and save the delayed operation.
+ 
 A "delayed object" is stored in the file as a HDF5 group with the `delayed_type` string attribute.
 This type can either be `"operation"`, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object;
 or it can be an `"array"`, in which case the object represents an array prior to any application of operations. 
 
-We implement a C++ library for cross-language validation of each delayed operation.
+To enforce the **chihaya** specification, we implement a C++ library for cross-language validation of each delayed operation.
 The specification for each operation is defined in terms of the documentation for its validator function:
 
 - [Subsetting](https://ltla.github.io/chihaya/subset_8hpp.html)
@@ -32,6 +45,8 @@ Similar validators are available for the arrays:
 - [External arrays](https://ltla.github.io/chihaya/external_8hpp.html)
 
 At some point, we may also add [**tatami**](https://github.com/LTLA/tatami) bindings to load the delayed operations into memory.
+This would enable C++ applications to natively read from the HDF5 files that comply with **chihaya**'s specification.
+
 The library is provisionally named after [Chihaya Kisaragi](https://myanimelist.net/character/10369/Chihaya_Kisaragi), one of my favorite characters.
 
 ![Chihaya GIF](https://raw.githubusercontent.com/LTLA/acceptable-anime-gifs/master/registry/10278_Idolmaster/0001.gif)
