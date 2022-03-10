@@ -45,17 +45,21 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   This should be boolean; integer or floats are implicitly converted to booleans with the usual methods.
  * - A `method` string scalar dataset, specifying the logic method to use.
  *   This can be any one of `!`, `&&`, `||` .
+ *   The exact string representation is left to the implementation.
  *
  * For `method != "!"`, we also expect:
  *
  * - A `side` dataset, describing the side of the `seed` object to apply the operation.
  *   This can be `"left"`, when `value` is applied to the left of `seed`, e.g., `value > seed`;
  *   or `"right"`, when `value` is applied to the right of `seed`, e.g., `seed > value`.
+ *   The exact string representation is left to the implementation.
  * - A `value` dataset.
  *   This may be scalar or 1-dimensional.
  *   If 1-dimensional, it should have length equal to the extent specified in `along`.
  *   This should be integer or float, which are implicitly converted to booleans with the usual methods.
+ *   The exact type representation is left to the implementation.
  * - An `along` integer scalar dataset, specifying the dimension on which to apply the operation with `value`.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the output object is always boolean.
  */

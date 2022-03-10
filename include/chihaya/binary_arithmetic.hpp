@@ -61,6 +61,7 @@ inline ArrayDetails fetch_seed_for_arithmetic(const H5::Group& handle, const std
  *   It should have exactly the same dimensions as the `left` object.
  * - A `method` string scalar dataset, specifying the arithmetic method to use.
  *   This can be any one of `+`, `-`, `/`, `*`, `^`, `%%` (modulo) or `%/%` (integer division).
+ *   The exact string representation is left to the implementation.
  *
  * The type of the output object depends on the operation, the type of `left` and the type of `right`:
  *

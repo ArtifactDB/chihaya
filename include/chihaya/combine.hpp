@@ -46,6 +46,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * - An `along` scalar integer dataset.
  *   This is a 0-based index that specifies the dimensions on which to combine objects in `seeds`.
  *   It should be a non-negative value that is less than the dimensionality of each object.
+ *   The exact integer representation is left to the implementation.
  *
  * If all `seeds` have the same type, the output object will also be of that type.
  * Otherwise, the type of the output object is set to the most advanced `ArrayType` among all `seeds` objects.

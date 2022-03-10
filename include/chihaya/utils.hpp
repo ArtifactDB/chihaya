@@ -16,7 +16,7 @@ namespace chihaya {
 
 /**
  * Type of the array.
- * Operations involving mixed types will result in promotion to the later types,
+ * Operations involving mixed types will generally result in promotion to the more advanced types,
  * e.g., an `INTEGER` and `FLOAT` addition will result in promotion to `FLOAT`.
  * Note that operations involving the same types are not guaranteed to preserve type,
  * e.g., `INTEGER` division is assumed to produce a `FLOAT`.
@@ -26,8 +26,9 @@ enum ArrayType { BOOLEAN = 0, INTEGER = 1, FLOAT = 2, STRING = 3 }; // giving ex
 /**
  * @brief Details about an array.
  *
- * This contains the type and dimensionality of the array,
- * which pretty much describes all that we need for validation purposes.
+ * This contains the type and dimensionality of the array.
+ * The exact type representation of the array is left to the implementation;
+ * we do not make any guarantees about precision, width or signedness.
  */
 struct ArrayDetails {
     /**

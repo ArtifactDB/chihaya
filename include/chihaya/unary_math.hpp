@@ -59,15 +59,18 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   - `log`, a log-transformation.
  *   - `round`, rounding to a certain number of decimal places.
  *   - `signif`, rounding to a certain number of significant digits.
+ *   The exact string representation is left to the implementation.
  *
  * If `method = "log"`, we may contain:
  *
- * - `base`, a scalar integer or float dataset containing the base of the log-transformation.
+ * - `base`, a scalar float dataset containing the base of the log-transformation.
  *   If this is absent, it is assumed that the natural base will be used.
+ *   The exact float representation is left to the implementation.
  *
  * If `method = "round"` or `"signif"`, we expect:
  *
  * - `digits`, a scalar integer dataset specifying the number of digits to report.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the output object is usually float.
  * The only exceptions are for `abs`, which is either integer or float depending on the input (booleans are promoted to integer);

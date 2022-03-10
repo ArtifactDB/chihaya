@@ -41,9 +41,10 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  * - A `seed` group, containing the object on which the transposition is to be applied.
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
  * - A `permutation` integer 1-dimensional dataset.
- *   This should be of length equal to the dimensionality of `seed` and contain all integers in `[0, N)` where `N` is the dimensionality.
+ *   Assuming that `seed` has dimensionality `d`, this dataset should have length `d` and contain all integers in `[0, d)`.
  *   This dataset describes the permutation to be applied to the dimensions to create the transposed array.
  *   For example, a `permutation` of `[1, 0]` will transpose a matrix, as the second dimension becomes the first and the first becomes the second.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the output is the same as that of `seed`; only the dimensions are altered.
  */

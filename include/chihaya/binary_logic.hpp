@@ -61,6 +61,7 @@ inline ArrayDetails fetch_seed_for_logic(const H5::Group& handle, const std::str
  *   It should have exactly the same dimensions as the `left` object.
  * - A `method` string scalar dataset, specifying the logic method to use.
  *   This can be any one of `&&` or `||`.
+ *   The exact string representation is left to the implementation.
  *
  * The type of the output object is always boolean.
  */

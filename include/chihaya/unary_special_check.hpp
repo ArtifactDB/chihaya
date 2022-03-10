@@ -50,6 +50,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   - `is_infinite`, is each value of the `seed` object infinite?
  *   - `is_missing`, is each value of the `seed` object "missing"?
  *     The exact implementation of "missingness" is implementation-defined but should at least include all `NaN`s.
+ *   The exact string representation is left to the implementation.
  *
  * The type of the output object is always boolean.
  */

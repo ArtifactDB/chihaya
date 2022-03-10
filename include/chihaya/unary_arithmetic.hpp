@@ -73,20 +73,24 @@ inline ArrayType determine_arithmetic_type(const ArrayType& first, const ArrayTy
  *   This can be either boolean, integer or float.
  * - A `method` string scalar dataset, specifying the arithmetic method to use.
  *   This can be any one of `+`, `-`, `/`, `*`, `^`, `%%` (modulo) or `%/%` (integer division).
+ *   The exact string representation is left to the implementation.
  * - A `side` dataset, describing the side of the `seed` object to apply the operation.
  *   This can be `"left"`, when `value` is applied to the left of `seed`, e.g., `value - seed`;
  *   or `"right"`, when `value` is applied to the right of `seed`, e.g., `seed - value`.
  *   For `+` and `-` as pure unary methods, this may also be `"none"`.
+ *   The exact string representation is left to the implementation.
  *
  * For `side != "none"`, we also expect:
  *
  * - A `value` dataset.
  *   This can be either boolean, integer or float, and may be scalar or 1-dimensional.
  *   If 1-dimensional, it should have length equal to the extent specified in `along`.
+ *   The exact type representation is left to the implementation.
  *
  * If `value` is 1-dimensional, we also expect:
  *
  * - An `along` integer scalar dataset, specifying the dimension on which to apply the operation with `value`.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the output object depends on the operation, the type of `seed` and the type of `value`:
  *

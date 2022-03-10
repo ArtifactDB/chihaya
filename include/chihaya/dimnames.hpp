@@ -45,6 +45,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
  *   Missing entries indicate that no names are attached to its dimension.
  *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
+ *   The exact string representation is left to the implementation.
  */
 inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {

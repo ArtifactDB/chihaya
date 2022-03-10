@@ -54,6 +54,7 @@ inline ArrayDetails fetch_seed_for_comparison(const H5::Group& handle, const std
  *   If `left` contains strings, so should `right`; otherwise, both `left` and `right` should be any of boolean, integer or float.
  * - A `method` string scalar dataset, specifying the comparison method to use.
  *   This can be any one of `==`, `<`, `>`, `>=`, `<=`, or `!=`. 
+ *   The exact string representation is left to the implementation.
  *
  * The type of the output object is always boolean.
  */

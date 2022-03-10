@@ -55,14 +55,18 @@ inline bool valid_comparison(const std::string& method) {
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
  * - A `method` string scalar dataset, specifying the comparison method to use.
  *   This can be any one of `==`, `<`, `>`, `>=`, `<=`, or `!=`. 
+ *   The exact string representation is left to the implementation.
  * - A `side` string scalar dataset, describing the side of the `seed` object to apply the operation.
  *   This can be `"left"`, when `value` is applied to the left of `seed`, e.g., `value > seed`;
  *   or `"right"`, when `value` is applied to the right of `seed`, e.g., `seed > value`.
+ *   The exact string representation is left to the implementation.
  * - A `value` dataset.
  *   This may be scalar or 1-dimensional.
  *   If 1-dimensional, it should have length equal to the extent specified in `along`.
  *   If `seed` contains strings, so should `value`; otherwise, both `seed` and `value` should be any of boolean, integer or float.
+ *   The exact type representation is left to the implementation.
  * - An `along` integer scalar dataset, specifying the dimension on which to apply the operation with `value`.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the output object is always boolean.
  */

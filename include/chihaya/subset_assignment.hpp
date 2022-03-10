@@ -48,6 +48,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   The absence of an entry for a dimension indicates that the full extent of that dimension is to be replaced.
  *   Each (non-missing) entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of `seed`;
  *   the length of this dataset should be equal to the extent of the corresponding dimension of `value`.
+ *   The exact integer representation is left to the implementation.
  *
  * The type of the object is defined as the more advanced type of `seed` and `value`.
  * For example, if `seed` is `INTEGER` and `value` is `FLOAT`, the output object will be promoted to `FLOAT`.
