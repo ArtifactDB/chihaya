@@ -13,6 +13,34 @@ namespace chihaya {
  * @cond
  */
 inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+
+inline bool valid_arithmetic(const std::string& method) {
+    return (method == "+" ||
+        method == "-" ||
+        method == "/" ||
+        method == "*" || 
+        method == "%/%" ||
+        method == "^" ||
+        method == "%%");
+}
+
+inline ArrayType determine_arithmetic_type(const ArrayType& first, const ArrayType& second, const std::string& method) {
+    if (method == "/") {
+        return FLOAT;
+    } else if (method == "%/%") {
+        return INTEGER;
+    } else if (method == "%%") {
+        if (first <= INTEGER && second <= INTEGER) {
+            return INTEGER;
+        } else {
+            return FLOAT;
+        }
+    } else if (first == BOOLEAN && second == BOOLEAN) {
+        return INTEGER;
+    } else {
+        return std::max(first, second);
+    }
+}
 /**
  * @endcond
  */
@@ -54,11 +82,14 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * - An `along` integer scalar dataset, specifying the dimension on which to apply the operation with `value`.
  *
- * The type of the output object depends on the operation, the type of `seed` and the type of `value`.
- * Any boolean types in `seed` and `value` are first promoted to integer.
- * For all operations except division, the output type is the more advanced type of `seed` and `value`. 
- * For simple division, the output type is float.
- * For integer division, the output type is integer.
+ * The type of the output object depends on the operation, the type of `seed` and the type of `value`:
+ *
+ * - For simple division, the output type is always float.
+ * - For integer division, the output type is always integer.
+ * - For modulo where both `seed` and `value` are integer, the output type is integer.
+ * - In all other cases, the output type is the more advanced type of `seed` and `value`. 
+ *
+ * Note that any boolean types in `seed` and `value` are first promoted to integer before type determination.
  */
 inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
@@ -83,15 +114,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std
     H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
     mhandle.read(method, stype);
-
-    if (method != "+" &&
-        method != "-" && 
-        method != "/" &&
-        method != "*" && 
-        method != "%/%" && 
-        method != "^" && 
-        method != "%%")
-    {
+    if (!valid_arithmetic(method)) {
         throw std::runtime_error(std::string("unrecognized 'method' (") + method + ") for an unary arithmetic operation");
     }
 
@@ -161,13 +184,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std
     }
 
     // Determining type promotion rules.
-    if (method == "/") {
-        seed_details.type = FLOAT;
-    } else if (method == "%/%") {
-        seed_details.type = INTEGER;
-    } else {
-        seed_details.type = std::max(min_type, seed_details.type);
-    }
+    seed_details.type = determine_arithmetic_type(min_type, seed_details.type, method);
 
     return seed_details;
 }

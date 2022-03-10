@@ -13,6 +13,9 @@
 #include "unary_logic.hpp"
 #include "unary_math.hpp"
 #include "unary_special_check.hpp"
+#include "binary_arithmetic.hpp"
+#include "binary_comparison.hpp"
+#include "binary_logic.hpp"
 
 /**
  * @file validate.hpp
@@ -77,6 +80,12 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
                 output = validate_unary_math(handle, name);
             } else if (otype == "unary special check") {
                 output = validate_unary_special_check(handle, name);
+            } else if (otype == "binary arithmetic") {
+                output = validate_binary_arithmetic(handle, name);
+            } else if (otype == "binary comparison") {
+                output = validate_binary_comparison(handle, name);
+            } else if (otype == "binary logic") {
+                output = validate_binary_logic(handle, name);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }

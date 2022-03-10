@@ -13,6 +13,17 @@ namespace chihaya {
  * @cond
  */
 inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+
+inline bool valid_comparison(const std::string& method) {
+    return (
+        method == "==" ||
+        method == ">" ||
+        method == "<" ||
+        method == ">=" ||
+        method == "<=" ||
+        method == "!="
+    );
+}
 /**
  * @endcond
  */
@@ -38,7 +49,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
  * - A `method` string scalar dataset, specifying the comparison method to use.
  *   This can be any one of `==`, `<`, `>`, `>=`, `<=`, or `!=`. 
- * - A `side` dataset, describing the side of the `seed` object to apply the operation.
+ * - A `side` string scalar dataset, describing the side of the `seed` object to apply the operation.
  *   This can be `"left"`, when `value` is applied to the left of `seed`, e.g., `value > seed`;
  *   or `"right"`, when `value` is applied to the right of `seed`, e.g., `seed > value`.
  * - A `value` dataset.
@@ -69,14 +80,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const std
     H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
     mhandle.read(method, stype);
-
-    if (method != "==" &&
-        method != ">" && 
-        method != "<" &&
-        method != ">=" && 
-        method != "<=" && 
-        method != "!=")
-    {
+    if (!valid_comparison(method)) {
         throw std::runtime_error(std::string("unrecognized 'method' (") + method + ") for an unary comparison operation");
     }
 

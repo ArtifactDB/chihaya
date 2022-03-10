@@ -66,18 +66,26 @@ inline std::string load_string_attribute(const H5::Attribute& attr, const std::s
 
     return output;
 }
-/**
- * @endcond
- */
 
-/**
- * @cond
- */
 inline std::string load_string_attribute(const H5::Group& handle, const std::string& field, const std::string& extra) {
     if (!handle.attrExists(field)) {
         throw std::runtime_error(std::string("expected a '") + field + "' attribute" + extra);
     }
     return load_string_attribute(handle.openAttribute(field), field);
+}
+
+template<class V>
+bool are_dimensions_equal(const V& left, const V& right) {
+    if (left.size() != right.size()) {
+        return false;
+    } else {
+        for (size_t i = 0; i < left.size(); ++i) {
+            if (left[i] != right[i]) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 /**
  * @endcond
