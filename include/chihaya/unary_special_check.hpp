@@ -48,8 +48,6 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   - `is_nan`, is each value of the `seed` object `NaN`?
  *   - `is_finite`, is each value of the `seed` object finite?
  *   - `is_infinite`, is each value of the `seed` object infinite?
- *   - `is_missing`, is each value of the `seed` object "missing"?
- *     The exact implementation of "missingness" is implementation-defined but should at least include all `NaN`s.
  *   The exact string representation is left to the implementation.
  *
  * The type of the output object is always boolean.
@@ -78,8 +76,7 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const 
     std::string method;
     mhandle.read(method, stype);
 
-    if (method != "is_missing" &&
-        method != "is_nan" &&
+    if (method != "is_nan" &&
         method != "is_finite" &&
         method != "is_infinite")
     {
