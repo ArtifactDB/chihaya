@@ -7,6 +7,12 @@
 #include <algorithm>
 #include "utils.hpp"
 
+/**
+ * @file unary_comparison.hpp
+ *
+ * @brief Validation for delayed unary comparison operations.
+ */
+
 namespace chihaya {
 
 /**

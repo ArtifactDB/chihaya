@@ -8,6 +8,12 @@
 #include "utils.hpp"
 #include "unary_logic.hpp"
 
+/**
+ * @file binary_logic.hpp
+ *
+ * @brief Validation for delayed binary logic operations.
+ */
+
 namespace chihaya {
 
 /**

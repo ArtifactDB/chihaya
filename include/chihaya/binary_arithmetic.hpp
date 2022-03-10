@@ -8,6 +8,12 @@
 #include "utils.hpp"
 #include "unary_arithmetic.hpp"
 
+/**
+ * @file binary_arithmetic.hpp
+ *
+ * @brief Validation for delayed binary arithmetic operations.
+ */
+
 namespace chihaya {
 
 /**

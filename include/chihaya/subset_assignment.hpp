@@ -24,15 +24,15 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  */
 
 /**
- * Validate a delayed subsetting operation in a HDF5 file.
+ * Validate a delayed subset assignment operation in a HDF5 file.
  *
- * @param handle An open handle on a HDF5 group representing a subset operation.
+ * @param handle An open handle on a HDF5 group representing a subset assignment.
  * @param name Name of the group inside the file.
  *
  * @return Details of the object after subset assignment.
  * Otherwise, if the validation failed, an error is raised.
  * 
- * A delayed subsetting operation is represented as a HDF5 group with the following attributes:
+ * A delayed subset assignment is represented as a HDF5 group with the following attributes:
  *
  * - `delayed_type` should be a scalar string `"operation"`.
  * - `delayed_operation` should be a scalar string `"subset assignment"`.

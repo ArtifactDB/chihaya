@@ -8,6 +8,12 @@
 #include "utils.hpp"
 #include "unary_comparison.hpp"
 
+/**
+ * @file binary_comparison.hpp
+ *
+ * @brief Validation for delayed binary comparison operations.
+ */
+
 namespace chihaya {
 
 /**

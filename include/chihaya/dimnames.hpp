@@ -7,6 +7,12 @@
 #include "list.hpp"
 #include "utils.hpp"
 
+/**
+ * @file dimnames.hpp
+ *
+ * @brief Validation for delayed dimnames assignment.
+ */
+
 namespace chihaya {
 
 /**

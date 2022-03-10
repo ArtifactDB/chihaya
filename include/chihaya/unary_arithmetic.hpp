@@ -7,6 +7,12 @@
 #include <algorithm>
 #include "utils.hpp"
 
+/**
+ * @file unary_arithmetic.hpp
+ *
+ * @brief Validation for delayed unary arithmetic operations.
+ */
+
 namespace chihaya {
 
 /**

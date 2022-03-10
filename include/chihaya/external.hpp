@@ -30,7 +30,7 @@ namespace chihaya {
  *
  * Inside the group, we expect:
  *
- * - `dimensions, a 1-dimensional integer dataset. 
+ * - `dimensions`, a 1-dimensional integer dataset. 
  *   This stores the dimensionality of the external array and should only contain non-negative values.
  * - `type`, a scalar string specifying the type.
  *   This should be one of `BOOLEAN`, `INTEGER`, `FLOAT` or `STRING`.
