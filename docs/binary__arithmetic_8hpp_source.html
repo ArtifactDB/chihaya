@@ -71,7 +71,7 @@ $(function() {
   <div class="headertitle"><div class="title">binary_arithmetic.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CHIHAYA_BINARY_ARITHMETIC_HPP</span></div>
+<a href="binary__arithmetic_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CHIHAYA_BINARY_ARITHMETIC_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CHIHAYA_BINARY_ARITHMETIC_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
@@ -79,55 +79,58 @@ $(function() {
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;unary_arithmetic.hpp&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="unary__arithmetic_8hpp.html">unary_arithmetic.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>chihaya {</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">inline</span> ArrayDetails fetch_seed_for_arithmetic(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; target, <span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (!handle.exists(target) || handle.childObjType(target) != H5O_TYPE_GROUP) {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;expected &#39;&quot;</span>) + target + <span class="stringliteral">&quot;&#39; group for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    }</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">auto</span> seed_details = <a class="code hl_function" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate</a>(handle.openGroup(target), name + <span class="stringliteral">&quot;/&quot;</span> + target);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (seed_details.type == STRING) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;type of &#39;&quot;</span>) + target + <span class="stringliteral">&quot;&#39; should be numeric or boolean for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">inline</span> ArrayDetails validate_binary_arithmetic(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">auto</span> left_details = fetch_seed_for_arithmetic(handle, <span class="stringliteral">&quot;left&quot;</span>, name);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">auto</span> right_details = fetch_seed_for_arithmetic(handle, <span class="stringliteral">&quot;right&quot;</span>, name);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">bool</span> okay = are_dimensions_equal(left_details.dimensions, right_details.dimensions);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (!okay) {</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;left&#39; and &#39;right&#39; should have the same dimensions for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// Checking the method.</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;method&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;method&quot;</span>) != H5O_TYPE_DATASET) {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;method&#39; dataset for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">auto</span> mhandle = handle.openDataSet(<span class="stringliteral">&quot;method&quot;</span>);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;method&#39; should be a scalar string for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    H5::StrType stype(0, H5T_VARIABLE);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::string method;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    mhandle.read(method, stype);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (!valid_arithmetic(method)) {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span>) + method + <span class="stringliteral">&quot;) for a binary arithmetic operation&quot;</span>);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    left_details.type = determine_arithmetic_type(left_details.type, right_details.type, method);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> left_details;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>chihaya {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">inline</span> ArrayDetails fetch_seed_for_arithmetic(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; target, <span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!handle.exists(target) || handle.childObjType(target) != H5O_TYPE_GROUP) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;expected &#39;&quot;</span>) + target + <span class="stringliteral">&quot;&#39; group for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">auto</span> seed_details = <a class="code hl_function" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate</a>(handle.openGroup(target), name + <span class="stringliteral">&quot;/&quot;</span> + target);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (seed_details.type == STRING) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;type of &#39;&quot;</span>) + target + <span class="stringliteral">&quot;&#39; should be numeric or boolean for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="binary__arithmetic_8hpp.html#ac70afebca70056207c54cbc902e84fc4">   74</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="binary__arithmetic_8hpp.html#ac70afebca70056207c54cbc902e84fc4">validate_binary_arithmetic</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> left_details = fetch_seed_for_arithmetic(handle, <span class="stringliteral">&quot;left&quot;</span>, name);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span> right_details = fetch_seed_for_arithmetic(handle, <span class="stringliteral">&quot;right&quot;</span>, name);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> okay = are_dimensions_equal(left_details.dimensions, right_details.dimensions);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!okay) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;left&#39; and &#39;right&#39; should have the same dimensions for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// Checking the method.</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;method&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;method&quot;</span>) != H5O_TYPE_DATASET) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;method&#39; dataset for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">auto</span> mhandle = handle.openDataSet(<span class="stringliteral">&quot;method&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;method&#39; should be a scalar string for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    H5::StrType stype(0, H5T_VARIABLE);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::string method;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    mhandle.read(method, stype);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!valid_arithmetic(method)) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span>) + method + <span class="stringliteral">&quot;) for a binary arithmetic operation&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    left_details.type = determine_arithmetic_type(left_details.type, right_details.type, method);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> left_details;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="abinary__arithmetic_8hpp_html_ac70afebca70056207c54cbc902e84fc4"><div class="ttname"><a href="binary__arithmetic_8hpp.html#ac70afebca70056207c54cbc902e84fc4">chihaya::validate_binary_arithmetic</a></div><div class="ttdeci">ArrayDetails validate_binary_arithmetic(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:74</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:32</div></div>
+<div class="ttc" id="aunary__arithmetic_8hpp_html"><div class="ttname"><a href="unary__arithmetic_8hpp.html">unary_arithmetic.hpp</a></div><div class="ttdoc">Validation for delayed unary arithmetic operations.</div></div>
 <div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Various utilities.</div></div>
 <div class="ttc" id="avalidate_8hpp_html_a80c86118f9e2bc69d0432426e2198944"><div class="ttname"><a href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> validate.hpp:37</div></div>
 </div><!-- fragment --></div><!-- contents -->

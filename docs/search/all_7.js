@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['transpose_2ehpp_0',['transpose.hpp',['../transpose_8hpp.html',1,'']]],
-  ['type_1',['type',['../structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a',1,'chihaya::ArrayDetails']]]
+  ['subset_2ehpp_0',['subset.hpp',['../subset_8hpp.html',1,'']]],
+  ['subset_5fassignment_2ehpp_1',['subset_assignment.hpp',['../subset__assignment_8hpp.html',1,'']]]
 ];

@@ -136,7 +136,7 @@ Functions</h2></td></tr>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
-<li>`dimensions, a 1-dimensional integer dataset. This stores the dimensionality of the external array and should only contain non-negative values.</li>
+<li><code>dimensions</code>, a 1-dimensional integer dataset. This stores the dimensionality of the external array and should only contain non-negative values.</li>
 <li><code>type</code>, a scalar string specifying the type. This should be one of <code>BOOLEAN</code>, <code>INTEGER</code>, <code>FLOAT</code> or <code>STRING</code>.</li>
 </ul>
 <p >The external array concept allows us to embed references to external resources, e.g., arrays held in databases. This avoids making a redundant copy of a large arrays when we only want to preserve the delayed operations. Of course, it is assumed that clients will know how to retrieve specific resources from the remotes. </p>

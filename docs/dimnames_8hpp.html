@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chihaya: chihaya/subset_assignment.hpp File Reference</title>
+<title>chihaya: chihaya/dimnames.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,25 +70,25 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">subset_assignment.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">dimnames.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Validation for delayed subset assignment.  
+<p>Validation for delayed dimnames assignment.  
 <a href="#details">More...</a></p>
 
-<p><a href="subset__assignment_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="dimnames_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae3e247db7e908418fdd164dcc7904e67"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="subset__assignment_8hpp.html#ae3e247db7e908418fdd164dcc7904e67">chihaya::validate_subset_assignment</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
-<tr class="separator:ae3e247db7e908418fdd164dcc7904e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26b9b72c40519f49050f8268f82ecb1d"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dimnames_8hpp.html#a26b9b72c40519f49050f8268f82ecb1d">chihaya::validate_dimnames</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
+<tr class="separator:a26b9b72c40519f49050f8268f82ecb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Validation for delayed subset assignment. </p>
+<div class="textblock"><p >Validation for delayed dimnames assignment. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ae3e247db7e908418fdd164dcc7904e67" name="ae3e247db7e908418fdd164dcc7904e67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3e247db7e908418fdd164dcc7904e67">&#9670;&nbsp;</a></span>validate_subset_assignment()</h2>
+<a id="a26b9b72c40519f49050f8268f82ecb1d" name="a26b9b72c40519f49050f8268f82ecb1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b9b72c40519f49050f8268f82ecb1d">&#9670;&nbsp;</a></span>validate_dimnames()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -97,7 +97,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ArrayDetails chihaya::validate_subset_assignment </td>
+          <td class="memname">ArrayDetails chihaya::validate_dimnames </td>
           <td>(</td>
           <td class="paramtype">const H5::Group &amp;&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -120,27 +120,25 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Validate a delayed subset assignment operation in a HDF5 file.</p>
+<p >Validate delayed dimnames assignment in a HDF5 file.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a subset assignment. </td></tr>
+    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a dimnames assignment operation. </td></tr>
     <tr><td class="paramname">name</td><td>Name of the group inside the file.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after subset assignment. Otherwise, if the validation failed, an error is raised.</dd></dl>
-<p>A delayed subset assignment is represented as a HDF5 group with the following attributes:</p>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after assigning dimnames. Otherwise, if the validation failed, an error is raised.</dd></dl>
+<p>A delayed subsetting operation is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
-<li><code>delayed_operation</code> should be a scalar string <code>"subset assignment"</code>.</li>
+<li><code>delayed_operation</code> should be a scalar string <code>"dimnames"</code>.</li>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
-<li>A <code>seed</code> group, containing the object to be subjected to subset assignment. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>A <code>value</code> group, containing the object supplying the replacement values for subset assignment. The <code>value</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>An <code>index</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry is named after a dimension of <code>seed</code> and contains the indices to be replaced along that dimension. The absence of an entry for a dimension indicates that the full extent of that dimension is to be replaced. Each (non-missing) entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of <code>seed</code>; the length of this dataset should be equal to the extent of the corresponding dimension of <code>value</code>.</li>
+<li>A <code>seed</code> group, containing a delayed object for which dimnames are to be assigned. The <code>seed</code> group handle is passed to <code><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">validate()</a></code> to check its contents recursively and to retrieve the dimensions.</li>
+<li>A <code>dimnames</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry corresponds to a dimension of <code>seed</code> and contains the names along that dimension. Missing entries indicate that no names are attached to its dimension. Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension. </li>
 </ul>
-<p >The type of the object is defined as the more advanced type of <code>seed</code> and <code>value</code>. For example, if <code>seed</code> is <code>INTEGER</code> and <code>value</code> is <code>FLOAT</code>, the output object will be promoted to <code>FLOAT</code>. </p>
 
 </div>
 </div>
