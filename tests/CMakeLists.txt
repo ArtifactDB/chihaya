@@ -28,6 +28,7 @@ add_executable(
     src/binary_arithmetic.cpp
     src/binary_comparison.cpp
     src/binary_logic.cpp
+    src/dense_array.cpp
 )
 
 target_link_libraries(

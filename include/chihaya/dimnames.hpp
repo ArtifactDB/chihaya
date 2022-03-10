@@ -19,6 +19,43 @@ namespace chihaya {
  * @cond
  */
 inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+
+template<class V>
+void validate_dimnames(const H5::Group& handle, const V& dimensions, const std::string& message) {
+    if (!handle.exists("dimnames") || handle.childObjType("dimnames") != H5O_TYPE_GROUP) {
+        throw std::runtime_error(std::string("expected 'dimnames' group for a ") + message);
+    }
+
+    auto dhandle = handle.openGroup("dimnames");
+    ListDetails list_params;
+    
+    try {
+        list_params = validate_list(dhandle);
+    } catch (std::exception& e) {
+        throw std::runtime_error(std::string("failed to load 'dimnames' list for a ") + message + std::string(":\n  ") + e.what());
+    }
+
+    if (list_params.length != dimensions.size()) {
+        throw std::runtime_error(std::string("length of 'dimnames' list should be equal to seed dimensionality for a ") + message);
+    }
+
+    for (const auto& p : list_params.present) {
+        if (dhandle.childObjType(p.second) != H5O_TYPE_DATASET) {
+            throw std::runtime_error(std::string("each entry of 'dimnames' should be a dataset for a ") + message);
+        }
+
+        auto current = dhandle.openDataSet(p.second);
+        if (current.getSpace().getSimpleExtentNdims() != 1 || current.getTypeClass() != H5T_STRING) {
+            throw std::runtime_error(std::string("each entry of 'dimnames' should be a 1-dimensional string dataset for a ") + message);
+        }
+
+        hsize_t dim;
+        current.getSpace().getSimpleExtentDims(&dim);
+        if (dim != static_cast<hsize_t>(dimensions[p.first])) {
+            throw std::runtime_error(std::string("each entry of 'dimnames' should have length equal to the extent of its corresponding dimension for a ") + message);
+        }
+    }
+}
 /**
  * @endcond
  */
@@ -49,44 +86,10 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  */
 inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
-        throw std::runtime_error("expected 'seed' group for a dimnames assignment operation");
+        throw std::runtime_error("expected 'seed' group for a dimnames assignment");
     }
     auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
-
-    if (!handle.exists("dimnames") || handle.childObjType("dimnames") != H5O_TYPE_GROUP) {
-        throw std::runtime_error("expected 'dimnames' group for a dimnames assignment operation"); 
-    }
-
-    auto dhandle = handle.openGroup("dimnames");
-    ListDetails list_params;
-    
-    try {
-        list_params = validate_list(dhandle);
-    } catch (std::exception& e) {
-        throw std::runtime_error(std::string("failed to load 'dimnames' list for a dimnames assignment operation:\n  ") + e.what());
-    }
-
-    if (list_params.length != seed_details.dimensions.size()) {
-        throw std::runtime_error("length of 'dimnames' list should be equal to seed dimensionality");
-    }
-
-    for (const auto& p : list_params.present) {
-        if (dhandle.childObjType(p.second) != H5O_TYPE_DATASET) {
-            throw std::runtime_error("each entry of 'dimnames' should be a dataset");
-        }
-
-        auto current = dhandle.openDataSet(p.second);
-        if (current.getSpace().getSimpleExtentNdims() != 1 || current.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("each entry of 'dimnames' should be a 1-dimensional string dataset");
-        }
-
-        hsize_t dim;
-        current.getSpace().getSimpleExtentDims(&dim);
-        if (dim != static_cast<hsize_t>(seed_details.dimensions[p.first])) {
-            throw std::runtime_error("each entry of 'dimnames' should have length equal to the extent of its corresponding dimension");
-        }
-    }
-
+    validate_dimnames(handle, seed_details.dimensions, "dimnames assignment");
     return seed_details;
 }
 

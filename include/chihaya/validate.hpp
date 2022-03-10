@@ -4,6 +4,7 @@
 #include "subset.hpp"
 #include "combine.hpp"
 #include "external.hpp"
+#include "dense_array.hpp"
 #include "transpose.hpp"
 #include "utils.hpp"
 #include "dimnames.hpp"
@@ -46,6 +47,9 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
             const std::string external_prefix = "external ";
             if (atype.size() > external_prefix.size() && atype.substr(0, external_prefix.size()) == external_prefix) {
                 output = validate_external(handle, name);
+
+            } else if (atype == "dense array") {
+                output = validate_dense_array(handle, name);
 
             } else {
                 throw std::runtime_error(std::string("unknown array type '") + atype + "' at '" + name + "'");
