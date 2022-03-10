@@ -67,9 +67,15 @@ $(function() {
   <div class="headertitle"><div class="title">Delayed operations in HDF5 </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md__github_workspace_README"></a> This repository contains a specification for delayed array operations stored in a HDF5 file. The aim is to save the delayed operations in HDF5 to avoid duplication of data, by holding references to the untouched originals in user-defined databases. The same approach can also be used to delay operations that would otherwise incur a loss of sparsity.</p>
+<div class="textblock"><p ><a class="anchor" id="md__github_workspace_README"></a> This repository contains a specification for delayed array operations stored in a HDF5 file. The concept of delayed operations is taken from Bioconductor's <a href="https://bioconductor.org/packages/DelayedArray"><b>DelayedArray</b></a> package, where any operations on a <code>DelayedArray</code> are cached in memory and evaluated on an as-needed basis. Our aim is to save these operations to file in a well-defined, cross-language format; this avoids the need to compute and store the results of such operations, which may be prohibitively expensive.</p>
+<p >Several use cases benefit from the serialization of delayed operations:</p>
+<ul>
+<li>We have an immutable array dataset stored in a database. Rather than making a copy for manipulation, we can hold a reference to the original and save the operations (slicing, arithmetic, etc.). This avoids duplication of large datasets.</li>
+<li>We have a dataset that can be represented in a small type, e.g., <code>uint8_t</code>s. We apply a transformation that promotes the type, e.g., log-transformation to <code>float</code>s or <code>double</code>s. By saving the delayed operation, we can maintain our compact representation to reduce the file size.</li>
+<li>We have a sparse dataset that is subjected to sparsity-breaking operation, e.g., centering. Rather than saving the dense matrix, we keep the efficient sparse representation and save the delayed operation.</li>
+</ul>
 <p >A "delayed object" is stored in the file as a HDF5 group with the <code>delayed_type</code> string attribute. This type can either be <code>"operation"</code>, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object; or it can be an <code>"array"</code>, in which case the object represents an array prior to any application of operations.</p>
-<p >We implement a C++ library for cross-language validation of each delayed operation. The specification for each operation is defined in terms of the documentation for its validator function:</p>
+<p >To enforce the <b>chihaya</b> specification, we implement a C++ library for cross-language validation of each delayed operation. The specification for each operation is defined in terms of the documentation for its validator function:</p>
 <ul>
 <li><a href="https://ltla.github.io/chihaya/subset_8hpp.html">Subsetting</a></li>
 <li><a href="https://ltla.github.io/chihaya/combine_8hpp.html">Combining</a></li>
@@ -91,7 +97,8 @@ $(function() {
 <li><a href="https://ltla.github.io/chihaya/sparse__matrix_8hpp.html">Sparse matrices</a></li>
 <li><a href="https://ltla.github.io/chihaya/external_8hpp.html">External arrays</a></li>
 </ul>
-<p >At some point, we may also add <a href="https://github.com/LTLA/tatami"><b>tatami</b></a> bindings to load the delayed operations into memory. The library is provisionally named after <a href="https://myanimelist.net/character/10369/Chihaya_Kisaragi">Chihaya Kisaragi</a>, one of my favorite characters.</p>
+<p >At some point, we may also add <a href="https://github.com/LTLA/tatami"><b>tatami</b></a> bindings to load the delayed operations into memory. This would enable C++ applications to natively read from the HDF5 files that comply with <b>chihaya</b>'s specification.</p>
+<p >The library is provisionally named after <a href="https://myanimelist.net/character/10369/Chihaya_Kisaragi">Chihaya Kisaragi</a>, one of my favorite characters.</p>
 <p ><img src="https://raw.githubusercontent.com/LTLA/acceptable-anime-gifs/master/registry/10278_Idolmaster/0001.gif" alt="Chihaya GIF" class="inline"/> </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
