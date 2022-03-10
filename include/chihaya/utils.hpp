@@ -88,6 +88,25 @@ bool are_dimensions_equal(const V& left, const V& right) {
     }
     return true;
 }
+
+inline H5::DataSet check_vector(const H5::Group& handle, const std::string& name, const std::string& message) {
+    if (!handle.exists(name) || handle.childObjType(name) != H5O_TYPE_DATASET) {
+        throw std::runtime_error(std::string("expected '") + name + "' to be a dataset for a " + message);
+    }
+
+    auto dhandle = handle.openDataSet(name);
+    if (dhandle.getSpace().getSimpleExtentNdims() != 1) {
+        throw std::runtime_error(std::string("'") + name + "' should be a 1-dimensional dataset for a " + message);
+    }
+
+    return dhandle;
+}
+
+inline size_t vector_length(const H5::DataSet& handle) {
+    hsize_t len;
+    handle.getSpace().getSimpleExtentDims(&len);
+    return len;
+}
 /**
  * @endcond
  */

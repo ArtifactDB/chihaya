@@ -28,6 +28,7 @@ The specification for each operation is defined in terms of the documentation fo
 Similar validators are available for the arrays:
 
 - [Dense arrays](https://ltla.github.io/chihaya/dense__array_8hpp.html)
+- [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
 - [External arrays](https://ltla.github.io/chihaya/external_8hpp.html)
 
 At some point, we may also add [**tatami**](https://github.com/LTLA/tatami) bindings to load the delayed operations into memory.
