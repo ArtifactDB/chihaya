@@ -81,9 +81,8 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const st
         throw std::runtime_error("'method' should be a scalar string for a binary comparison operation");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
-    mhandle.read(method, stype);
+    mhandle.read(method, mhandle.getStrType());
     if (!valid_comparison(method)) {
         throw std::runtime_error(std::string("unrecognized 'method' (") + method + ") for a binary comparison operation");
     }

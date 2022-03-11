@@ -84,9 +84,8 @@ inline ArrayDetails validate_binary_logic(const H5::Group& handle, const std::st
         throw std::runtime_error("'method' should be a scalar string for a binary logic operation");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
-    mhandle.read(method, stype);
+    mhandle.read(method, mhandle.getStrType());
     if (method != "&&" && method != "||") {
         throw std::runtime_error(std::string("unrecognized 'method' (") + method + ") for a binary logic operation");
     }

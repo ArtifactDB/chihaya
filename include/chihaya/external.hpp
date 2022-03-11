@@ -73,9 +73,7 @@ inline ArrayDetails validate_external(const H5::Group& handle, const std::string
         }
 
         std::string type;
-        H5::StrType stype(0, H5T_VARIABLE);
-        H5::DataSpace sspace(H5S_SCALAR);
-        thandle.read(type, stype, sspace);
+        thandle.read(type, thandle.getStrType());
 
         if (type == "BOOLEAN") {
             atype = BOOLEAN;

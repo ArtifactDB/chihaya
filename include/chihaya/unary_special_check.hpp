@@ -72,10 +72,8 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const 
         throw std::runtime_error("'method' should be a scalar string for an unary special check");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
-    mhandle.read(method, stype);
-
+    mhandle.read(method, mhandle.getStrType());
     if (method != "is_nan" &&
         method != "is_finite" &&
         method != "is_infinite")

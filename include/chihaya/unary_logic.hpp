@@ -83,9 +83,8 @@ inline ArrayDetails validate_unary_logic(const H5::Group& handle, const std::str
         throw std::runtime_error("'method' should be a scalar string for an unary logic operation");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
-    mhandle.read(method, stype);
+    mhandle.read(method, mhandle.getStrType());
 
     if (method != "!" &&
         method != "&&" && 
@@ -106,7 +105,7 @@ inline ArrayDetails validate_unary_logic(const H5::Group& handle, const std::str
         }
 
         std::string side;
-        shandle.read(side, stype);
+        shandle.read(side, shandle.getStrType());
         if (side != "left" && side != "right") {
             throw std::runtime_error(std::string("unrecognized 'side' (") + side + ") for an unary logic operation");
         }

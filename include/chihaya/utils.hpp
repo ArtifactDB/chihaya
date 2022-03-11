@@ -61,9 +61,8 @@ inline std::string load_string_attribute(const H5::Attribute& attr, const std::s
         throw std::runtime_error(std::string("'") + field + "' attribute should be a scalar string");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string output;
-    attr.read(stype, output);
+    attr.read(attr.getStrType(), output);
 
     return output;
 }

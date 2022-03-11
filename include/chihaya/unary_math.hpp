@@ -78,28 +78,27 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  */
 inline ArrayDetails validate_unary_math(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
-        throw std::runtime_error("expected 'seed' group for an unary comparison operation");
+        throw std::runtime_error("expected 'seed' group for an unary math operation");
     }
 
     auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
 
     if (seed_details.type == STRING) {
-        throw std::runtime_error("'seed' should contain numeric or boolean values for an unary comparison operation");
+        throw std::runtime_error("'seed' should contain numeric or boolean values for an unary math operation");
     }
 
     // Checking the method.
     if (!handle.exists("method") || handle.childObjType("method") != H5O_TYPE_DATASET) {
-        throw std::runtime_error("expected 'method' dataset for an unary comparison operation");
+        throw std::runtime_error("expected 'method' dataset for an unary math operation");
     }
 
     auto mhandle = handle.openDataSet("method");
     if (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'method' should be a scalar string for an unary comparison operation");
+        throw std::runtime_error("'method' should be a scalar string for an unary math operation");
     }
 
-    H5::StrType stype(0, H5T_VARIABLE);
     std::string method;
-    mhandle.read(method, stype);
+    mhandle.read(method, mhandle.getStrType());
 
     if (method == "sign") {
         seed_details.type = INTEGER;
