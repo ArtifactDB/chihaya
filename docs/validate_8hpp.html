@@ -126,11 +126,17 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file, to be used for meaningful error messages. This can be set to an empty string to treat the current group as the root.</td></tr>
+    <tr><td class="paramname">name</td><td>Name of the group inside the file, to be used for meaningful error messages.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>handle</code> (and its children) have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>handle</code> (and its children) have been applied.</dd></dl>
+<p>A "delayed object" is stored in the file as a HDF5 group with the <code>delayed_type</code> string attribute. The value of this attribute can either be:</p>
+<ul>
+<li><code>"operation"</code>, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object. This requires an additional <code>delayed_operation</code> string attribute to specify the type of operation.</li>
+<li><code>"array"</code>, in which case the object represents an array prior to any application of operations. This requires an additional <code>delayed_array</code> string attribute to specify the type of array.</li>
+</ul>
+<p >In all cases, the exact string representation is left to the implementation. </p>
 
 </div>
 </div>
