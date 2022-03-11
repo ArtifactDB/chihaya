@@ -115,29 +115,27 @@ $(function() {
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        }</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::string type;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        H5::StrType stype(0, H5T_VARIABLE);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        H5::DataSpace sspace(H5S_SCALAR);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        thandle.read(type, stype, sspace);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;BOOLEAN&quot;</span>) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            atype = BOOLEAN;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;INTEGER&quot;</span>) {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            atype = INTEGER;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;FLOAT&quot;</span>) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            atype = FLOAT;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;STRING&quot;</span>) {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            atype = STRING;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unknown &#39;type&#39; (&quot;</span>) + type + <span class="stringliteral">&quot;) for an external array&quot;</span>);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(atype, std::vector&lt;size_t&gt;(dimensions.begin(), dimensions.end()));</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        thandle.read(type, thandle.getStrType());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;BOOLEAN&quot;</span>) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            atype = BOOLEAN;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;INTEGER&quot;</span>) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            atype = INTEGER;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;FLOAT&quot;</span>) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            atype = FLOAT;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (type == <span class="stringliteral">&quot;STRING&quot;</span>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            atype = STRING;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;unknown &#39;type&#39; (&quot;</span>) + type + <span class="stringliteral">&quot;) for an external array&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(atype, std::vector&lt;size_t&gt;(dimensions.begin(), dimensions.end()));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aexternal_8hpp_html_a475328cf510920ba9e8762408f3fc100"><div class="ttname"><a href="external_8hpp.html#a475328cf510920ba9e8762408f3fc100">chihaya::validate_external</a></div><div class="ttdeci">ArrayDetails validate_external(const H5::Group &amp;handle, const std::string &amp;name)</div><div class="ttdef"><b>Definition:</b> external.hpp:42</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:33</div></div>
 <div class="ttc" id="autils_8hpp_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition:</b> utils.hpp:24</div></div>
