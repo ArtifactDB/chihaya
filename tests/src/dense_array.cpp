@@ -10,8 +10,12 @@ H5::Group dense_array_opener(H5::Group& handle, std::string name, std::vector<hs
         std::reverse(dimensions.begin(), dimensions.end());
     }
     H5::DataSpace dspace(dimensions.size(), dimensions.data());
-
     ghandle.createDataSet("data", type, dspace);
+
+    auto dhandle = ghandle.createDataSet("native", H5::PredType::NATIVE_UINT8, H5S_SCALAR);
+    int native_int = native;
+    dhandle.write(&native_int, H5::PredType::NATIVE_INT);
+
     return ghandle;
 }
 
