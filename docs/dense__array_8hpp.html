@@ -137,11 +137,14 @@ Functions</h2></td></tr>
 <p >Inside the group, we expect:</p>
 <ul>
 <li>A <code>data</code> dataset, containing the array data. This should have a non-zero number of dimensions (i.e., not scalar) and contain integers, floats or strings. The exact type representation is left to the implementation.</li>
+<li>A <code>native</code> scalar integer dataset, to be interpreted as a boolean. This specifies whether the array is saved in the native HDF5 order, i.e., the last dimension is the fastest-changing one. If false, the array is saved in reverse order, i.e., the first dimension is the fastest-changing.</li>
 </ul>
+<p >Setting <code>native = 0</code> is frequently done for efficiency when the in-memory array has a different layout than HDF5. For example, Fortran, R and Julia use column-major order for their matrices, while C code (and HDF5) would typically use row-major order. By setting <code>native = 0</code>, we avoid the need to reorganize the data when reading/writing from file; this means that the dimensions reported by HDF5 need to be reversed to obtain the dimensions of the delayed object.</p>
 <p >The group may also contain:</p>
 <ul>
-<li>A <code>dimnames</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry corresponds to a dimension of <code>seed</code> and contains the names along that dimension. Missing entries indicate that no names are attached to its dimension. Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension. The exact string representation is left to the implementation. </li>
+<li>A <code>dimnames</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry corresponds to a dimension of <code>seed</code> and contains the names along that dimension. Missing entries indicate that no names are attached to its dimension. Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension. The exact string representation is left to the implementation.</li>
 </ul>
+<p >Note that the ordering of <code>dimnames</code> is unrelated to the setting of <code>native</code>. For example, entry 0 always corresponds to the first dimension of the delayed object, not of the HDF5 dataset in <code>data</code>. </p>
 
 </div>
 </div>
