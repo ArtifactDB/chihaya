@@ -33,6 +33,14 @@ namespace chihaya {
  * - A `data` dataset, containing the array data.
  *   This should have a non-zero number of dimensions (i.e., not scalar) and contain integers, floats or strings.
  *   The exact type representation is left to the implementation.
+ * - A `native` scalar integer dataset, to be interpreted as a boolean.
+ *   This specifies whether the array is saved in the native HDF5 order, i.e., the last dimension is the fastest-changing one.
+ *   If false, the array is saved in reverse order, i.e., the first dimension is the fastest-changing.
+ *
+ * Setting `native = 0` is frequently done for efficiency when the in-memory array has a different layout than HDF5.
+ * For example, Fortran, R and Julia use column-major order for their matrices, while C code (and HDF5) would typically use row-major order.
+ * By setting `native = 0`, we avoid the need to reorganize the data when reading/writing from file;
+ * this means that the dimensions reported by HDF5 need to be reversed to obtain the dimensions of the delayed object.
  *
  * The group may also contain:
  *
@@ -41,6 +49,9 @@ namespace chihaya {
  *   Missing entries indicate that no names are attached to its dimension.
  *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
  *   The exact string representation is left to the implementation.
+ *
+ * Note that the ordering of `dimnames` is unrelated to the setting of `native`.
+ * For example, entry 0 always corresponds to the first dimension of the delayed object, not of the HDF5 dataset in `data`.
  */
 inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::string& name) {
     // Check for a 'data' group.
@@ -68,6 +79,22 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::str
         output.type = STRING;
     } else {
         throw std::runtime_error("unrecognized type of 'data' for a dense array");
+    }
+
+    // Check for native.
+    if (!handle.exists("native") || handle.childObjType("native") != H5O_TYPE_DATASET) {
+        throw std::runtime_error("'native' should be a dataset for a dense array");
+    }
+
+    auto nhandle = handle.openDataSet("native");
+    if (nhandle.getSpace().getSimpleExtentNdims() != 0 || nhandle.getTypeClass() != H5T_INTEGER) {
+        throw std::runtime_error("'native' should be an integer scalar for a dense array");
+    }
+
+    int native;
+    nhandle.read(&native, H5::PredType::NATIVE_INT);
+    if (!native) {
+        std::reverse(output.dimensions.begin(), output.dimensions.end());
     }
 
     // Validating dimnames.
