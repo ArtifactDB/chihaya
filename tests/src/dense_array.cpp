@@ -3,10 +3,19 @@
 #include "utils.h"
 
 template<class T>
-H5::Group dense_array_opener(H5::Group& handle, std::string name, std::vector<hsize_t> dimensions, const T& type) {
+H5::Group dense_array_opener(H5::Group& handle, std::string name, std::vector<hsize_t> dimensions, const T& type, bool native = true) {
     auto ghandle = array_opener(handle, name, "dense array");
+
+    if (!native) {
+        std::reverse(dimensions.begin(), dimensions.end());
+    }
     H5::DataSpace dspace(dimensions.size(), dimensions.data());
     ghandle.createDataSet("data", type, dspace);
+
+    auto dhandle = ghandle.createDataSet("native", H5::PredType::NATIVE_UINT8, H5S_SCALAR);
+    int native_int = native;
+    dhandle.write(&native_int, H5::PredType::NATIVE_INT);
+
     return ghandle;
 }
 
@@ -36,6 +45,23 @@ TEST(Dense, Basic) {
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
         EXPECT_EQ(dims[0], 5);
+        EXPECT_EQ(dims[1], 17);
+    }
+}
+
+TEST(Dense, NonNative) {
+    std::string path = "Test_dense_array.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, false); 
+    }
+    {
+        auto output = chihaya::validate(path, "dense"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        const auto& dims = output.dimensions;
+        EXPECT_EQ(dims.size(), 2);
+        EXPECT_EQ(dims[0], 20);
         EXPECT_EQ(dims[1], 17);
     }
 }
