@@ -32,9 +32,18 @@ namespace chihaya {
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
- * This can be set to an empty string to treat the current group as the root. 
  *
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ *
+ * A "delayed object" is stored in the file as a HDF5 group with the `delayed_type` string attribute.
+ * The value of this attribute can either be:
+ *
+ * - `"operation"`, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object.
+ *   This requires an additional `delayed_operation` string attribute to specify the type of operation.
+ * - `"array"`, in which case the object represents an array prior to any application of operations.
+ *   This requires an additional `delayed_array` string attribute to specify the type of array.
+ *
+ * In all cases, the exact string representation is left to the implementation.
  */
 inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
     auto dtype = load_string_attribute(handle, "delayed_type", " for a delayed object");

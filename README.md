@@ -1,5 +1,7 @@
 # Delayed operations in HDF5
 
+## Introduction
+
 This repository contains a specification for delayed array operations stored in a HDF5 file.
 The concept of delayed operations is taken from Bioconductor's [**DelayedArray**](https://bioconductor.org/packages/DelayedArray) package,
 where any operations on a `DelayedArray` are cached in memory and evaluated on an as-needed basis.
@@ -16,12 +18,14 @@ Several use cases benefit from the serialization of delayed operations:
   By saving the delayed operation, we can maintain our compact representation to reduce the file size.
 - We have a sparse dataset that is subjected to sparsity-breaking operation, e.g., centering.
   Rather than saving the dense matrix, we keep the efficient sparse representation and save the delayed operation.
- 
-A "delayed object" is stored in the file as a HDF5 group with the `delayed_type` string attribute.
-This type can either be `"operation"`, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object;
-or it can be an `"array"`, in which case the object represents an array prior to any application of operations. 
 
-To enforce the **chihaya** specification, we implement a C++ library for cross-language validation of each delayed operation.
+## Specification
+
+In **chihaya**'s specification, We store a "delayed object" as a HDF5 group in the file.
+Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it).
+Attributes are used to specify the delayed type of each group and the nature of the operation being applied.
+
+To enforce this specification, we implement a C++ library for cross-language validation of each delayed operation.
 The specification for each operation is defined in terms of the documentation for its validator function:
 
 - [Subsetting](https://ltla.github.io/chihaya/subset_8hpp.html)
@@ -43,6 +47,18 @@ Similar validators are available for the arrays:
 - [Dense arrays](https://ltla.github.io/chihaya/dense__array_8hpp.html)
 - [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
 - [External arrays](https://ltla.github.io/chihaya/external_8hpp.html)
+
+A delayed object in a file can be validated by calling the [`validate`](https://ltla.github.io/chihaya/validate_8hpp.html) function:
+
+```cpp
+#include "chihaya/chihaya.hpp"
+
+chihaya::validate("path_to_file.h5", "delayed/object/name");
+```
+
+Any number of other arbitrary objects may be stored in the same file, as long as these are outside of the group corresponding to the delayed object.
+
+## Further comments
 
 At some point, we may also add [**tatami**](https://github.com/LTLA/tatami) bindings to load the delayed operations into memory.
 This would enable C++ applications to natively read from the HDF5 files that comply with **chihaya**'s specification.
