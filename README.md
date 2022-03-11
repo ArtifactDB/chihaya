@@ -48,7 +48,11 @@ Similar validators are available for the arrays:
 - [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
 - [External arrays](https://ltla.github.io/chihaya/external_8hpp.html)
 
-A delayed object in a file can be validated by calling the [`validate`](https://ltla.github.io/chihaya/validate_8hpp.html) function:
+Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.
+
+## Code snippets
+
+In C++, a delayed object in a file can be validated by calling the [`validate`](https://ltla.github.io/chihaya/validate_8hpp.html) function:
 
 ```cpp
 #include "chihaya/chihaya.hpp"
@@ -56,7 +60,20 @@ A delayed object in a file can be validated by calling the [`validate`](https://
 chihaya::validate("path_to_file.h5", "delayed/object/name");
 ```
 
-Any number of other arbitrary objects may be stored in the same file, as long as these are outside of the group corresponding to the delayed object.
+In R, `DelayedArray` objects (from the [**DelayedArray**](https://bioconductor.org/packages/DelayedArray) package)
+can be saved to a **chihaya**-compliant HDF5 file using the [our R package](https://github.com/LTLA/chihaya-R).
+The same package also reconstitutes a `DelayedArray` from the file.
+
+```r
+library(DelayedArray)
+X <- DelayedArray(matrix(runif(100), 100, 20)) 
+X <- log(t(t(X) / runif(ncol(X))) + 1) 
+
+library(chihaya)
+tmp <- tempfile(fileext=".h5")
+saveDelayed(X, tmp)
+Y <- loadDelayed(tmp)
+```
 
 ## Further comments
 
