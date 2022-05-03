@@ -32,8 +32,8 @@ inline H5::Group array_opener(const H5::Group& parent, const std::string& name, 
     return super_group_opener(parent, name, attrs);
 }
 
-inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
-    auto ghandle = array_opener(parent, name, "external array");
+inline H5::Group custom_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT", std::string array_type = "custom thingy") {
+    auto ghandle = array_opener(parent, name, array_type);
 
     hsize_t ndim = dimensions.size();
     H5::DataSpace dspace(1, &ndim);
@@ -43,6 +43,20 @@ inline H5::Group external_array_opener(const H5::Group& parent, const std::strin
     H5::StrType stype(0, H5T_VARIABLE);
     auto thandle = ghandle.createDataSet("type", stype, H5S_SCALAR);
     thandle.write(type, stype, H5S_SCALAR);
+
+    return ghandle;
+}
+
+inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
+    auto ghandle = custom_array_opener(parent, name, dimensions, type, "external hdf5 dense array");
+
+    H5::StrType stype(0, H5T_VARIABLE);
+    auto fhandle = ghandle.createDataSet("file", stype, H5S_SCALAR);
+    std::string dummy = "WHEEE";
+    fhandle.write(dummy, stype, H5S_SCALAR);
+
+    auto nhandle = ghandle.createDataSet("name", stype, H5S_SCALAR);
+    nhandle.write(dummy, stype, H5S_SCALAR);
 
     return ghandle;
 }

@@ -46,7 +46,8 @@ Similar validators are available for the arrays:
 
 - [Dense arrays](https://ltla.github.io/chihaya/dense__array_8hpp.html)
 - [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
-- [External arrays](https://ltla.github.io/chihaya/external_8hpp.html)
+- [External arrays](https://ltla.github.io/chihaya/external__hdf5_8hpp.html)
+- [Custom arrays](https://ltla.github.io/chihaya/custom__array_8hpp.html)
 
 Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.
 

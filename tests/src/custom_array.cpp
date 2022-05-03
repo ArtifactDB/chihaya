@@ -2,12 +2,12 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-TEST(External, Basic) {
-    std::string path = "Test_external.h5";
+TEST(CustomArray, Basic) {
+    std::string path = "Test_custom.h5";
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
     }
     {
         auto output = chihaya::validate(path, "ext"); 
@@ -22,7 +22,7 @@ TEST(External, Basic) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 17 }, "BOOLEAN"); 
+        custom_array_opener(fhandle, "ext", { 17 }, "BOOLEAN"); 
     }
     {
         auto output = chihaya::validate(path, "ext"); 
@@ -34,7 +34,7 @@ TEST(External, Basic) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 20, 10 }, "STRING"); 
+        custom_array_opener(fhandle, "ext", { 20, 10 }, "STRING"); 
     }
     {
         auto output = chihaya::validate(path, "ext"); 
@@ -47,7 +47,7 @@ TEST(External, Basic) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 20, 17 }, "INTEGER"); 
+        custom_array_opener(fhandle, "ext", { 20, 17 }, "INTEGER"); 
     }
     {
         auto output = chihaya::validate(path, "ext"); 
@@ -59,25 +59,25 @@ TEST(External, Basic) {
     }
 }
 
-TEST(External, Errors) {
-    std::string path = "Test_external.h5";
+TEST(CustomArray, Errors) {
+    std::string path = "Test_custom.h5";
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("dimensions");
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'dimensions'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 50, -20 }); 
+        custom_array_opener(fhandle, "ext", { 50, -20 }); 
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "non-negative");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, -20 }); 
+        auto ghandle = custom_array_opener(fhandle, "ext", { 50, -20 }); 
         ghandle.unlink("dimensions");
 
         hsize_t dims[2];
@@ -88,16 +88,17 @@ TEST(External, Errors) {
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "1-dimensional");
     
+    // Checking type.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("type");
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'type'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("type");
 
         hsize_t dims = 10;
@@ -108,8 +109,7 @@ TEST(External, Errors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, "FOOBAR"); 
+        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, "FOOBAR"); 
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "(FOOBAR)");
 }
-
