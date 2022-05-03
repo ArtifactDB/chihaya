@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['present_0',['present',['../structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f',1,'chihaya::ListDetails']]]
+  ['sparse_5fmatrix_2ehpp_0',['sparse_matrix.hpp',['../sparse__matrix_8hpp.html',1,'']]],
+  ['subset_2ehpp_1',['subset.hpp',['../subset_8hpp.html',1,'']]],
+  ['subset_5fassignment_2ehpp_2',['subset_assignment.hpp',['../subset__assignment_8hpp.html',1,'']]]
 ];
