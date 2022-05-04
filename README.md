@@ -41,6 +41,7 @@ The specification for each operation is defined in terms of the documentation fo
 - [Binary arithmetic](https://ltla.github.io/chihaya/binary__arithmetic_8hpp.html)
 - [Binary comparison](https://ltla.github.io/chihaya/binary__comparison_8hpp.html)
 - [Binary logic](https://ltla.github.io/chihaya/binary__logic_8hpp.html)
+- [Matrix product](https://ltla.github.io/chihaya/matrix__product_8hpp.html)
 
 Similar validators are available for the arrays:
 

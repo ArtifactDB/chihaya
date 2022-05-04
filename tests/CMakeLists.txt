@@ -31,6 +31,7 @@ add_executable(
     src/binary_logic.cpp
     src/dense_array.cpp
     src/sparse_matrix.cpp
+    src/matrix_product.cpp
 )
 
 target_link_libraries(
