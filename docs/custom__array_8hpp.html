@@ -132,7 +132,7 @@ Functions</h2></td></tr>
 <p>Each custom array is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"array"</code>.</li>
-<li><code>delayed_array</code> should be any scalar string that starts with <code>"external "</code> (note the space).</li>
+<li><code>delayed_array</code> should be any scalar string that starts with <code>"custom "</code> (note the space). Implementations are expected to add their own descriptors to define specific interprations.</li>
 </ul>
 <p >Inside the group, we expect at least the following children:</p>
 <ul>

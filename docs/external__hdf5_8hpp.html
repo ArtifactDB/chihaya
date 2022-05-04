@@ -132,7 +132,7 @@ Functions</h2></td></tr>
 <p>Each external array is represented as a HDF5 group with the following attributes:</p>
 <ul>
 <li><code>delayed_type</code> should be a scalar string <code>"array"</code>.</li>
-<li><code>delayed_array</code> should be any scalar string that starts with <code>"external "</code> (note the space).</li>
+<li><code>delayed_array</code> should be any scalar string that starts with <code>"external hdf5 "</code> (note the space). Implementations are expected to add their own descriptors to define specific interprations.</li>
 </ul>
 <p >Inside the group, we expect:</p>
 <ul>
@@ -141,7 +141,7 @@ Functions</h2></td></tr>
 <li><code>file</code>, a scalar string containing the path to the external HDF5 file. This may be an absolute or relative path.</li>
 <li><code>name</code>, a scalar string containing the name of the dataset or group inside <code>file</code> corresponding to the array/matrix.</li>
 </ul>
-<p >This will not check that <code>file</code> actually exists with the specified <code>name</code> entry. </p>
+<p >This function will not check that <code>file</code> actually exists with the specified <code>name</code> entry. The structure of the array data at <code>name</code> in the external file is also left to the implementation. Generally, we suggest referring to HDF5 datasets for dense arrays (see <code>data</code> in <code><a class="el" href="dense__array_8hpp.html#ada37607ba9ad4512761a406da2fa07b4">validate_dense_array()</a></code>) and to HDF5 groups for sparse matrices (see the expected children of <code>handle</code> in <code><a class="el" href="sparse__matrix_8hpp.html#aade8201bdb2ea92e8cce6e79f39c0ad2">validate_sparse_matrix()</a></code>). </p>
 
 </div>
 </div>
