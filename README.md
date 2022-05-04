@@ -37,7 +37,7 @@ The specification for each operation is defined in terms of the documentation fo
 - [Unary comparison](https://ltla.github.io/chihaya/unary__comparison_8hpp.html)
 - [Unary logic](https://ltla.github.io/chihaya/unary__logic_8hpp.html)
 - [Unary math](https://ltla.github.io/chihaya/unary__math_8hpp.html)
-- [Unary special checks](https://ltla.github.io/chihaya/unary__special__checks_8hpp.html)
+- [Unary special checks](https://ltla.github.io/chihaya/unary__special__check_8hpp.html)
 - [Binary arithmetic](https://ltla.github.io/chihaya/binary__arithmetic_8hpp.html)
 - [Binary comparison](https://ltla.github.io/chihaya/binary__comparison_8hpp.html)
 - [Binary logic](https://ltla.github.io/chihaya/binary__logic_8hpp.html)
@@ -47,7 +47,7 @@ Similar validators are available for the arrays:
 
 - [Dense arrays](https://ltla.github.io/chihaya/dense__array_8hpp.html)
 - [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
-- [External arrays](https://ltla.github.io/chihaya/external__hdf5_8hpp.html)
+- [External HDF5 arrays](https://ltla.github.io/chihaya/external__hdf5_8hpp.html)
 - [Custom arrays](https://ltla.github.io/chihaya/custom__array_8hpp.html)
 
 Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.

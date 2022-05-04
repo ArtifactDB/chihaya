@@ -25,7 +25,8 @@ namespace chihaya {
  * Each custom array is represented as a HDF5 group with the following attributes:
  *
  * - `delayed_type` should be a scalar string `"array"`.
- * - `delayed_array` should be any scalar string that starts with `"external "` (note the space).
+ * - `delayed_array` should be any scalar string that starts with `"custom "` (note the space).
+ *   Implementations are expected to add their own descriptors to define specific interprations.
  *
  * Inside the group, we expect at least the following children:
  *
