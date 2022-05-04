@@ -8,7 +8,7 @@
 /**
  * @file custom_array.hpp
  *
- * @brief Custom array for third-party extensions.
+ * @brief Validation for custom third-party arrays.
  */
 
 namespace chihaya {

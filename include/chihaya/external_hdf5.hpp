@@ -4,7 +4,7 @@
 #include "minimal_array.hpp"
 
 /**
- * @file external_array.hpp
+ * @file external_hdf5.hpp
  *
  * @brief Validation for external arrays.
  */
