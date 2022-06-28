@@ -47,6 +47,7 @@ Similar validators are available for the arrays:
 
 - [Dense arrays](https://ltla.github.io/chihaya/dense__array_8hpp.html)
 - [Sparse matrices](https://ltla.github.io/chihaya/sparse__matrix_8hpp.html)
+- [Constant arrays](https://ltla.github.io/chihaya/constant__array_8hpp.html)
 - [External HDF5 arrays](https://ltla.github.io/chihaya/external__hdf5_8hpp.html)
 - [Custom arrays](https://ltla.github.io/chihaya/custom__array_8hpp.html)
 
