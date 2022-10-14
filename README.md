@@ -23,10 +23,10 @@ Several use cases benefit from the serialization of delayed operations:
 
 In the **chihaya** specification, we store a "delayed object" as a HDF5 group in the file.
 Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it).
-Attributes are used to specify the delayed type of each group and the nature of the operation being applied.
+The type of delayed operation/array is specified in the group's attributes.
 
-We implement a C++ library for cross-language validation of each delayed operation.
-The specification for each operation is defined in terms of the documentation for its validator function:
+We have implemented a C++ library for cross-language validation of each delayed operation.
+The specification for each delayed operation is defined in the documentation for its validator function:
 
 - [Subsetting](https://ltla.github.io/chihaya/subset_8hpp.html)
 - [Combining](https://ltla.github.io/chihaya/combine_8hpp.html)
