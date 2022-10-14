@@ -54,6 +54,31 @@ TEST(Sparse, Dimnames) {
     EXPECT_EQ(output.type, chihaya::FLOAT);
 }
 
+TEST(Sparse, Boolean) {
+    std::string path = "Test_dense_array.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_vector<int>(ghandle, "shape", { 10, 5 });
+
+        std::vector<int> copy(data.begin(), data.end());
+        add_vector<int>(ghandle, "data", copy); 
+
+        add_vector<int>(ghandle, "indices", indices);
+        add_vector<int>(ghandle, "indptr", indptr);
+
+        auto dhandle = ghandle.openDataSet("data");
+        auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
+        int val = 1;
+        ahandle.write(H5::PredType::NATIVE_INT, &val);
+    }
+    {
+        auto output = chihaya::validate(path, "foobar"); 
+        EXPECT_EQ(output.type, chihaya::BOOLEAN);
+    }
+}
+
 TEST(Sparse, ShapeErrors) {
     std::string path = "Test_sparse_matrix.h5";
 

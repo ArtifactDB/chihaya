@@ -82,6 +82,23 @@ TEST(Dense, Dimnames) {
     }
 }
 
+TEST(Dense, Boolean) {
+    std::string path = "Test_dense_array.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT); 
+        auto dhandle = ghandle.openDataSet("data");
+        auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
+        int val = 1;
+        ahandle.write(H5::PredType::NATIVE_INT, &val);
+    }
+    {
+        auto output = chihaya::validate(path, "dense"); 
+        EXPECT_EQ(output.type, chihaya::BOOLEAN);
+    }
+}
+
 TEST(Dense, Errors) {
     std::string path = "Test_dense_array.h5";
 
@@ -106,5 +123,22 @@ TEST(Dense, Errors) {
         lhandle.createGroup("0");
     }
     expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "dimnames");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_FLOAT); 
+        auto dhandle = ghandle.openDataSet("data");
+        dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should only exist for integer");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT); 
+        auto dhandle = ghandle.openDataSet("data");
+        H5::StrType stype(0, H5T_VARIABLE);
+        dhandle.createAttribute("is_boolean", stype, H5S_SCALAR);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be an integer scalar");
 }
 
