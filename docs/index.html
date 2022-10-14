@@ -83,8 +83,8 @@ $(function() {
 <li>We have a sparse dataset that is subjected to sparsity-breaking operation, e.g., centering. Rather than saving the dense matrix, we keep the efficient sparse representation and save the delayed operation.</li>
 </ul>
 <h1>Specification</h1>
-<p >In the <b>chihaya</b> specification, we store a "delayed object" as a HDF5 group in the file. Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it). For each group, the type of delayed operation/array is described by its attributes. The specification does not place any constraints on the exact choice of datatype for any HDF5 dataset, nor on the handling of missing values, as long as the data type class is appropriate.</p>
-<p >We implement a C++ library for cross-language validation of each delayed operation. The specification for each operation is defined in terms of the documentation for its validator function:</p>
+<p >In the <b>chihaya</b> specification, we store a "delayed object" as a HDF5 group in the file. Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it). The type of delayed operation/array is specified in the group's attributes.</p>
+<p >We have implemented a C++ library for cross-language validation of each delayed operation. The specification for each delayed operation is defined in the documentation for its validator function:</p>
 <ul>
 <li><a href="https://ltla.github.io/chihaya/subset_8hpp.html">Subsetting</a></li>
 <li><a href="https://ltla.github.io/chihaya/combine_8hpp.html">Combining</a></li>

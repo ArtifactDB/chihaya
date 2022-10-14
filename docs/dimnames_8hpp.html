@@ -144,7 +144,7 @@ Functions</h2></td></tr>
 <p >Inside the group, we expect:</p>
 <ul>
 <li>A <code>seed</code> group, containing a delayed object for which dimnames are to be assigned. The <code>seed</code> group handle is passed to <code>validate()</code> to check its contents recursively and to retrieve the dimensions.</li>
-<li>A <code>dimnames</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry corresponds to a dimension of <code>seed</code> and contains the names along that dimension. Missing entries indicate that no names are attached to its dimension. Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension. The exact string representation is left to the implementation. </li>
+<li>A <code>dimnames</code> group, representing a list (see <code>ListDetails</code>) of length equal to the number of dimensions in the <code>seed</code>. Each child entry corresponds to a dimension of <code>seed</code> and contains the names along that dimension. Missing entries indicate that no names are attached to its dimension. Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension. The exact string representation and encoding is left to the implementation. If the implementation supports missing strings, then each string inside each dataset should be non-missing. </li>
 </ul>
 
 </div>
