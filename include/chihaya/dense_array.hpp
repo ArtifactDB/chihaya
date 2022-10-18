@@ -38,17 +38,17 @@ namespace chihaya {
  *   If true, the dimensions of the `data` dataset are in the same order as the dimensions of the dense array.
  *   If false, the dimensions are saved in reverse order, i.e., the first dimension of the dense array is the last dimension of the `data` dataset.
  *
- * Setting `native = 0` is frequently done for efficiency when the in-memory array has a different layout than HDF5.
+ * Setting `native = 0` is frequently done for efficiency when the in-memory dense array has a different layout than the on-disk HDF5 dataset.
  * For example, Fortran, R and Julia use column-major order for their matrices, while C code (and HDF5) would typically use row-major order.
  * By setting `native = 0`, we avoid the need to reorganize the data when reading/writing from file;
- * this means that the dimensions reported by HDF5 need to be reversed to obtain the dimensions of the delayed object.
+ * however, this means that the dimensions reported by HDF5 need to be reversed to obtain the dimensions of the delayed object.
  *
  * The group may also contain:
  *
- * - A `dimnames` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
- *   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
- *   Missing entries indicate that no names are attached to its dimension.
- *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
+ * - A `dimnames` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the dense array.
+ *   Each child entry corresponds to a dimension of the dense array and contains the names along that dimension.
+ *   The absence of a child entry indicates that no names are attached to the corresponding dimension.
+ *   Each (non-absent) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
  *   The exact string representation is left to the implementation.
  *
  * Note that the ordering of `dimnames` is unrelated to the setting of `native`.
