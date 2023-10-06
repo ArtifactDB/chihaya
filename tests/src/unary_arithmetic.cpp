@@ -50,6 +50,27 @@ TEST(UnaryArithmetic, VectorUnary) {
     EXPECT_EQ(output.type, chihaya::FLOAT);
 }
 
+TEST(UnaryArithmetic, Missing) {
+    std::string path = "Test_unary_arithmetic.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
+        external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
+        add_scalar(ghandle, "method", std::string("/"));
+        add_scalar(ghandle, "side", std::string("left"));
+        add_scalar(ghandle, "along", 0);
+
+        add_vector<double>(ghandle, "value", { 1, 2, 3, 4, 5 });
+        auto dhandle = ghandle.openDataSet("value");
+        add_missing_placeholder(dhandle, 1.2);
+    }
+
+    auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+}
+
+
 TEST(UnaryArithmetic, CommonErrors) {
     std::string path = "Test_unary_arithmetic.h5";
 
@@ -191,4 +212,19 @@ TEST(UnaryArithmetic, AlongErrors) {
         add_scalar<int>(ghandle, "along", 0);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'value' dataset");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
+        external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
+        add_scalar(ghandle, "method", std::string("/"));
+        add_scalar(ghandle, "side", std::string("left"));
+        add_scalar(ghandle, "along", 0);
+
+        add_vector<double>(ghandle, "value", { 1, 2, 3, 4, 5 });
+        auto dhandle = ghandle.openDataSet("value");
+        hsize_t dim = 5;
+        dhandle.createAttribute("missing_placeholder", H5::PredType::NATIVE_DOUBLE, H5::DataSpace(1, &dim));
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a scalar");
 }

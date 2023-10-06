@@ -80,10 +80,10 @@ void validate_dimnames(const H5::Group& handle, const V& dimensions, const std::
  *   The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
  * - A `dimnames` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
  *   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
- *   Missing entries indicate that no names are attached to its dimension.
- *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
+ *   Each entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
  *   The exact string representation and encoding is left to the implementation.
- *   If the implementation supports missing strings, then each string inside each dataset should be non-missing.
+ *   If a dataset is absent, no names are attached to the corresponding dimension.
+ *   It is assumed that each string in each dataset is not missing (i.e., the placeholders described in `validate_dense_array()` should not be used here).
  */
 inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {

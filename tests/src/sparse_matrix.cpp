@@ -79,6 +79,27 @@ TEST(Sparse, Boolean) {
     }
 }
 
+TEST(Sparse, Missing) {
+    std::string path = "Test_sparse_matrix.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_vector<int>(ghandle, "shape", { 10, 5 });
+        add_vector<double>(ghandle, "data", data);
+        add_vector<int>(ghandle, "indices", indices);
+        add_vector<int>(ghandle, "indptr", indptr);
+
+        auto dhandle = ghandle.openDataSet("data");
+        add_missing_placeholder(dhandle, 2.5);
+    }
+    {
+        auto output = chihaya::validate(path, "foobar"); 
+        EXPECT_EQ(output.type, chihaya::FLOAT);
+    }
+}
+
+
 TEST(Sparse, ShapeErrors) {
     std::string path = "Test_sparse_matrix.h5";
 
@@ -254,4 +275,17 @@ TEST(Sparse, ComplexIndexErrors) {
         add_vector<int>(ghandle, "indices", copy);
     }
     expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "strictly increasing");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_vector<int>(ghandle, "shape", { 10, 5 });
+        add_vector<double>(ghandle, "data", data);
+        add_vector<int>(ghandle, "indices", indices);
+        add_vector<int>(ghandle, "indptr", indptr);
+
+        auto dhandle = ghandle.openDataSet("data");
+        add_missing_placeholder(dhandle, 1);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "should be of the same type");
 }
