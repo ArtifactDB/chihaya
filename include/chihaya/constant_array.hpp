@@ -28,6 +28,11 @@ namespace chihaya {
  * - A `dimensions` dataset, specifying the dimensions of the constant array.
  *   This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions, containing only non-negative integers.
  * - A `value` scalar dataset, containing the value of the constant array. 
+ *
+ * `value` may contain a `missing_placeholder` attribute.
+ * This should be a scalar dataset of the same type class as `value`, specifying the placeholder value used for all missing elements,
+ * i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
+ * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
 inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::string& name) {
     std::vector<int> dims;
@@ -61,6 +66,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::
     if (ndims != 0) {
         throw std::runtime_error("'value' should be a scalar for a constant array");
     }
+    validate_missing_placeholder(dhandle);
 
     ArrayDetails output;
     output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());

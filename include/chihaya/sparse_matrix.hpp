@@ -52,6 +52,11 @@ namespace chihaya {
  *
  * If `data` is an integer dataset, it may contain an `is_boolean` attribute.
  * This should be an integer scalar; if non-zero, it indicates that the contents of `data` should be treated as booleans where zeros are falsey and non-zeros are truthy.
+ *
+ * `data` may contain a `missing_placeholder` attribute.
+ * This should be a scalar dataset of the same type class as `data`, specifying the placeholder value used for all missing elements,
+ * i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
+ * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
 inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::string& name) {
     std::vector<int> dims(2);
@@ -80,6 +85,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::s
     } else {
         throw std::runtime_error("unknown type of 'data' for a sparse matrix");
     }
+    validate_missing_placeholder(dhandle);
 
     // Checking the properties of the indices.
     auto ihandle = check_vector(handle, "indices", "sparse matrix");

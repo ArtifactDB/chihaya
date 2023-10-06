@@ -55,11 +55,19 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *   The exact string representation is left to the implementation.
  * - A `value` dataset.
  *   This may be scalar or 1-dimensional.
- *   If 1-dimensional, it should have length equal to the extent specified in `along`.
  *   This should be integer or float, which are implicitly converted to booleans with the usual methods.
  *   The exact type representation is left to the implementation.
+ *
+ * If `value` is 1-dimensional, we also expect:
+ *
  * - An `along` integer scalar dataset, specifying the dimension on which to apply the operation with `value`.
  *   The exact integer representation is left to the implementation.
+ *   The length of `value` should be equal to the extent of the dimension specified in `along`.
+ *
+ * `value` may contain a `missing_placeholder` attribute.
+ * This should be a scalar dataset of the same type class as `value`, specifying the placeholder value used for all missing elements,
+ * i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
+ * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  *
  * The type of the output object is always boolean.
  */
