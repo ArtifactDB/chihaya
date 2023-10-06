@@ -38,6 +38,17 @@ TEST(Constant, Basic) {
         EXPECT_EQ(dims[0], 5);
         EXPECT_EQ(dims[1], 17);
     }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        constant_array_opener(fhandle, "constant", { 20, 17 }, 1);
+        auto dhandle = fhandle.openDataSet("constant/value");
+        add_missing_placeholder(dhandle, (int)1);
+    }
+    {
+        auto output = chihaya::validate(path, "constant"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+    }
 }
 
 TEST(Constant, Errors) {
@@ -78,5 +89,14 @@ TEST(Constant, Errors) {
         add_vector<int>(ghandle, "value", { 20, 20 });
     }
     expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "should be a scalar");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        constant_array_opener(fhandle, "constant", { 20, 17 }, 1);
+        auto dhandle = fhandle.openDataSet("constant/value");
+        add_missing_placeholder(dhandle, 1.0);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "should be of the same type");
+
 }
 

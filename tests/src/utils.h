@@ -107,7 +107,7 @@ void add_scalar(const H5::Group& handle, const std::string& name, T value) {
         auto dhandle = handle.createDataSet(name, stype, dspace); 
         dhandle.write(value, stype);
     } else {
-        static_assert(dependent_false<T>::value, "scalar type should be either an 'int' or 'double'"); 
+        static_assert(dependent_false<T>::value, "scalar type should be either an 'int', 'string' or 'double'"); 
     }
 }
 
@@ -127,6 +127,23 @@ void expect_error(Function op, std::string message) {
             throw;
         }
     });
+}
+
+template<typename T>
+void add_missing_placeholder(const H5::DataSet& handle, T value) {
+    if constexpr(std::is_same<T, int>::value) {
+        auto dhandle = handle.createAttribute("missing_placeholder", H5::PredType::NATIVE_INT, H5S_SCALAR); 
+        dhandle.write(H5::PredType::NATIVE_INT, &value);
+    } else if constexpr(std::is_same<T, double>::value) {
+        auto dhandle = handle.createAttribute("missing_placeholder", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR); 
+        dhandle.write(H5::PredType::NATIVE_DOUBLE, &value);
+    } else if constexpr(std::is_same<T, std::string>::value) {
+        H5::StrType stype(0, H5T_VARIABLE);
+        auto dhandle = handle.createAttribute("missing_placeholder", stype, H5S_SCALAR); 
+        dhandle.write(stype, value);
+    } else {
+        static_assert(dependent_false<T>::value, "scalar type should be either an 'int', 'string' or 'double'"); 
+    }
 }
 
 #endif

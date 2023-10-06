@@ -126,11 +126,11 @@ inline bool is_boolean(const H5::DataSet& handle) {
 
 inline void validate_missing_placeholder(const H5::DataSet& handle) {
     if (handle.attrExists("missing_placeholder")) {
-        auto ahdnel = handle.openAttribute("missing_placeholder");
+        auto ahandle = handle.openAttribute("missing_placeholder");
         if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
             throw std::runtime_error("missing placeholder attribute should be a scalar");
         }
-        if (handle.getTypeClass() != attr.getTypeClass()) {
+        if (handle.getTypeClass() != ahandle.getTypeClass()) {
             throw std::runtime_error("missing placeholder attribute should be of the same type as the dataset");
         }
     }

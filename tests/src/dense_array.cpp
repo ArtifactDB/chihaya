@@ -66,6 +66,22 @@ TEST(Dense, NonNative) {
     }
 }
 
+TEST(Dense, Missing) {
+    std::string path = "Test_dense_array.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, false); 
+        auto dhandle = fhandle.openDataSet("dense/data");
+        add_missing_placeholder(dhandle, (int)2);
+    }
+    {
+        auto output = chihaya::validate(path, "dense"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+    }
+}
+
+
 TEST(Dense, Dimnames) {
     std::string path = "Test_dense_array.h5";
 
@@ -140,5 +156,12 @@ TEST(Dense, Errors) {
         dhandle.createAttribute("is_boolean", stype, H5S_SCALAR);
     }
     expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be an integer scalar");
-}
 
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT); 
+        auto dhandle = fhandle.openDataSet("dense/data");
+        add_missing_placeholder(dhandle, 2.5);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be of the same type");
+}
