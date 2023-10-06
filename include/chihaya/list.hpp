@@ -46,7 +46,7 @@ struct ListDetails {
 /**
  * @cond
  */
-inline ListDetails validate_list(const H5::Group& handle) {
+inline ListDetails validate_list(const H5::Group& handle, const Version&) {
     ListDetails output;
 
     auto dtype = load_string_attribute(handle, "delayed_type", " for a list");

@@ -14,6 +14,7 @@ namespace chihaya {
  *
  * @param handle An open handle on a HDF5 group representing a dense array.
  * @param name Name of the group inside the file.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the constant array.
  * Otherwise, if the validation failed, an error is raised.
@@ -34,7 +35,7 @@ namespace chihaya {
  * i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
  * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
-inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::string& name, const Version& version) {
     std::vector<int> dims;
     {
         auto shandle = check_vector(handle, "dimensions", "constant_array");
@@ -66,7 +67,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::
     if (ndims != 0) {
         throw std::runtime_error("'value' should be a scalar for a constant array");
     }
-    validate_missing_placeholder(dhandle);
+    validate_missing_placeholder(dhandle, version);
 
     ArrayDetails output;
     output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());

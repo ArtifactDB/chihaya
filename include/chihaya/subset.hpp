@@ -18,7 +18,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+inline ArrayDetails validate(const H5::Group& handle, const std::string&, const Version&);
 /**
  * @endcond
  */
@@ -50,11 +50,11 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * The type of the output object is the same as that of the `seed`; only the dimensions are changed.
  */
-inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name, const Version& version) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a subset operation");
     }
-    auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
+    auto seed_details = validate(handle.openGroup("seed"), name + "/seed", version);
 
     if (!handle.exists("index") || handle.childObjType("index") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'index' group for a subset operation"); 

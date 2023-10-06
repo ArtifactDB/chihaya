@@ -18,7 +18,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+inline ArrayDetails validate(const H5::Group& handle, const std::string&, const Version&);
 /**
  * @endcond
  */
@@ -29,6 +29,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * @param handle An open handle on a HDF5 group representing an unary logic operation.
  * @param name Name of the group inside the file.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the object after applying the logical operation.
  * Otherwise, if the validation failed, an error is raised.
@@ -71,12 +72,12 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&);
  *
  * The type of the output object is always boolean.
  */
-inline ArrayDetails validate_unary_logic(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_unary_logic(const H5::Group& handle, const std::string& name, const Version& version) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for an unary logic operation");
     }
 
-    auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
+    auto seed_details = validate(handle.openGroup("seed"), name + "/seed", version);
     if (seed_details.type == STRING) {
         throw std::runtime_error("'seed' should contain numeric or boolean values for an unary logic operation");
     }
@@ -127,6 +128,8 @@ inline ArrayDetails validate_unary_logic(const H5::Group& handle, const std::str
         if (vhandle.getTypeClass() == H5T_STRING) {
             throw std::runtime_error("'value' should contain numeric or boolean values for an unary logic operation");
         }
+
+        validate_missing_placeholder(vhandle, version);
 
         size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
         if (ndims == 0) {

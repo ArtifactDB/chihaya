@@ -40,6 +40,7 @@ namespace chihaya {
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  *
@@ -53,7 +54,7 @@ namespace chihaya {
  *
  * In all cases, the exact string representation is left to the implementation.
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate(const H5::Group& handle, const std::string& name, const Version& version) {
     auto dtype = load_string_attribute(handle, "delayed_type", " for a delayed object");
     ArrayDetails output;
 
@@ -126,6 +127,26 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
     }
 
     return output;
+}
+
+/**
+ * Validate a delayed operation/array at the specified HDF5 group,
+ * using the version string.
+ * 
+ * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
+ * @param name Name of the group inside the file, to be used for meaningful error messages.
+ *
+ * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ */
+inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
+    Version version;
+    if (handle.attrExists("delayed_version")) {
+        auto vstring = load_string_attribute(handle, "delayed_version");
+        version = parse_version_string(vstring);
+    } else {
+        version.major = 0;
+    }
+    return validate(handle, name, version);
 }
 
 /**
