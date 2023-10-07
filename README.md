@@ -119,15 +119,15 @@ cmake --build . --target install
 Then you can use `find_package()` as usual:
 
 ```cmake
-find_package(chihaya_chihaya CONFIG REQUIRED)
-target_link_libraries(mylib INTERFACE chihaya::chihaya)
+find_package(artifactdb_chihaya CONFIG REQUIRED)
+target_link_libraries(mylib INTERFACE artifactdb::chihaya)
 ```
 
 ### Manual
 
 If you're not using CMake, the simple approach is to just copy the files the `include/` subdirectory -
 either directly or with Git submodules - and include their path during compilation with, e.g., GCC's `-I`.
-You will also need to link to the HDF5 library.
+You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).
 
 ## Further comments
 
