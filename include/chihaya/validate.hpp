@@ -133,7 +133,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
  * Validate a delayed operation/array at the specified HDF5 group,
  * using a version string in the `delayed_version` attribute of the `handle`.
  * This should be a string of the form `<MAJOR>.<MINOR>.<PATCH>`;
- * if missing, this is set to `0.0.0`.
+ * if missing, this defaults to `0.0.0`.
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
@@ -152,6 +152,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
 
 /**
  * Validate a delayed operation/array at the specified HDF5 group.
+ * This simply calls the `validate()` overload for a `H5::Group`; the specification version is taken from the `delayed_version` attribute.
  * 
  * @param path Path to a HDF5 file.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
