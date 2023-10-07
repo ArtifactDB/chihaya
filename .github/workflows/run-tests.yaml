@@ -1,4 +1,8 @@
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 name: Run unit tests
 
@@ -20,7 +24,7 @@ jobs:
           }
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
@@ -53,6 +57,6 @@ jobs:
 
     - name: Upload to Codecov
       if: ${{ matrix.config.cov }}
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3
       with:
         directory: build/tests/CMakeFiles/
