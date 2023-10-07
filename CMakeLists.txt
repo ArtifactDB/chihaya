@@ -52,7 +52,7 @@ install(TARGETS chihaya
 
 install(EXPORT chihayaTargets
     FILE artifactdb_chihayaTargets.cmake
-    NAMESPACE tatami::
+    NAMESPACE artifactdb::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/artifactdb_chihaya)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
