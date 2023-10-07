@@ -10,13 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(chihaya INTERFACE)
 add_library(artifactdb::chihaya ALIAS chihaya)
 
-option(CHIHAYA_FETCH_EXTERN "Automatically fetch chihaya's external dependencies." ON)
-if(CHIHAYA_FETCH_EXTERN)
-    add_subdirectory(extern)
-else()
-    find_package(artifactdb_chihaya CONFIG REQUIRED)
-endif()
-
 option(CHIHAYA_FIND_HDF5 "Try to find and link to HDF5 for chihaya." ON)
 if(CHIHAYA_FIND_HDF5)
     find_package(HDF5 COMPONENTS C CXX)
