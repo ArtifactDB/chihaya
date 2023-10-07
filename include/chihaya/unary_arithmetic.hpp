@@ -107,7 +107,7 @@ inline ArrayType determine_arithmetic_type(const ArrayType& first, const ArrayTy
  *
  * Note that any boolean types in `seed` and `value` are first promoted to integer before type determination.
  */
-inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for an unary arithmetic operation");
     }
@@ -204,6 +204,8 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std
     seed_details.type = determine_arithmetic_type(min_type, seed_details.type, method);
 
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate unary arithmetic operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

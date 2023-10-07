@@ -59,7 +59,7 @@ inline ArrayDetails fetch_seed_for_comparison(const H5::Group& handle, const std
  *
  * The type of the output object is always boolean.
  */
-inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const std::string& name, const Version& version) try {
     auto left_details = fetch_seed_for_comparison(handle, "left", name, version);
     auto right_details = fetch_seed_for_comparison(handle, "right", name, version);
 
@@ -90,6 +90,8 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const st
 
     left_details.type = BOOLEAN;
     return left_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate binary comparison operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

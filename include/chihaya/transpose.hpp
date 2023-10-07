@@ -49,7 +49,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&, const 
  *
  * The type of the output is the same as that of `seed`; only the dimensions are altered.
  */
-inline ArrayDetails validate_transpose(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_transpose(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a transpose operation");
     }
@@ -91,6 +91,8 @@ inline ArrayDetails validate_transpose(const H5::Group& handle, const std::strin
 
     seed_details.dimensions = new_dimensions;
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate transposition at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

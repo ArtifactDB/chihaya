@@ -53,7 +53,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&, const 
  *
  * The type of the output object is always boolean.
  */
-inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for an unary special check");
     }
@@ -84,6 +84,8 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const 
 
     seed_details.type = BOOLEAN;
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate unary special check operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

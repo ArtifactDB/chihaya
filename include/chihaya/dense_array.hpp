@@ -63,7 +63,7 @@ namespace chihaya {
  * i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
  * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
-inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::string& name, const Version& version) try {
     // Check for a 'data' group.
     if (!handle.exists("data") || handle.childObjType("data") != H5O_TYPE_DATASET) {
         throw std::runtime_error("'data' should be a dataset for a dense array");
@@ -119,6 +119,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::str
     }
 
     return output;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate dense array at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

@@ -41,8 +41,10 @@ namespace chihaya {
  * thus avoiding a redundant copy of a large arrays when we only want to preserve the delayed operations.
  * Of course, it is assumed that clients will know how to retrieve specific resources from the remotes.
  */
-inline ArrayDetails validate_custom_array(const H5::Group& handle, const std::string& name, const Version& version) {
-    return validate_minimal(handle, name, []() -> std::string { return std::string("a custom array"); }, version);
+inline ArrayDetails validate_custom_array(const H5::Group& handle, const std::string& name, const Version& version) try {
+    return validate_minimal(handle, []() -> std::string { return std::string("a custom array"); }, version);
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate custom array at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }
