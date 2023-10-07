@@ -110,7 +110,7 @@ $(function() {
 <li><a href="https://artifactdb.github.io/chihaya/custom__array_8hpp.html">Custom arrays</a></li>
 </ul>
 <p >Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.</p>
-<h1>Code snippets</h1>
+<h1>Using the validation library</h1>
 <p >In C++, a delayed object in a file can be validated by calling the <a href="https://artifactdb.github.io/chihaya/validate_8hpp.html"><code>validate</code></a> function:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="chihaya_8hpp.html">chihaya/chihaya.hpp</a>&quot;</span></div>
 <div class="line"> </div>
@@ -125,7 +125,35 @@ $(function() {
 <div class="line">tmp &lt;- tempfile(fileext=&quot;.h5&quot;)</div>
 <div class="line">saveDelayed(X, tmp)</div>
 <div class="line">Y &lt;- loadDelayed(tmp)</div>
-</div><!-- fragment --><h1>Further comments</h1>
+</div><!-- fragment --><h1>Building projects</h1>
+<h2>CMake with <code>FetchContent</code></h2>
+<p >If you're using CMake, you just need to add something like this to your <code>CMakeLists.txt</code>:</p>
+<div class="fragment"><div class="line">include(FetchContent)</div>
+<div class="line"> </div>
+<div class="line">FetchContent_Declare(</div>
+<div class="line">  chihaya</div>
+<div class="line">  GIT_REPOSITORY https://github.com/ArtifactDB/chihaya</div>
+<div class="line">  GIT_TAG master # or any version of interest</div>
+<div class="line">)</div>
+<div class="line"> </div>
+<div class="line">FetchContent_MakeAvailable(chihaya)</div>
+</div><!-- fragment --><p >Then you can link to <b>chihaya</b> to make the headers available during compilation:</p>
+<div class="fragment"><div class="line"># For executables:</div>
+<div class="line">target_link_libraries(myexe chihaya)</div>
+<div class="line"> </div>
+<div class="line"># For libaries</div>
+<div class="line">target_link_libraries(mylib INTERFACE chihaya)</div>
+</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+<p >You can install the library by cloning a suitable version of this repository and running the following commands:</p>
+<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
+<div class="line">cmake .. -DTATAMI_TESTS=OFF</div>
+<div class="line">cmake --build . --target install</div>
+</div><!-- fragment --><p >Then you can use <code>find_package()</code> as usual:</p>
+<div class="fragment"><div class="line">find_package(artifactdb_chihaya CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(mylib INTERFACE artifactdb::chihaya)</div>
+</div><!-- fragment --><h2>Manual</h2>
+<p >If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).</p>
+<h1>Further comments</h1>
 <p >Web applications can read delayed matrices into memory using the <a href="https://npmjs.com/package/chihaya"><b>chihaya</b></a> Javascript package.</p>
 <p >At some point, we may also add <a href="https://github.com/tatami-inc/tatami"><b>tatami</b></a> bindings to load the delayed operations into memory. This would enable C++ applications to natively read from the HDF5 files that comply with <b>chihaya</b>'s specification.</p>
 <p >The library is provisionally named after <a href="https://myanimelist.net/character/10369/Chihaya_Kisaragi">Chihaya Kisaragi</a>, one of my favorite characters.</p>
