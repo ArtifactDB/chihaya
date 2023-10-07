@@ -53,7 +53,7 @@ Similar validators are available for the arrays:
 
 Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.
 
-## Code snippets
+## Using the validation library
 
 In C++, a delayed object in a file can be validated by calling the [`validate`](https://artifactdb.github.io/chihaya/validate_8hpp.html) function:
 
@@ -77,6 +77,57 @@ tmp <- tempfile(fileext=".h5")
 saveDelayed(X, tmp)
 Y <- loadDelayed(tmp)
 ```
+
+## Building projects
+
+### CMake with `FetchContent`
+
+If you're using CMake, you just need to add something like this to your `CMakeLists.txt`:
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+  chihaya
+  GIT_REPOSITORY https://github.com/ArtifactDB/chihaya
+  GIT_TAG master # or any version of interest
+)
+
+FetchContent_MakeAvailable(chihaya)
+```
+
+Then you can link to **chihaya** to make the headers available during compilation:
+
+```cmake
+# For executables:
+target_link_libraries(myexe chihaya)
+
+# For libaries
+target_link_libraries(mylib INTERFACE chihaya)
+```
+
+### CMake with `find_package()`
+
+You can install the library by cloning a suitable version of this repository and running the following commands:
+
+```sh
+mkdir build && cd build
+cmake .. -DTATAMI_TESTS=OFF
+cmake --build . --target install
+```
+
+Then you can use `find_package()` as usual:
+
+```cmake
+find_package(artifactdb_chihaya CONFIG REQUIRED)
+target_link_libraries(mylib INTERFACE artifactdb::chihaya)
+```
+
+### Manual
+
+If you're not using CMake, the simple approach is to just copy the files the `include/` subdirectory -
+either directly or with Git submodules - and include their path during compilation with, e.g., GCC's `-I`.
+You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).
 
 ## Further comments
 
