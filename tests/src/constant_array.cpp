@@ -42,6 +42,7 @@ TEST(Constant, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         constant_array_opener(fhandle, "constant", { 20, 17 }, 1);
+        add_version_string(fhandle.openGroup("constant"), "1.0.0");
         auto dhandle = fhandle.openDataSet("constant/value");
         add_missing_placeholder(dhandle, (int)1);
     }
@@ -93,6 +94,7 @@ TEST(Constant, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         constant_array_opener(fhandle, "constant", { 20, 17 }, 1);
+        add_version_string(fhandle.openGroup("constant"), "1.0.0");
         auto dhandle = fhandle.openDataSet("constant/value");
         add_missing_placeholder(dhandle, 1.0);
     }

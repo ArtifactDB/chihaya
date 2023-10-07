@@ -19,6 +19,7 @@ namespace chihaya {
  *
  * @param handle An open handle on a HDF5 group representing a dense array.
  * @param name Name of the group inside the file.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the dense array.
  * Otherwise, if the validation failed, an error is raised.
@@ -62,7 +63,7 @@ namespace chihaya {
  * i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
  * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
-inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::string& name, const Version& version) {
     // Check for a 'data' group.
     if (!handle.exists("data") || handle.childObjType("data") != H5O_TYPE_DATASET) {
         throw std::runtime_error("'data' should be a dataset for a dense array");
@@ -73,7 +74,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::str
     if (ndims == 0) {
         throw std::runtime_error("'data' should have non-zero dimensions for a dense array");
     }
-    validate_missing_placeholder(dhandle);
+    validate_missing_placeholder(dhandle, version);
 
     ArrayDetails output;
     std::vector<hsize_t> dims(ndims);
@@ -109,7 +110,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::str
 
     // Validating dimnames.
     if (handle.exists("dimnames")) {
-        validate_dimnames(handle, output.dimensions, "dense array");
+        validate_dimnames(handle, output.dimensions, "dense array", version);
     }
 
     // Check if it's boolean.

@@ -18,7 +18,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+inline ArrayDetails validate(const H5::Group& handle, const std::string&, const Version&);
 
 inline bool valid_arithmetic(const std::string& method) {
     return (method == "+" ||
@@ -57,6 +57,7 @@ inline ArrayType determine_arithmetic_type(const ArrayType& first, const ArrayTy
  *
  * @param handle An open handle on a HDF5 group representing an unary arithmetic operation.
  * @param name Name of the group inside the file.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
@@ -106,12 +107,12 @@ inline ArrayType determine_arithmetic_type(const ArrayType& first, const ArrayTy
  *
  * Note that any boolean types in `seed` and `value` are first promoted to integer before type determination.
  */
-inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std::string& name, const Version& version) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for an unary arithmetic operation");
     }
 
-    auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
+    auto seed_details = validate(handle.openGroup("seed"), name + "/seed", version);
     if (seed_details.type == STRING) {
         throw std::runtime_error("type of 'seed' should be numeric or boolean for an unary arithmetic operation");
     }
@@ -166,7 +167,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const std
             min_type = FLOAT;
         }
 
-        validate_missing_placeholder(vhandle);
+        validate_missing_placeholder(vhandle, version);
 
         size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
         if (ndims == 0) {

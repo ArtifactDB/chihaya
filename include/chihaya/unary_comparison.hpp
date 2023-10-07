@@ -18,7 +18,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string&);
+inline ArrayDetails validate(const H5::Group& handle, const std::string&, const Version&);
 
 inline bool valid_comparison(const std::string& method) {
     return (
@@ -40,6 +40,7 @@ inline bool valid_comparison(const std::string& method) {
  *
  * @param handle An open handle on a HDF5 group representing an unary comparison operation.
  * @param name Name of the group inside the file.
+ * @param version Version of the **chihaya** specification.
  *
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
@@ -78,12 +79,12 @@ inline bool valid_comparison(const std::string& method) {
  *
  * The type of the output object is always boolean.
  */
-inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const std::string& name) {
+inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const std::string& name, const Version& version) {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for an unary comparison operation");
     }
 
-    auto seed_details = validate(handle.openGroup("seed"), name + "/seed");
+    auto seed_details = validate(handle.openGroup("seed"), name + "/seed", version);
 
     // Checking the method.
     if (!handle.exists("method") || handle.childObjType("method") != H5O_TYPE_DATASET) {
@@ -127,7 +128,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const std
         throw std::runtime_error("both or none of 'seed' and 'value' should contain strings in an unary comparison operation");
     }
 
-    validate_missing_placeholder(vhandle);
+    validate_missing_placeholder(vhandle, version);
 
     size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
     if (ndims == 0) {

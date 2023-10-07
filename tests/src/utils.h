@@ -146,4 +146,10 @@ void add_missing_placeholder(const H5::DataSet& handle, T value) {
     }
 }
 
+inline void add_version_string(const H5::Group& handle, std::string version) {
+    H5::StrType stype(0, H5T_VARIABLE);
+    auto dhandle = handle.createAttribute("delayed_version", stype, H5S_SCALAR); 
+    dhandle.write(stype, version);
+}
+
 #endif
