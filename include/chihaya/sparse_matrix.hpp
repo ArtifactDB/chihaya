@@ -59,7 +59,7 @@ namespace chihaya {
  * i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
  * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
-inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::string& name, const Version& version) try {
     std::vector<int> dims(2);
     {
         auto shandle = check_vector(handle, "shape", "sparse_matrix");
@@ -101,7 +101,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::s
     if (iphandle.getTypeClass() != H5T_INTEGER) {
         throw std::runtime_error("'indptr' should be integer for a sparse matrix");
     }
-    if (vector_length(iphandle) != dims[1] + 1) {
+    if (vector_length(iphandle) != static_cast<size_t>(dims[1] + 1)) {
         throw std::runtime_error("'indptr' should have length equal to the number of columns plus 1 for a sparse matrix");
     }
     std::vector<hsize_t> indptrs(dims[1] + 1);
@@ -162,6 +162,8 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::s
     }
 
     return ArrayDetails(type, std::vector<size_t>(dims.begin(), dims.end()));
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate sparse matrix at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

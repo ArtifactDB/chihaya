@@ -53,7 +53,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&, const 
  * Otherwise, the type of the output object is set to the most advanced `ArrayType` among all `seeds` objects.
  * For example, a mixture of `INTEGER` and `FLOAT` objects will result in a `FLOAT` output.
  */
-inline ArrayDetails validate_combine(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_combine(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("along") || handle.childObjType("along") != H5O_TYPE_DATASET) {
         throw std::runtime_error("expected 'along' dataset for a combine operation");
     }
@@ -97,7 +97,7 @@ inline ArrayDetails validate_combine(const H5::Group& handle, const std::string&
         if (first) {
             type = cur_seed.type;
             dimensions = cur_seed.dimensions;
-            if (along >= dimensions.size()) {
+            if (static_cast<size_t>(along) >= dimensions.size()) {
                 throw std::runtime_error("'along' should be less than the seed dimensionality for a combine operation");
             }
             first = false;
@@ -119,6 +119,8 @@ inline ArrayDetails validate_combine(const H5::Group& handle, const std::string&
     }
 
     return ArrayDetails(type, std::move(dimensions));
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate combine operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

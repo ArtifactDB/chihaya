@@ -50,7 +50,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&, const 
  *
  * The type of the output object is the same as that of the `seed`; only the dimensions are changed.
  */
-inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a subset operation");
     }
@@ -100,6 +100,8 @@ inline ArrayDetails validate_subset(const H5::Group& handle, const std::string& 
     }
 
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate subset operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

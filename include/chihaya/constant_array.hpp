@@ -35,7 +35,7 @@ namespace chihaya {
  * i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
  * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
  */
-inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::string& name, const Version& version) try {
     std::vector<int> dims;
     {
         auto shandle = check_vector(handle, "dimensions", "constant_array");
@@ -84,6 +84,8 @@ inline ArrayDetails validate_constant_array(const H5::Group& handle, const std::
     }
 
     return output;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate constant array at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

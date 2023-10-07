@@ -54,7 +54,7 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string&, const 
  * The type of the object is defined as the more advanced type of `seed` and `value`.
  * For example, if `seed` is `INTEGER` and `value` is `FLOAT`, the output object will be promoted to `FLOAT`.
  */
-inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a subset assignment");
     }
@@ -117,6 +117,8 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const st
     // Promotion.
     seed_details.type = std::max(seed_details.type, value_details.type);
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate subset assignment at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

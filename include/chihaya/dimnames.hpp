@@ -86,14 +86,17 @@ void validate_dimnames(const H5::Group& handle, const V& dimensions, const std::
  *   If a dataset is absent, no names are attached to the corresponding dimension.
  *   It is assumed that each string in each dataset is not missing (i.e., the placeholders described in `validate_dense_array()` should not be used here).
  */
-inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_dimnames(const H5::Group& handle, const std::string& name, const Version& version) try {
     if (!handle.exists("seed") || handle.childObjType("seed") != H5O_TYPE_GROUP) {
         throw std::runtime_error("expected 'seed' group for a dimnames assignment");
     }
     auto seed_details = validate(handle.openGroup("seed"), name + "/seed", version);
     validate_dimnames(handle, seed_details.dimensions, "dimnames assignment", version);
     return seed_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate dimnames operation at '" + name + "'\n- " + std::string(e.what()));
 }
+
 
 }
 

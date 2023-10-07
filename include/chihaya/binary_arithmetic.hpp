@@ -73,7 +73,7 @@ inline ArrayDetails fetch_seed_for_arithmetic(const H5::Group& handle, const std
  *
  * Note that any boolean types in `left` and `right` are first promoted to integer before type determination.
  */
-inline ArrayDetails validate_binary_arithmetic(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_binary_arithmetic(const H5::Group& handle, const std::string& name, const Version& version) try {
     auto left_details = fetch_seed_for_arithmetic(handle, "left", name, version);
     auto right_details = fetch_seed_for_arithmetic(handle, "right", name, version);
 
@@ -100,6 +100,8 @@ inline ArrayDetails validate_binary_arithmetic(const H5::Group& handle, const st
 
     left_details.type = determine_arithmetic_type(left_details.type, right_details.type, method);
     return left_details;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate binary arithmetic operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

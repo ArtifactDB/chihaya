@@ -86,7 +86,7 @@ inline std::pair<ArrayDetails, bool> fetch_seed_for_product(
  * If either `left_seed` or `right_seed` are floating-point, the output type will also be `FLOAT`.
  * Otherwise, the output type will be `INTEGER`.
  */
-inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::string& name, const Version& version) {
+inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::string& name, const Version& version) try {
     auto left_details = fetch_seed_for_product(handle, "left_seed", "left_orientation", name, version);
     auto right_details = fetch_seed_for_product(handle, "right_seed", "right_orientation", name, version);
 
@@ -123,6 +123,8 @@ inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::
     }
 
     return output;
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate matrix product at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }
