@@ -17,7 +17,7 @@ jobs:
       uses: lukka/get-cmake@latest
 
     - name: Configure the build
-      run: cmake -S . -B build -DUZUKI2_TESTS=OFF
+      run: cmake -S . -B build -DCHIHAYA_TESTS=OFF
 
     - name: Install the library
       run: sudo cmake --install build
@@ -30,7 +30,7 @@ jobs:
         cmake_minimum_required(VERSION 3.24)
         project(test_install)
         add_executable(whee source.cpp)
-        find_package(artifactdb_uzuki2)
-        target_link_libraries(whee artifactdb::uzuki2)
+        find_package(artifactdb_chihaya)
+        target_link_libraries(whee artifactdb::chihaya)
         EOF
         cd _downstream && cmake -S . -B build
