@@ -176,6 +176,12 @@ inline Version parse_version_string(const std::string& version_string) {
     int major = 0, minor = 0, patch = 0;
     size_t i = 0, end = version_string.size();
 
+    // Back-compatibility hack for older files.
+    if (version_string == "0.99") {
+        minor = 99;
+        return Version(major, minor, patch);
+    }
+
     // MAJOR VERSION.
     if (version_string.empty()) {
         throw std::runtime_error("version string is empty");
