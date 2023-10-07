@@ -213,7 +213,7 @@ inline Version parse_version_string(const std::string& version_string) {
 
     } else {
         ++i;
-        if (i < end && version_string[i] == '.') {
+        if (i < end && version_string[i] != '.') {
             throw std::runtime_error("version string '" + version_string + "' has leading zeros in its minor version");
         }
     }
