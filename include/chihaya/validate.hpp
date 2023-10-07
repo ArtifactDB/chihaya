@@ -64,15 +64,15 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
 
             // Checking external.
             if (atype == "dense array") {
-                output = validate_dense_array(handle, name);
+                output = validate_dense_array(handle, name, version);
             } else if (atype == "sparse matrix") {
-                output = validate_sparse_matrix(handle, name);
+                output = validate_sparse_matrix(handle, name, version);
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
-                output = validate_custom_array(handle, name);
+                output = validate_custom_array(handle, name, version);
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos) {
-                output = validate_external_hdf5(handle, name);
+                output = validate_external_hdf5(handle, name, version);
             } else if (atype == "constant array") {
-                output = validate_constant_array(handle, name);
+                output = validate_constant_array(handle, name, version);
             } else {
                 throw std::runtime_error(std::string("unknown array type '") + atype + "' at '" + name + "'");
             }
@@ -87,33 +87,33 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
 
             // Checking subset.
             if (otype == "subset") {
-                output = validate_subset(handle, name);
+                output = validate_subset(handle, name, version);
             } else if (otype == "combine") {
-                output = validate_combine(handle, name);
+                output = validate_combine(handle, name, version);
             } else if (otype == "transpose") {
-                output = validate_transpose(handle, name);
+                output = validate_transpose(handle, name, version);
             } else if (otype == "dimnames") {
-                output = validate_dimnames(handle, name);
+                output = validate_dimnames(handle, name, version);
             } else if (otype == "subset assignment") {
-                output = validate_subset_assignment(handle, name);
+                output = validate_subset_assignment(handle, name, version);
             } else if (otype == "unary arithmetic") {
-                output = validate_unary_arithmetic(handle, name);
+                output = validate_unary_arithmetic(handle, name, version);
             } else if (otype == "unary comparison") {
-                output = validate_unary_comparison(handle, name);
+                output = validate_unary_comparison(handle, name, version);
             } else if (otype == "unary logic") {
-                output = validate_unary_logic(handle, name);
+                output = validate_unary_logic(handle, name, version);
             } else if (otype == "unary math") {
-                output = validate_unary_math(handle, name);
+                output = validate_unary_math(handle, name, version);
             } else if (otype == "unary special check") {
-                output = validate_unary_special_check(handle, name);
+                output = validate_unary_special_check(handle, name, version);
             } else if (otype == "binary arithmetic") {
-                output = validate_binary_arithmetic(handle, name);
+                output = validate_binary_arithmetic(handle, name, version);
             } else if (otype == "binary comparison") {
-                output = validate_binary_comparison(handle, name);
+                output = validate_binary_comparison(handle, name, version);
             } else if (otype == "binary logic") {
-                output = validate_binary_logic(handle, name);
+                output = validate_binary_logic(handle, name, version);
             } else if (otype == "matrix product") {
-                output = validate_matrix_product(handle, name);
+                output = validate_matrix_product(handle, name, version);
             } else {
                 throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
             }
@@ -131,7 +131,9 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
 
 /**
  * Validate a delayed operation/array at the specified HDF5 group,
- * using the version string.
+ * using a version string in the `delayed_version` attribute of the `handle`.
+ * This should be a string of the form `<MAJOR>.<MINOR>.<PATCH>`;
+ * if missing, this is set to `0.0.0`.
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param name Name of the group inside the file, to be used for meaningful error messages.
@@ -141,10 +143,9 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
 inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
     Version version;
     if (handle.attrExists("delayed_version")) {
-        auto vstring = load_string_attribute(handle, "delayed_version");
+        auto ahandle = handle.openAttribute("delayed_version");
+        auto vstring = load_string_attribute(ahandle, "delayed_version");
         version = parse_version_string(vstring);
-    } else {
-        version.major = 0;
     }
     return validate(handle, name, version);
 }

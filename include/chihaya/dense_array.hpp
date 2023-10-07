@@ -110,7 +110,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const std::str
 
     // Validating dimnames.
     if (handle.exists("dimnames")) {
-        validate_dimnames(handle, output.dimensions, "dense array");
+        validate_dimnames(handle, output.dimensions, "dense array", version);
     }
 
     // Check if it's boolean.

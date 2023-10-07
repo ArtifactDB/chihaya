@@ -153,7 +153,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::s
 
     // Validating dimnames.
     if (handle.exists("dimnames")) {
-        validate_dimnames(handle, dims, "sparse matrix");
+        validate_dimnames(handle, dims, "sparse matrix", version);
     }
 
     // Check if it's boolean.

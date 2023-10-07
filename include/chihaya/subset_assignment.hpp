@@ -77,7 +77,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const st
     ListDetails list_params;
     
     try {
-        list_params = validate_list(ihandle);
+        list_params = validate_list(ihandle, version);
     } catch (std::exception& e) {
         throw std::runtime_error(std::string("failed to load 'index' list for a subset assignment:\n  ") + e.what());
     }

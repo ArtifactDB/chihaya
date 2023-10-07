@@ -91,6 +91,10 @@ inline ListDetails validate_list(const H5::Group& handle, const Version&) {
 
     return output;
 }
+
+inline ListDetails validate_list(const H5::Group& handle) {
+    return validate_list(handle, Version());
+}
 /**
  * @endcond
  */

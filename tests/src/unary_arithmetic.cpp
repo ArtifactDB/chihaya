@@ -57,6 +57,8 @@ TEST(UnaryArithmetic, Missing) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
         external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
+        add_version_string(ghandle, "1.0.0");
+
         add_scalar(ghandle, "method", std::string("/"));
         add_scalar(ghandle, "side", std::string("left"));
         add_scalar(ghandle, "along", 0);
@@ -216,7 +218,9 @@ TEST(UnaryArithmetic, AlongErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
+        add_version_string(ghandle, "1.0.0");
         external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
+
         add_scalar(ghandle, "method", std::string("/"));
         add_scalar(ghandle, "side", std::string("left"));
         add_scalar(ghandle, "along", 0);

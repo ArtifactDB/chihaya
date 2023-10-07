@@ -57,6 +57,7 @@ TEST(UnaryComparison, Missing) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary comparison");
+        add_version_string(ghandle, "1.0.0");
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
         add_scalar(ghandle, "method", std::string("=="));
         add_scalar(ghandle, "side", std::string("left"));
@@ -206,6 +207,7 @@ TEST(UnaryComparison, AlongErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary comparison");
+        add_version_string(ghandle, "1.0.0");
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
         add_scalar(ghandle, "method", std::string("=="));
         add_scalar(ghandle, "side", std::string("left"));

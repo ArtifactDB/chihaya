@@ -85,6 +85,8 @@ TEST(Sparse, Missing) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_version_string(fhandle.openGroup("foobar"), "1.0.0");
+
         add_vector<int>(ghandle, "shape", { 10, 5 });
         add_vector<double>(ghandle, "data", data);
         add_vector<int>(ghandle, "indices", indices);
@@ -279,6 +281,8 @@ TEST(Sparse, ComplexIndexErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_version_string(fhandle.openGroup("foobar"), "1.0.0");
+
         add_vector<int>(ghandle, "shape", { 10, 5 });
         add_vector<double>(ghandle, "data", data);
         add_vector<int>(ghandle, "indices", indices);

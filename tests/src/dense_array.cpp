@@ -72,6 +72,7 @@ TEST(Dense, Missing) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, false); 
+        add_version_string(fhandle.openGroup("dense"), "1.0.0");
         auto dhandle = fhandle.openDataSet("dense/data");
         add_missing_placeholder(dhandle, (int)2);
     }
@@ -160,6 +161,7 @@ TEST(Dense, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT); 
+        add_version_string(fhandle.openGroup("dense"), "1.0.0");
         auto dhandle = fhandle.openDataSet("dense/data");
         add_missing_placeholder(dhandle, 2.5);
     }
