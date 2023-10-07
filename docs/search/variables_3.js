@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['type_0',['type',['../structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a',1,'chihaya::ArrayDetails']]]
+  ['patch_0',['patch',['../structchihaya_1_1Version.html#a59b11e1df764115c1c037043252f680b',1,'chihaya::Version']]],
+  ['present_1',['present',['../structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f',1,'chihaya::ListDetails']]]
 ];

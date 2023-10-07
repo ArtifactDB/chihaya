@@ -88,6 +88,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a7ed9c8c10856306b5481b7d8a8a52a4c" id="r_a7ed9c8c10856306b5481b7d8a8a52a4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a7ed9c8c10856306b5481b7d8a8a52a4c">chihaya::validate</a> (const H5::Group &amp;handle, const std::string &amp;name, const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;version)</td></tr>
+<tr class="separator:a7ed9c8c10856306b5481b7d8a8a52a4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80c86118f9e2bc69d0432426e2198944" id="r_a80c86118f9e2bc69d0432426e2198944"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a80c86118f9e2bc69d0432426e2198944">chihaya::validate</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
 <tr class="separator:a80c86118f9e2bc69d0432426e2198944"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c3fd26f340d08cba588b0a4baa61ca8" id="r_a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="validate_8hpp.html#a8c3fd26f340d08cba588b0a4baa61ca8">chihaya::validate</a> (const std::string &amp;path, std::string name)</td></tr>
@@ -97,7 +99,7 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Main validation function. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a80c86118f9e2bc69d0432426e2198944" name="a80c86118f9e2bc69d0432426e2198944"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80c86118f9e2bc69d0432426e2198944">&#9670;&#160;</a></span>validate() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a80c86118f9e2bc69d0432426e2198944">&#9670;&#160;</a></span>validate() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -129,11 +131,63 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Validate a delayed operation/array at the specified HDF5 group.</p>
+<p>Validate a delayed operation/array at the specified HDF5 group, using a version string in the <code>delayed_version</code> attribute of the <code>handle</code>. This should be a string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;.&lt;PATCH&gt;</code>; if missing, this defaults to <code>0.0.0</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
     <tr><td class="paramname">name</td><td>Name of the group inside the file, to be used for meaningful error messages.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>handle</code> (and its children) have been applied. </dd></dl>
+
+</div>
+</div>
+<a id="a7ed9c8c10856306b5481b7d8a8a52a4c" name="a7ed9c8c10856306b5481b7d8a8a52a4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ed9c8c10856306b5481b7d8a8a52a4c">&#9670;&#160;</a></span>validate() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ArrayDetails chihaya::validate </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Validate a delayed operation/array at the specified HDF5 group.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
+    <tr><td class="paramname">name</td><td>Name of the group inside the file, to be used for meaningful error messages. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
   </table>
   </dd>
 </dl>
@@ -148,7 +202,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 <a id="a8c3fd26f340d08cba588b0a4baa61ca8" name="a8c3fd26f340d08cba588b0a4baa61ca8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c3fd26f340d08cba588b0a4baa61ca8">&#9670;&#160;</a></span>validate() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c3fd26f340d08cba588b0a4baa61ca8">&#9670;&#160;</a></span>validate() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -180,7 +234,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Validate a delayed operation/array at the specified HDF5 group.</p>
+<p>Validate a delayed operation/array at the specified HDF5 group. This simply calls the <code>validate()</code> overload for a <code>H5::Group</code>; the specification version is taken from the <code>delayed_version</code> attribute.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">path</td><td>Path to a HDF5 file. </td></tr>

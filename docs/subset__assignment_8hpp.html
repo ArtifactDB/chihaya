@@ -88,14 +88,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae3e247db7e908418fdd164dcc7904e67" id="r_ae3e247db7e908418fdd164dcc7904e67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="subset__assignment_8hpp.html#ae3e247db7e908418fdd164dcc7904e67">chihaya::validate_subset_assignment</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
-<tr class="separator:ae3e247db7e908418fdd164dcc7904e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b70dcca56573c998b38fa12e904c34" id="r_ab0b70dcca56573c998b38fa12e904c34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="subset__assignment_8hpp.html#ab0b70dcca56573c998b38fa12e904c34">chihaya::validate_subset_assignment</a> (const H5::Group &amp;handle, const std::string &amp;name, const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;version)</td></tr>
+<tr class="separator:ab0b70dcca56573c998b38fa12e904c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Validation for delayed subset assignment. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ae3e247db7e908418fdd164dcc7904e67" name="ae3e247db7e908418fdd164dcc7904e67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3e247db7e908418fdd164dcc7904e67">&#9670;&#160;</a></span>validate_subset_assignment()</h2>
+<a id="ab0b70dcca56573c998b38fa12e904c34" name="ab0b70dcca56573c998b38fa12e904c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b70dcca56573c998b38fa12e904c34">&#9670;&#160;</a></span>validate_subset_assignment()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -113,7 +113,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -131,7 +137,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a subset assignment. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file.</td></tr>
+    <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
   </table>
   </dd>
 </dl>

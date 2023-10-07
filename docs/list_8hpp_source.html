@@ -103,7 +103,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
 </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ListDetails.html">ListDetails</a> validate_list(<span class="keyword">const</span> H5::Group&amp; handle) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ListDetails.html">ListDetails</a> validate_list(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> <a class="code hl_struct" href="structchihaya_1_1Version.html">Version</a>&amp;) {</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_struct" href="structchihaya_1_1ListDetails.html">ListDetails</a> output;</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">auto</span> dtype = load_string_attribute(handle, <span class="stringliteral">&quot;delayed_type&quot;</span>, <span class="stringliteral">&quot; for a list&quot;</span>);</div>
@@ -148,12 +148,17 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">return</span> output;</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">inline</span> ListDetails validate_list(<span class="keyword">const</span> H5::Group&amp; handle) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> validate_list(handle, Version());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="astructchihaya_1_1ListDetails_html"><div class="ttname"><a href="structchihaya_1_1ListDetails.html">chihaya::ListDetails</a></div><div class="ttdoc">Details of a list object.</div><div class="ttdef"><b>Definition</b> list.hpp:31</div></div>
 <div class="ttc" id="astructchihaya_1_1ListDetails_html_a4929c96edd7e8087d850088bcba459ab"><div class="ttname"><a href="structchihaya_1_1ListDetails.html#a4929c96edd7e8087d850088bcba459ab">chihaya::ListDetails::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition</b> list.hpp:35</div></div>
 <div class="ttc" id="astructchihaya_1_1ListDetails_html_ad99c49c6e04865aecd0663c79749257f"><div class="ttname"><a href="structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f">chihaya::ListDetails::present</a></div><div class="ttdeci">std::map&lt; int, std::string &gt; present</div><div class="ttdef"><b>Definition</b> list.hpp:43</div></div>
+<div class="ttc" id="astructchihaya_1_1Version_html"><div class="ttname"><a href="structchihaya_1_1Version.html">chihaya::Version</a></div><div class="ttdoc">Version of the chihaya specification.</div><div class="ttdef"><b>Definition</b> utils.hpp:59</div></div>
 <div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Various utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

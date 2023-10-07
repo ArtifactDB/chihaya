@@ -88,14 +88,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac70afebca70056207c54cbc902e84fc4" id="r_ac70afebca70056207c54cbc902e84fc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="binary__arithmetic_8hpp.html#ac70afebca70056207c54cbc902e84fc4">chihaya::validate_binary_arithmetic</a> (const H5::Group &amp;handle, const std::string &amp;name)</td></tr>
-<tr class="separator:ac70afebca70056207c54cbc902e84fc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0281dab3b1b0f3eff17231984031ef0e" id="r_a0281dab3b1b0f3eff17231984031ef0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="binary__arithmetic_8hpp.html#a0281dab3b1b0f3eff17231984031ef0e">chihaya::validate_binary_arithmetic</a> (const H5::Group &amp;handle, const std::string &amp;name, const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;version)</td></tr>
+<tr class="separator:a0281dab3b1b0f3eff17231984031ef0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Validation for delayed binary arithmetic operations. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ac70afebca70056207c54cbc902e84fc4" name="ac70afebca70056207c54cbc902e84fc4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac70afebca70056207c54cbc902e84fc4">&#9670;&#160;</a></span>validate_binary_arithmetic()</h2>
+<a id="a0281dab3b1b0f3eff17231984031ef0e" name="a0281dab3b1b0f3eff17231984031ef0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0281dab3b1b0f3eff17231984031ef0e">&#9670;&#160;</a></span>validate_binary_arithmetic()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -113,7 +113,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -131,7 +137,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a binary arithmetic operation. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file.</td></tr>
+    <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
   </table>
   </dd>
 </dl>
