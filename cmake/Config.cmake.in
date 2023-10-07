@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+if(@CHIHAYA_FIND_HDF5@)
+    find_package(HDF5 COMPONENTS C CXX)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/artifactdb_chihayaTargets.cmake")
