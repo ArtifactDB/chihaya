@@ -45,17 +45,14 @@ inline ArrayType determine_output_type(const ArrayType& first, const ArrayType& 
         return FLOAT;
     } else if (method == "%/%") {
         return INTEGER;
-    } else if (method == "%%") {
-        if (first <= INTEGER && second <= INTEGER) {
-            return INTEGER;
-        } else {
-            return FLOAT;
-        }
-    } else if (first == BOOLEAN && second == BOOLEAN) {
-        return INTEGER;
-    } else {
-        return std::max(first, second);
     }
+
+    auto output = std::max(first, second);
+    if (output == BOOLEAN) {
+        return INTEGER;
+    }
+
+    return output;
 }
 
 }

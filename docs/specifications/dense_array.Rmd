@@ -27,7 +27,15 @@ Inside the group, we expect:
 - A `data` dataset, containing the array data.
   This should have a non-zero number of dimensions (i.e., not scalar).
 ```{r, results="asis", echo=FALSE}
-deposit_type_spiel(can.be.string=FALSE, indent=2)
+if (.version > package_version("1.0")) {
+    cat('  This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:
+  - `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
+  - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
+  - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.
+  - `"string"`, in which case `data` should have a datatype that can be represented by a UTF-8 encoded string.')
+} else {
+    cat("  This can be either boolean, integer, float or string; the exact type is left to the implementation.")
+}
 ```
 - A `native` scalar dataset, to be interpreted as a boolean.
 ```{r, results="asis", echo=FALSE}

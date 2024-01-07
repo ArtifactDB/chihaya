@@ -27,8 +27,8 @@ A unary arithmetic operation is represented as a HDF5 group with the following a
 Inside the group, we expect:
 
 - A `seed` group, containing a delayed object for which arithmetic is to be applied.
-  The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
   This can be either boolean, integer or float.
+  Booleans are promoted to integers for the purpose of this operation.
 - A `method` string scalar dataset, specifying the arithmetic method to use.
   This can be any one of `+`, `-`, `/`, `*`, `^`, `%%` (modulo) or `%/%` (integer division).
   Any HDF5 string datatype may be used here.
@@ -42,7 +42,16 @@ For `side != "none"`, we also expect:
 
 - A `value` dataset, which may be either scalar or 1-dimensional.
 ```{r, echo=FALSE, results="asis"}
-deposit_type_spiel(can.be.string=FALSE, indent=2)
+if (.version > package_version("1.0")) {
+    cat('  This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:
+  - `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
+  - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
+  - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.
+    These are promoted to integers for the purpose of this operation.')
+} else {
+    cat("  This can be either boolean, integer or float; the exact type is left to the implementation.
+  Note that booleans are treated as integer, i.e., true is 1 and false is zero")
+}
 ```
 
 If `value` is 1-dimensional, we also expect:
@@ -65,9 +74,8 @@ The type of the output object depends on the operation, the type of `seed` and t
 
 - For simple division, the output type is always float.
 - For integer division, the output type is always integer.
-- For modulo where both `seed` and `value` are integer, the output type is integer.
-- In all other cases, the output type is the more advanced type of `seed` and `value`. 
+- For all other operations:
+  - If the types of `seed` and `value` are the same, the output type of the arithmetic operation is equal to that type.
+  - Otherwise, the less advanced type is promoted to a more advanced type, and the output type of the arithmetic operation is equal to the promoted type.
 
-For `left` and `right` that are of different types, the less advanced type is promoted to a more advanced type prior to applying the arithmetic operation.
-If `left` and `right` are both boolean, they are first promoted to integer.
 Note that no guarantees are provided with respect to the over/underflow of the output type.

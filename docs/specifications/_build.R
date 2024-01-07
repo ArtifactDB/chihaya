@@ -8,24 +8,6 @@ dest <- "compiled"
 unlink(dest, recursive=TRUE)
 dir.create(dest)
 
-deposit_type_spiel <- function(can.be.string, indent) {
-    if (.version > package_version("1.0")) {
-        msg <- c('This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:',
-            '- `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.',
-            '- `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.',
-            '- `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
-        msg <- c(msg, '- `"string"`, in which case `data` should have a datatype that can be represented by a UTF-8 encoded string.')
-    } else {
-        if (can.be.string) {
-            msg <- "This can be either boolean, integer, float or string"
-        } else {
-            msg <- "This can be either boolean, integer or float"
-        }
-        msg <- paste0(msg, "; the exact type is left to the implementation.")
-    }
-    cat(paste(paste0(strrep(" ", indent), msg), collapse="\n"))
-}
-
 deposit_placeholder_spiel <- function(can.be.string, data.name) {
     if (.version != package_version("0.0")) {
         cat("`", data.name, "` may contain a `missing_placeholder` attribute.\n", sep="")

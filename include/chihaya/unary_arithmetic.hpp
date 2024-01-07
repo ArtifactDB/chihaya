@@ -6,9 +6,9 @@
 #include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
-#include <string>
 
 #include "utils_public.hpp"
+#include "utils_unary.hpp"
 #include "utils_type.hpp"
 #include "utils_misc.hpp"
 #include "utils_arithmetic.hpp"
@@ -19,14 +19,6 @@
  */
 
 namespace chihaya {
-
-/**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
-/**
- * @endcond
- */
 
 /**
  * @namespace chihaya::unary_arithmetic
@@ -44,34 +36,18 @@ namespace unary_arithmetic {
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version);
 
-    std::string method;
-    {
-        auto mhandle = ritsuko::hdf5::open_dataset(handle, "method");
-        if (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("'method' should be a scalar string for an unary arithmetic operation");
-        }
-
-        method = ritsuko::hdf5::load_scalar_string_dataset(mhandle);
-        if (!internal_arithmetic::is_valid_operation(method)) {
-            throw std::runtime_error("unrecognized 'method' (" + method + ")");
-        }
+    auto method = internal_unary::load_side(handle);
+    if (!internal_arithmetic::is_valid_operation(method)) {
+        throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }
 
-    std::string side;
-    {
-        auto shandle = ritsuko::hdf5::open_dataset(handle, "side");
-        if (shandle.getSpace().getSimpleExtentNdims() != 0 || shandle.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("'side' should be a scalar string for an unary arithmetic operation");
-        }
-
-        side = ritsuko::hdf5::load_scalar_string_dataset(shandle);
-        if (side == "none") {
-            if (method != "+" && method != "-") {
-                throw std::runtime_error("'side' cannot be 'none' for method '" + method + "'");
-            } 
-        } else if (side != "left" && side != "right") {
-            throw std::runtime_error(std::string("unrecognized side '" + side + "'");
-        }
+    auto side = internal_unary::load_side(handle);
+    if (side == "none") {
+        if (method != "+" && method != "-") {
+            throw std::runtime_error("'side' cannot be 'none' for method '" + method + "'");
+        } 
+    } else if (side != "left" && side != "right") {
+        throw std::runtime_error("unrecognized side '" + side + "'");
     }
 
     // If side = none, we set it to INTEGER to promote BOOLEANs to integer (i.e., multiplication by +/-1).
@@ -100,38 +76,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         } else if (ndims == 1) {
             hsize_t extent;
             vspace.getSimpleExtentDims(&extent);
-
-            // Checking 'along'.
-            uint64_t along;
-            auto ahandle = ritsuko::hdf5::open_dataset(handle, "along");
-            if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-                throw std::runtime_error("'along' should be a scalar dataset");
-            }
-
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
-                if (ahandle.getTypeClass() != H5T_INTEGER) {
-                    throw std::runtime_error("'along' should be an integer dataset");
-                }
-                int along_tmp; 
-                ahandle.read(&along_tmp, H5::PredType::NATIVE_INT);
-                if (along_tmp < 0) {
-                    throw std::runtime_error("'along' should be non-negative");
-                }
-                along = along_tmp;
-            } else {
-                if (ritsuko::hdf5::exceeds_integer_limits(ahandle, 64, false)) {
-                    throw std::runtime_error("'along' should have a datatype that fits in a 64-bit unsigned integer");
-                }
-                ahandle.read(&along, H5::PredType::NATIVE_UINT64);
-            }
-
-            if (static_cast<size_t>(along) >= seed_details.dimensions.size()) {
-                throw std::runtime_error("'along' should be less than the seed dimensionality");
-            }
-
-            if (extent != seed_details.dimensions[along]) {
-                throw std::runtime_error("length of 'value' dataset should be equal to the dimension specified in 'along'");
-            }
+            internal_unary::check_along(handle, seed_details.dimensions, extent);
         } else { 
             throw std::runtime_error("'value' dataset should be scalar or 1-dimensional for an unary arithmetic operation");
         }

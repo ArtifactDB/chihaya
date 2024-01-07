@@ -34,4 +34,4 @@ Inside the group, we expect:
   Any HDF5 string datatype may be used here.
 
 The type of the output object is always boolean.
-For non-string `left` and `right` that are of different types, the less advanced type is promoted to a more advanced type prior to applying the logical operation.
+For non-boolean `left` and `right`, values are converted to booleans with the usual rules (non-zero values are truthy, zero is falsey) before the logical operation.
