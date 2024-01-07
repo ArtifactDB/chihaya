@@ -3,13 +3,15 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
 
 #include <stdexcept>
 #include <vector>
-#include <algorithm>
 
+#include "utils_public.hpp"
 #include "utils_misc.hpp"
 #include "utils_comparison.hpp"
+#include "utils_unary.hpp"
 
 /**
  * @file binary_comparison.hpp
@@ -21,7 +23,7 @@ namespace chihaya {
 /**
  * @cond
  */
-ArrayDetails validate(const H5::Group&, const Version&);
+ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 /**
  * @endcond
  */
@@ -52,12 +54,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
         throw std::runtime_error("both or neither of 'left' and 'right' should contain strings");
     }
 
-    auto mhandle = ritsuko::hdf5::open_dataset(handle, "method");
-    if (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'method' should be a scalar string");
-    }
-
-    auto method = ritsuko::hdf5::load_scalar_string_dataset(mhandle);
+    auto mhandle = internal_unary::load_method(handle);
     if (!internal_comparison::is_valid_operation(method)) {
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }

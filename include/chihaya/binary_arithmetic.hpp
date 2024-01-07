@@ -3,6 +3,7 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
 
 #include <stdexcept>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "utils_public.hpp"
 #include "utils_arithmetic.hpp"
 #include "utils_misc.hpp"
+#include "utils_unary.hpp"
 
 /**
  * @file binary_arithmetic.hpp
@@ -18,14 +20,6 @@
  */
 
 namespace chihaya {
-
-/**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group&, const Version&);
-/**
- * @endcond
- */
 
 /**
  * @namespace chihaya::binary_arithmetic
@@ -40,7 +34,7 @@ namespace binary_arithmetic {
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto left_details = internal_arithmetic::fetch_seed(handle, "left", version);
     auto right_details = internal_arithmetic::fetch_seed(handle, "right", version);
 
@@ -49,12 +43,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
         throw std::runtime_error("'left' and 'right' should have the same dimensions");
     }
 
-    auto mhandle = ritsuko::hdf5::open_dataset(handle, "method");
-    if (mhandle.getSpace().getSimpleExtentNdims() != 0 || mhandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'method' should be a scalar string");
-    }
-
-    auto method = ritsuko::hdf5::load_scalar_string_dataset(mhandle);
+    auto method = internal_unary::load_method(handle);
     if (!internal_arithmetic::is_valid_operation(method)) {
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }

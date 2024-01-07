@@ -29,7 +29,7 @@ inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 
 /**
  * @namespace chihaya::unary_comparison
- * @brief Namespace for delayed unary comparisons .
+ * @brief Namespace for delayed unary comparisons.
  */
 namespace unary_comparison {
 
@@ -40,8 +40,8 @@ namespace unary_comparison {
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
-    auto seed_details = ::chihaya::validate(handle.openGroup("seed"), name + "/seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
+    auto seed_details = ::chihaya::validate(handle.openGroup("seed"), version);
 
     auto method = internal_unary::load_method(handle);
     if (!internal_comparison::is_valid_operation(method)) {
@@ -76,7 +76,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
     } else if (ndims == 1) {
         hsize_t extent;
         vhandle.getSpace().getSimpleExtentDims(&extent);
-        internal_unary::check_along(handle, seed_details.dimensions, extent);
+        internal_unary::check_along(handle, version, seed_details.dimensions, extent);
     } else { 
         throw std::runtime_error("'value' dataset should be scalar or 1-dimensional for an unary comparison operation");
     }

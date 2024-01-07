@@ -2,6 +2,7 @@
 #define CHIHAYA_COMBINE_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
@@ -22,7 +23,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group&, const Version&);
+inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 /**
  * @endcond
  */
@@ -40,32 +41,7 @@ namespace combine {
  * @return Details of the combined object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
-    uint64_t along = 0;
-    {
-        auto ahandle = ritsuko::hdf5::open_dataset(handle, "along");
-        if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("'along' should be an integer scalar");
-        }
-
-        if (internal_misc::is_version_at_or_below(version.major, 1, 0)) {
-            if (ahandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("datatype for 'along' should be integer");
-            }
-            int along_tmp;
-            ahandle.read(&along_tmp, H5::PredType::NATIVE_INT);
-            if (along_tmp < 0) {
-                throw std::runtime_error("'along' should contain a non-negative value");
-            }
-            along = along_tmp;
-        } else {
-            if (ritsuko::hdf5::exceeds_integer_limit(ahandle, 64, false)) {
-                throw std::runtime_error("datatype for 'along' should fit in a 64-bit unsigned integer");
-            }
-            ahandle.read(&along, H5::PredType::NATIVE_UINT64);
-        }
-    }
-
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     internal_list::ListDetails list_params;
     {
         auto shandle = ritsuko::hdf5::open_group(handle, "seeds");
@@ -78,6 +54,8 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
             throw std::runtime_error("missing elements in the 'seeds' list");
         }
     }
+
+    uint64_t along = internal_misc::load_along(handle, version);
 
     std::vector<size_t> dimensions;
     ArrayType type = BOOLEAN;

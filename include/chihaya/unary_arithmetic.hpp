@@ -50,8 +50,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         throw std::runtime_error("unrecognized side '" + side + "'");
     }
 
-    // If side = none, we set it to INTEGER to promote BOOLEANs to integer (i.e., multiplication by +/-1).
+    // If side = none, we set it to INTEGER to promote BOOLEANs to integer (implicit multiplication by +/-1).
     ArrayType min_type = INTEGER;
+
     if (side != "none") {
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
         
@@ -62,8 +63,8 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 min_type = FLOAT;
             }
         } else {
-            auto type  = internal_type::fetch_delayed_type(dhandle);
-            internal_type::check_numeric_type_1_1(dhandle, type);
+            auto type = internal_type::fetch_delayed_type(vhandle);
+            internal_type::check_numeric_type_1_1(vhandle, type);
             min_type = internal_type::translate_type_1_1(type);
         }
 
@@ -76,7 +77,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         } else if (ndims == 1) {
             hsize_t extent;
             vspace.getSimpleExtentDims(&extent);
-            internal_unary::check_along(handle, seed_details.dimensions, extent);
+            internal_unary::check_along(handle, version, seed_details.dimensions, extent);
         } else { 
             throw std::runtime_error("'value' dataset should be scalar or 1-dimensional for an unary arithmetic operation");
         }

@@ -49,8 +49,7 @@ if (.version > package_version("1.0")) {
   - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.
     These are promoted to integers for the purpose of this operation.')
 } else {
-    cat("  This can be either boolean, integer or float; the exact type is left to the implementation.
-  Note that booleans are treated as integer, i.e., true is 1 and false is zero")
+    cat("  This can be either integer or float; the exact type is left to the implementation.")
 }
 ```
 
