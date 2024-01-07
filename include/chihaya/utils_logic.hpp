@@ -4,10 +4,10 @@
 #include "H5Cpp.h"
 #include "ritsuko/hdf5/hdf5.hpp"
 #include "ritsuko/ritsuko.hpp"
-#include <stdexcept>
-#include "utils.hpp"
 
-namespace chihaya {
+#include <stdexcept>
+
+#include "utils.hpp"
 
 ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 

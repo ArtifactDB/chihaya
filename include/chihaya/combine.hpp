@@ -58,7 +58,6 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
                 throw std::runtime_error("'along' should contain a non-negative value");
             }
             along = along_tmp;
-
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(ahandle, 64, false)) {
                 throw std::runtime_error("datatype for 'along' should fit in a 64-bit unsigned integer");

@@ -2,8 +2,14 @@
 #define CHIHAYA_DENSE_ARRAY_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "ritsuko/hdf5/hdf5.hpp"
+
 #include <vector>
+#include <cstdint>
+
 #include "utils_public.hpp"
+#include "utils_type.hpp"
 #include "utils_dimnames.hpp"
 
 /**
@@ -26,7 +32,7 @@ namespace dense_array {
  * @return Details of the dense array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_dense_array(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     ArrayDetails output;
 
     {
@@ -48,8 +54,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const Version&
             }
         } else {
             auto type = internal_type::fetch_delayed_type(dhandle);
-            check_type_1_1(dhandle, type);
-            output.type = translate_type_1_1(type);
+            internal_type::check_type_1_1(dhandle, type);
+            output.type = internal_type::translate_type_1_1(type);
         }
 
         validate_missing_placeholder(dhandle, version);

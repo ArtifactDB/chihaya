@@ -1,11 +1,11 @@
 #ifndef CHIHAYA_UTILS_TYPE_HPP
 #define CHIHAYA_UTILS_TYPE_HPP
 
-#include <string>
-#include <stdxcept>
-
 #include "H5Cpp.h"
 #include "ritsuko/hdf5/hdf5.hpp"
+
+#include <string>
+#include <stdxcept>
 
 #include "utils_public.hpp"
 

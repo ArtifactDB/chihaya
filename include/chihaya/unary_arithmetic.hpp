@@ -2,9 +2,15 @@
 #define CHIHAYA_UNARY_ARITHMETIC_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "ritsuko/hdf5/hdf5.hpp"
+
 #include <stdexcept>
-#include <vector>
-#include <algorithm>
+#include <string>
+
+#include "utils_public.hpp"
+#include "utils_type.hpp"
+#include "utils_misc.hpp"
 #include "utils_arithmetic.hpp"
 
 /**
@@ -17,7 +23,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group&, const Version&);
+inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 /**
  * @endcond
  */
@@ -35,7 +41,7 @@ namespace unary_arithmetic {
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version);
 
     std::string method;
@@ -68,6 +74,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
         }
     }
 
+    // If side = none, we set it to INTEGER to promote BOOLEANs to integer (i.e., multiplication by +/-1).
     ArrayType min_type = INTEGER;
     if (side != "none") {
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
@@ -79,38 +86,47 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
                 min_type = FLOAT;
             }
         } else {
-            auto thandle = ritsuko::hdf5::open_attribute(dhandle, "type");
-            if (thandle.getSpace().getSimpleExtentNdims() != 0 || thandle.getTypeClass() != H5T_STRING) {
-                throw std::runtime_error("'type' should be a scalar string");
-            }
-            auto type = ritsuko::hdf5::load_scalar_string_attribute(thandle);
-            check_type_1_1(dhandle, type);
-            output.type = translate_type_1_1(type);
+            auto type  = internal_type::fetch_delayed_type(dhandle);
+            internal_type::check_numeric_type_1_1(dhandle, type);
+            min_type = internal_type::translate_type_1_1(type);
         }
 
         internal_misc::validate_missing_placeholder(vhandle, version);
-
-        size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
+    
+        auto vspace = vhandle.getSpace();
+        size_t ndims = vspace.getSimpleExtentNdims();
         if (ndims == 0) {
             // scalar operation.
         } else if (ndims == 1) {
             hsize_t extent;
-            vhandle.getSpace().getSimpleExtentDims(&extent);
+            vspace.getSimpleExtentDims(&extent);
 
             // Checking 'along'.
-            if (!handle.exists("along") || handle.childObjType("along") != H5O_TYPE_DATASET) {
-                throw std::runtime_error("expected 'along' dataset for an unary arithmetic operation");
+            uint64_t along;
+            auto ahandle = ritsuko::hdf5::open_dataset(handle, "along");
+            if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
+                throw std::runtime_error("'along' should be a scalar dataset");
             }
 
-            auto ahandle = handle.openDataSet("along");
-            if (ahandle.getSpace().getSimpleExtentNdims() != 0 || ahandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'along' should be a scalar integer for an unary arithmetic operation");
+            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+                if (ahandle.getTypeClass() != H5T_INTEGER) {
+                    throw std::runtime_error("'along' should be an integer dataset");
+                }
+                int along_tmp; 
+                ahandle.read(&along_tmp, H5::PredType::NATIVE_INT);
+                if (along_tmp < 0) {
+                    throw std::runtime_error("'along' should be non-negative");
+                }
+                along = along_tmp;
+            } else {
+                if (ritsuko::hdf5::exceeds_integer_limits(ahandle, 64, false)) {
+                    throw std::runtime_error("'along' should have a datatype that fits in a 64-bit unsigned integer");
+                }
+                ahandle.read(&along, H5::PredType::NATIVE_UINT64);
             }
 
-            int along;
-            ahandle.read(&along, H5::PredType::NATIVE_INT);
-            if (along < 0 || static_cast<size_t>(along) >= seed_details.dimensions.size()) {
-                throw std::runtime_error("'along' should be non-negative and less than the dimensionality for an unary arithmetic operation");
+            if (static_cast<size_t>(along) >= seed_details.dimensions.size()) {
+                throw std::runtime_error("'along' should be less than the seed dimensionality");
             }
 
             if (extent != seed_details.dimensions[along]) {
@@ -122,11 +138,9 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
     }
 
     // Determining type promotion rules.
-    seed_details.type = determine_arithmetic_type(min_type, seed_details.type, method);
+    seed_details.type = internal_arithmetic::determine_output_type(min_type, seed_details.type, method);
 
     return seed_details;
-} catch (std::exception& e) {
-    throw std::runtime_error("failed to validate unary arithmetic operation at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

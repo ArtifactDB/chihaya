@@ -3,11 +3,13 @@
 
 #include <map>
 #include <string>
+#include <stdexcept>
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
 #include "ritsuko/hdf5/hdf5.hpp"
 
+#include "utils_misc.hpp"
 #include "utils_internal.hpp"
 #include "utils_type.hpp"
 
@@ -20,7 +22,7 @@ struct ListDetails {
     std::map<size_t, std::string> present;
 };
 
-inline ListDetails validate(const H5::Group& handle, const Version&) {
+inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     ListDetails output;
 
     {
@@ -42,6 +44,9 @@ inline ListDetails validate(const H5::Group& handle, const Version&) {
             }
             int l = 0;
             len.read(H5::PredType::NATIVE_INT, &l);
+            if (l < 0) {
+                throw std::runtime_error("'delayed_length' should be non-negative");
+            }
             output.length = l;
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(lhandle, 64, false)) {
