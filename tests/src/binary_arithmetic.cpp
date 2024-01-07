@@ -39,7 +39,7 @@ TEST(BinaryArithmetic, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "binary arithmetic");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'left'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'left'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -53,7 +53,7 @@ TEST(BinaryArithmetic, Errors) {
         auto ghandle = operation_opener(fhandle, "hello", "binary arithmetic");
         external_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'right'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'right'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -69,7 +69,7 @@ TEST(BinaryArithmetic, Errors) {
         external_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
         external_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'method'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

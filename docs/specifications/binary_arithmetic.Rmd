@@ -1,0 +1,45 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Binary arithmetic (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A binary arithmetic operation involves applying an element-wise arithmetic operation on two delayed objects of the same shape.
+
+## Specification
+
+A binary arithmetic operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"binary arithmetic"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `left` group, containing a delayed object on the left of the arithmetic operation.
+  This can be either boolean, integer or float.
+- A `right` group, containing a delayed object on the right of the operation.
+  This can be either boolean, integer or float.
+  It should have exactly the same dimensions as the `left` object.
+- A `method` string scalar dataset, specifying the arithmetic method to use.
+  This can be any one of `+`, `-`, `/`, `*`, `^`, `%%` (modulo) or `%/%` (integer division).
+  Any HDF5 string datatype may be used here.
+
+The type of the output object depends on the operation, the type of `left` and the type of `right`:
+
+- For simple division, the output type is always float.
+- For integer division, the output type is always integer.
+- For modulo where both `left` and `right` are integer, the output type is integer.
+- In all other cases, the output type is the more advanced type of `left` and `right`. 
+
+For `left` and `right` that are of different types, the less advanced type is promoted to a more advanced type prior to applying the arithmetic operation.
+If `left` and `right` are both boolean, they are first promoted to integer.
+Note that no guarantees are provided with respect to the over/underflow of the output type.

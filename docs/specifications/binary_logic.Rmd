@@ -1,0 +1,37 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Binary logic (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A binary logic operation involves an element-wise logical operation between two delayed objects of the same shape.
+
+## Specification
+
+A binary logic operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"binary logic"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `left` group, containing a delayed object on the left of the logic operation.
+  This can be either boolean, integer or float.
+- A `right` group, containing a delayed object on the right of the operation.
+  This should have exactly the same dimensions as the `left` object.
+  It can be either boolean, integer or float.
+- A `method` string scalar dataset, specifying the logic method to use.
+  This can be any one of `&&` or `||`.
+  Any HDF5 string datatype may be used here.
+
+The type of the output object is always boolean.
+For non-string `left` and `right` that are of different types, the less advanced type is promoted to a more advanced type prior to applying the logical operation.

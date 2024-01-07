@@ -1,0 +1,33 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Dimnames assignment (", as.character(.version), ")", sep="")
+```
+
+## Overview 
+
+A dimnames assignment operation involves changing the names along one or more of the dimensions of the array.
+
+## Specification
+
+A delayed subsetting operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"dimnames"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `seed` group, containing a delayed object for which dimnames are to be assigned.
+- A `dimnames` group, representing a [list](../_general.md#lists) of length equal to the number of dimensions in the `seed`.
+  Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
+  Each entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
+  Any HDF5 string dataset may be used here.
+  If a dataset is absent, no names are attached to the corresponding dimension.
+  It is assumed that each string in each dataset is not missing.

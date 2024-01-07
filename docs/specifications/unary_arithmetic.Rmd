@@ -1,0 +1,73 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Unary arithmetic (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A unary arithmetic operation involves applying an element-wise arithmetic operation on a delayed object with a scalar or vector as the other operand,
+recycling the latter across dimensions as necessary.
+This is "unary" in the sense that only one delayed object is involved.
+
+## Specification
+
+A unary arithmetic operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"unary arithmetic"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `seed` group, containing a delayed object for which arithmetic is to be applied.
+  The `seed` group handle is passed to `validate()` to check its contents recursively and to retrieve the dimensions.
+  This can be either boolean, integer or float.
+- A `method` string scalar dataset, specifying the arithmetic method to use.
+  This can be any one of `+`, `-`, `/`, `*`, `^`, `%%` (modulo) or `%/%` (integer division).
+  Any HDF5 string datatype may be used here.
+- A `side` string scalar dataset, describing the side of the `seed` object to apply the operation.
+  This can be `"left"`, when `value` is applied to the left of `seed`, e.g., `value - seed`;
+  or `"right"`, when `value` is applied to the right of `seed`, e.g., `seed - value`.
+  For `+` and `-` as pure unary methods, this may also be `"none"`.
+  Any HDF5 string datatype may be used here.
+
+For `side != "none"`, we also expect:
+
+- A `value` dataset, which may be either scalar or 1-dimensional.
+```{r, echo=FALSE, results="asis"}
+deposit_type_spiel(can.be.string=FALSE, indent=2)
+```
+
+If `value` is 1-dimensional, we also expect:
+
+- An `along` scalar integer dataset, specifying the dimension on which to apply the operation with `value`.
+```{r, echo=FALSE, results="asis"}
+if (.version <= package_version("1.0")) {
+    cat("  The exact integer representation is left to the implementation.")
+} else {
+    cat("  This dataset should have a datatype that fits into a 64-bit unsigned integer.")
+}
+```
+  The length of `value` should be equal to the extent of the dimension specified in `along`.
+
+```{r, results="asis", echo=FALSE}
+deposit_placeholder_spiel(can.be.string=FALSE, data.nam="value")
+```
+
+The type of the output object depends on the operation, the type of `seed` and the type of `value`:
+
+- For simple division, the output type is always float.
+- For integer division, the output type is always integer.
+- For modulo where both `seed` and `value` are integer, the output type is integer.
+- In all other cases, the output type is the more advanced type of `seed` and `value`. 
+
+For `left` and `right` that are of different types, the less advanced type is promoted to a more advanced type prior to applying the arithmetic operation.
+If `left` and `right` are both boolean, they are first promoted to integer.
+Note that no guarantees are provided with respect to the over/underflow of the output type.

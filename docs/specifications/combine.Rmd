@@ -1,0 +1,44 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Combine (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A combine operation involves combining one or more delayed objects along a single dimension.
+
+## Specification
+
+A delayed combining operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"combine"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `seeds` group.
+  This is expected to be a [list](../_general.md#lists) of length equal to the number of seeds to be combined.
+  Each seed should be a group describing a delayed object.
+  All seeds should have the same dimensionality and extents, with the exception of the `along` dimension.
+- An `along` scalar dataset 
+```{r, results="asis", echo=FALSE}
+if (.version <= package_version("1.0")) {
+    cat(" of any integer datatype.")
+} else {
+    cat(" of any datatype that can be represented by a 64-bit unsigned integer.")
+}
+```
+  This is a 0-based index that specifies the dimensions on which to combine objects in `seeds`.
+  It should be a non-negative value that is less than the dimensionality of each object.
+
+If all `seeds` have the same type, the output object will also be of that type.
+Otherwise, the type of the output object is set to the most advanced type among all `seeds` objects.
+For example, a mixture of integer and float objects will result in a float output, where all objects are promoted to float before combining them.
