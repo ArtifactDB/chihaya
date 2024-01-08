@@ -7,7 +7,9 @@
  */
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "ritsuko/hdf5/hdf5.hpp"
+
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
@@ -27,7 +29,7 @@ namespace constant_array {
  * @return Details of the constant array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     ArrayDetails output;
 
     {
@@ -41,8 +43,8 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
             if (dhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'dimensions' should be integer");
             }
-            std::vector<int> dims(size);
-            dhandle.read(dims.data(), H5::PredType::NATIVE_INT);
+            std::vector<int> dims_tmp(size);
+            dhandle.read(dims_tmp.data(), H5::PredType::NATIVE_INT);
             for (auto d : dims_tmp) {
                 if (d < 0) {
                     throw std::runtime_error("'dimensions' should contain non-negative values");
@@ -69,12 +71,12 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
         if (is_version_at_or_below(version, 1, 0)) {
             output.type = translate_type_0_0(vhandle.getTypeClass());
         } else {
-            auto type = internal_type::fetch_delayed_type(thandle);
+            auto type = internal_type::fetch_data_type(thandle);
             check_type_1_1(vhandle, type);
             output.type = translate_type_1_1(type);
         }
 
-        validate_missing_placeholder(vhandle, version);
+        internal_misc::validate_missing_placeholder(vhandle, version);
     }
 
     return output;

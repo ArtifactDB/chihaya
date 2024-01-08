@@ -111,7 +111,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
                 array_type = BOOLEAN;
             }
         } else {
-            auto type = internal_type::fetch_delayed_type(dhandle);
+            auto type = internal_type::fetch_data_type(dhandle);
             internal_type::check_numeric_type_1_1(dhandle, type);
             array_type = internal_type::translate_type_1_1(type);
         }

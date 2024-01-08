@@ -11,7 +11,6 @@
 
 #include "utils_misc.hpp"
 #include "utils_internal.hpp"
-#include "utils_type.hpp"
 
 namespace chihaya {
 
@@ -26,7 +25,14 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
     ListDetails output;
 
     {
-        auto dtype = internal_type::fetch_delayed_type(handle);
+        auto thandle = ritsuko::hdf5::open_attribute(dhandle, "delayed_type");
+        if (!ritsuko::hdf5::is_scalar(thandle)) {
+            throw std::runtime_error("'delayed_type' should be a scalar");
+        }
+        if (!ritsuko::hdf5::is_utf8_string(thandle)) {
+            throw std::runtime_error("datatype of 'delayed_type' should be compatible with a UTF-8 encoded string");
+        }
+        auto dtype = ritsuko::hdf5::load_scalar_string_attribute(thandle);
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
         }

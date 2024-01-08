@@ -47,10 +47,10 @@ if (.version > package_version("1.0")) {
 - A `data` 1-dimensional dataset, containing the values of the non-zero elements.
 ```{r, results="asis", echo=FALSE}
 if (.version > package_version("1.0")) {
-    cat('  This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:
-  - `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
-  - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
-  - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
+    cat('  This should have a `type` scalar attribute of any string datatype, which should be one of the following:
+  - `"INTEGER"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
+  - `"FLOAT"`, in which case `data` should have a datatype that fits into a 64-bit float.
+  - `"BOOLEAN"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
 } else {
     cat("  This can be integer or float; the exact datatype is left to the implementation.
   If `data` is an integer dataset, it may additionally contain an `is_boolean` attribute.

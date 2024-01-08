@@ -1,8 +1,12 @@
 library(knitr)
 
 listings <- list.files(pattern="\\.Rmd$")
-defaults <- c("0.99", "1.0", "1.1")
-known.variants <- list()
+
+all.versions <- c("0.99", "1.0", "1.1")
+startpoint <- list()
+endpoint <- list(
+    external_hdf5.Rmd="1.0"
+)
 
 dest <- "compiled"
 unlink(dest, recursive=TRUE)
@@ -31,7 +35,16 @@ Note that, for floating-point datasets, the placeholder itself may be NaN; in th
 }
 
 for (n in listings) {
-    versions <- c(defaults, known.variants[[n]])
+    versions <- all.versions
+    if (n %in% names(endpoint)) {
+        end <- endpoint[[n]]
+        versions <- versions[1:which(versions == end)]
+    }
+    if (n %in% names(startpoint)) {
+        start <- startpoint[[n]]
+        versions <- versions[which(versions == start):length(versions)]
+    }
+
     odir <- file.path(dest, sub("\\.Rmd$", "", n))
     unlink(odir, recursive=TRUE)
     dir.create(odir)

@@ -53,7 +53,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
         }
     } else {
-        auto type = internal_type::fetch_delayed_type(dhandle);
+        auto type = internal_type::fetch_data_type(dhandle);
         internal_type::check_type_1_1(dhandle, type);
         auto tt = internal_type::translate_type_1_1(type);
         if ((tt == STRING) != (seed_details.type == STRING)) {

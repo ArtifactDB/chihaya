@@ -1,0 +1,45 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Custom array (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A custom array involves some application-specific custom array type that provides its dimensions and type but no further details.
+This allows third-party developers to extend the chihaya specification with their own array definitions.
+The custom array is most commonly used to embed references to external resources, e.g., arrays stored in custom databases,
+thus avoiding a redundant copy of a large arrays when we only want to preserve the delayed operations.
+Of course, it is assumed that clients will know how to retrieve specific resources from the remotes.
+
+## Specification
+
+Each custom array is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"array"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_array` should be any scalar string that starts with `"custom "` (note the space).
+  Implementations are expected to add their own descriptors to define specific interprations.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect at least the following children:
+
+- `dimensions`, specifying the dimensions of the external array.
+  This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions.
+```{r, results="asis", echo=FALSE}
+if (.version <= package_version("1.0")) {
+    cat("  Any integer datatype can be used here.
+  All values should be non-negative.")
+} else {
+    cat("  It can be of any datatype that can be represented by a 64-bit unsigned integer.")
+}
+```
+- `type`, a scalar string specifying the type.
+  This should be one of `BOOLEAN`, `INTEGER`, `FLOAT` or `STRING`.
+  Any HDF5 string datatype may be used here.
+

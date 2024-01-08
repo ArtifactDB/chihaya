@@ -41,10 +41,10 @@ For `method != "!"`, we also expect:
 - A `value` dataset, which may be either scalar or 1-dimensional.
 ```{r, echo=FALSE, results="asis"}
 if (.version > package_version("1.0")) {
-    cat('  This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:
-  - `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
-  - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
-  - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
+    cat('  This should have a `type` scalar attribute of any string datatype, which should be one of the following:
+  - `"INTEGER"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
+  - `"FLOAT"`, in which case `data` should have a datatype that fits into a 64-bit float.
+  - `"BOOLEAN"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
 } else {
     cat('  This can be either integer or float; the exact type is left to the implementation.')
 }

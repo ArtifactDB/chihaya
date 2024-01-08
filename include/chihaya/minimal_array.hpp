@@ -1,51 +1,56 @@
 #ifndef CHIHAYA_MINIMAL_ARRAY_HPP
 #define CHIHAYA_MINIMAL_ARRAY_HPP
 
+#include "H5Cpp.h"
+#include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
+
 #include <vector>
 #include <stdexcept>
 #include <cstdint>
-#include "H5Cpp.h"
-#include "utils.hpp"
+#include <algorithm>
+
+#include "utils_misc.hpp"
 
 namespace chihaya {
 
-template<class Function>
-ArrayDetails validate_minimal(const H5::Group& handle, Function fun, const Version&) {
-    if (!handle.exists("dimensions") || handle.childObjType("dimensions") != H5O_TYPE_DATASET) {
-        throw std::runtime_error("expected 'dimensions' dataset for " + fun());
-    }
+namespace minimal_array {
 
-    auto dhandle = handle.openDataSet("dimensions");
-    auto dspace = dhandle.getSpace();
-    if (dspace.getSimpleExtentNdims() != 1 || dhandle.getTypeClass() != H5T_INTEGER) {
-        throw std::runtime_error("'dimensions' should be a 1-dimensional integer dataset for " + fun());
-    }
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
+    auto dhandle = ritsuko::hdf5::open_dataset(handle, "dimensions");
+    auto len = ritsuko::hdf5::get_1d_length(dhandle, false);
+    std::vector<uint64_t> dimensions(len);
 
-    hsize_t len;
-    dspace.getSimpleExtentDims(&len);
-
-    std::vector<int64_t> dimensions(len);
-    dhandle.read(dimensions.data(), H5::PredType::NATIVE_INT64);
-    for (auto d : dimensions) {
-        if (d < 0) {
-            throw std::runtime_error("elements in 'dimensions' should be non-negative for " + fun());
+    if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (dhandle.getTypeClass() != H5T_INTEGER) {
+            throw std::runtime_error("'dimensions' should be integer");
         }
-    } 
+        std::vector<int64_t> dimensions_tmp(len);
+        dhandle.read(dimensions_tmp.data(), H5::PredType::NATIVE_INT64);
+        for (auto d : dimensions_tmp) {
+            if (d < 0) {
+                throw std::runtime_error("elements in 'dimensions' should be non-negative for " + fun());
+            }
+        } 
+        std::copy(dimensions_tmp.begin(), dimensions_tmp.end(), dimensions.begin());
+    } else {
+        if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
+            throw std::runtime_error("datatype of 'dimensions' should fit in a 64-bit unsigned integer");
+        }
+        dhandle.read(dimensions.data(), H5::PredType::NATIVE_INT64);
+    }
 
     ArrayType atype;
     {
-        if (!handle.exists("type") || handle.childObjType("type") != H5O_TYPE_DATASET) {
-            throw std::runtime_error("expected 'type' dataset for " + fun());
+        auto thandle = ritsuko::hdf5::open_dataset(handle, "type");
+        if (!ritsuko::hdf5::is_scalar(thandle)) {
+            throw std::runtime_error("'type' should be a scalar");
+        }
+        if (!ritsuko::hdf5::is_utf8_string(thandle)) {
+            throw std::runtime_error("datatype for 'type' should be compatible with a UTF-8 encoded string");
         }
 
-        auto thandle = handle.openDataSet("type");
-        if (thandle.getSpace().getSimpleExtentNdims() != 0 || thandle.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("'type' should be a string scalar for " + fun());
-        }
-
-        std::string type;
-        thandle.read(type, thandle.getStrType());
-
+        auto type = ritsuko::hdf5::load_scalar_string_dataset(thandle);
         if (type == "BOOLEAN") {
             atype = BOOLEAN;
         } else if (type == "INTEGER") {

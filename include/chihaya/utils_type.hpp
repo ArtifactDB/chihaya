@@ -30,24 +30,27 @@ inline bool is_boolean(const H5::DataSet& handle) {
     return is_bool;
 }
 
-inline std::string fetch_delayed_type(const H5::DataSet& handle) {
-    auto thandle = ritsuko::hdf5::open_attribute(dhandle, "delayed_type");
-    if (!ritsuko::hdf5:is_scalar(thandle) || thandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'delayed_type' should be a scalar string");
+inline std::string fetch_data_type(const H5::DataSet& handle) {
+    auto thandle = ritsuko::hdf5::open_attribute(dhandle, "type");
+    if (!ritsuko::hdf5::is_scalar(thandle)) {
+        throw std::runtime_error("'type' should be a scalar");
+    }
+    if (!ritsuko::hdf5::is_utf8_string(thandle)) {
+        throw std::runtime_error("datatype of 'type' should be compatible with a UTF-8 encoded string");
     }
     return ritsuko::hdf5::load_scalar_string_attribute(thandle);
 }
 
 inline void check_numeric_type_1_1(const H5::DataSet& handle, const std::string& type) {
-    if (type == "integer") {
+    if (type == "INTEGER") {
         if (ritsuko::hdf5::exceeds_integer_limit(handle, 32, true)) {
             throw std::runtime_error("integer 'value' should have a datatype that fits into a 32-bit signed integer");
         }
-    } else if (type == "boolean") {
+    } else if (type == "BOOLEAN") {
         if (ritsuko::hdf5::exceeds_integer_limit(handle, 8, true)) {
             throw std::runtime_error("boolean 'value' should have a datatype that fits into a 8-bit signed integer");
         }
-    } else if (type == "float") {
+    } else if (type == "FLOAT") {
         if (ritsuko::hdf5::exceeds_limit(handle, 64)) {
             throw std::runtime_error("floating-point 'value' should have a datatype that fits into a 64-bit float");
         }
@@ -57,7 +60,7 @@ inline void check_numeric_type_1_1(const H5::DataSet& handle, const std::string&
 }
 
 inline void check_type_1_1(const H5::DataSet& handle, const std::string& type) {
-    if (type == "string") {
+    if (type == "STRING") {
         if (handle.getTypeClass() != H5T_STRING) {
             throw std::runtime_error("string 'value' should have a string datatype class");
         }
@@ -67,11 +70,11 @@ inline void check_type_1_1(const H5::DataSet& handle, const std::string& type) {
 }
 
 inline ArrayType translate_type_1_1(const std::string& type) {
-    if (type == "integer") {
+    if (type == "INTEGER") {
         return INTEGER;
-    } else if (type == "boolean") {
+    } else if (type == "BOOLEAN") {
         return BOOLEAN;
-    } else if (type == "float") {
+    } else if (type == "FLOAT") {
         return FLOAT;
     }
     return STRING;

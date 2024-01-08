@@ -53,7 +53,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 output.type = BOOLEAN;
             }
         } else {
-            auto type = internal_type::fetch_delayed_type(dhandle);
+            auto type = internal_type::fetch_data_type(dhandle);
             internal_type::check_type_1_1(dhandle, type);
             output.type = internal_type::translate_type_1_1(type);
         }

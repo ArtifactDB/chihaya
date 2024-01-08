@@ -56,7 +56,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 throw std::runtime_error("'value' should contain numeric or boolean values for an unary logic operation");
             }
         } else {
-            auto type = internal_type::fetch_delayed_type(dhandle);
+            auto type = internal_type::fetch_data_type(dhandle);
             internal_type::check_numeric_type_1_1(dhandle, type);
         }
 
