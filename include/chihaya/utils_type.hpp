@@ -21,7 +21,7 @@ inline bool is_boolean(const H5::DataSet& handle) {
         }
 
         auto ahandle = handle.openAttribute("is_boolean");
-        if (ahandle.getSpace().getSimpleExtentNdims() != 0 || ahandle.getTypeClass() != H5T_INTEGER) {
+        if (!ritsuko::hdf5::is_scalar(ahandle) || ahandle.getTypeClass() != H5T_INTEGER) {
             throw std::runtime_error("'is_boolean' attribute should be an integer scalar");
         }
 
@@ -32,7 +32,7 @@ inline bool is_boolean(const H5::DataSet& handle) {
 
 inline std::string fetch_delayed_type(const H5::DataSet& handle) {
     auto thandle = ritsuko::hdf5::open_attribute(dhandle, "delayed_type");
-    if (thandle.getSpace().getSimpleExtentNdims() != 0 || thandle.getTypeClass() != H5T_STRING) {
+    if (!ritsuko::hdf5:is_scalar(thandle) || thandle.getTypeClass() != H5T_STRING) {
         throw std::runtime_error("'delayed_type' should be a scalar string");
     }
     return ritsuko::hdf5::load_scalar_string_attribute(thandle);
@@ -77,15 +77,20 @@ inline ArrayType translate_type_1_1(const std::string& type) {
     return STRING;
 }
 
-inline ArrayType translate_type_0_0(H5T_class_t cls) {
-    if (cls == H5T_INTEGER) {
-        return INTEGER;
-    } else if (cls == H5T_FLOAT) {
+inline ArrayType translate_numeric_type_0_0(H5T_class_t cls) {
+    if (cls == H5T_FLOAT) {
         return FLOAT;
-    } else if (cls != H5T_STRING) {
-        throw std::runtime_error("unrecognized type of 'data' for a dense array");
+    } else if (cls != H5T_INTEGER) {
+        throw std::runtime_error("unrecognized HDF5 datatype class");
     }
-    return STRING;
+    return INTEGER;
+}
+
+inline ArrayType translate_type_0_0(H5T_class_t cls) {
+    if (cls == H5T_STRING) {
+        return STRING;
+    }
+    return translate_numeric_type_0_0(cls);
 }
 
 }

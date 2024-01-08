@@ -7,7 +7,9 @@
 
 #include <stdexcept>
 
-#include "utils.hpp"
+#include "utils_misc.hpp"
+
+namespace chihaya {
 
 ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 
@@ -18,15 +20,7 @@ inline bool is_valid_operation(const std::string& method) {
 }
 
 inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version) {
-    const auto& ghandle = ritsuko::hdf5::open_group(handle, target.c_str());
-
-    ArrayDetails output;
-    try {
-        output = ::chihaya::validate(ghandle, version);
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to validate '" + target + "'; " + std::string(e.what()));
-    }
-
+    const auto& ghandle = internal_misc::load_seed_details(handle, target, version);
     if (output.type == STRING) {
         throw std::runtime_error("type of '" + target + "' should be integer, float or boolean");
     }

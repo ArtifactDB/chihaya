@@ -2,10 +2,15 @@
 #define CHIHAYA_UNARY_LOGIC_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "ritsuko/hd5/hdf5.hpp"
+
 #include <stdexcept>
-#include <vector>
-#include <algorithm>
-#include "utils.hpp"
+
+#include "utils_logic.hpp"
+#include "utils_unary.hpp"
+#include "utils_type.hpp"
+#include "utils_misc.hpp"
 
 /**
  * @file unary_logic.hpp
@@ -14,14 +19,6 @@
  */
 
 namespace chihaya {
-
-/**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version&);
-/**
- * @endcond
- */
 
 /**
  * @namespace chihaya::unary_logic
@@ -37,10 +34,7 @@ namespace unary_logic {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = ::chihaya::validate(handle.openGroup("seed"), version);
-    if (seed_details.type == STRING) {
-        throw std::runtime_error("'seed' should contain numeric or boolean values");
-    }
+    auto seed_details = internal_logic::fetch_seed(handle, "seed", version);
 
     // Checking the method.
     auto method = internal_unary::load_method(handle);

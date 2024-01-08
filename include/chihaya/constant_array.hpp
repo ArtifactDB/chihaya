@@ -62,7 +62,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
  
     {
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
-        if (vhandle.getSpace().getSimpleExtentNdims() != 0) {
+        if (!ritsuko::hdf5::is_scalar(vhandle)) {
             throw std::runtime_error("'value' should be a scalar");
         }
 

@@ -1,0 +1,45 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Subset (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A delayed subset involves replacing a subarray of a delayed object.
+If slices are applied to multiple dimensions, the subset is defined as the outer product of all slices.
+
+## Specification
+
+A delayed subset is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"operation"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_operation` should be a scalar string `"subset"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `seed` group, containing the delayed object to be subsetted. 
+  This can be of any type - boolean, integer, float or string.
+- A `value` group, containing the object supplying the replacement values for subset assignment.
+  This can be of any type - boolean, integer, float or string.
+- An `index` group, representing a [list](../_general.md#lists) of length equal to the number of dimensions in the `seed`.
+  Each child entry is named after a dimension of `seed` and contains the indices to be replaced along that dimension.
+  Each entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of `seed`;
+  the length of this dataset should be equal to the extent of the corresponding dimension of `value`.
+```{r, echo=FALSE, results="asis"}
+if (.version > package_version("1.0")) {
+  cat("  The datatype of each dataset should be exactly represented by a 64-bit unsigned integer.")
+} else {
+  cat("  The exact integer representation is left to the implementation.")
+}
+```
+  The absence of an entry for a dimension indicates that the full extent of that dimension is to be replaced.
+
+The type of the object is defined as the more advanced type of `seed` and `value`.

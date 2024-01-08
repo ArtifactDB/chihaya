@@ -42,8 +42,8 @@ namespace binary_comparison {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
-    auto left_details = ::chihaya::validate(ritsuko::hdf5::open_group(handle, "left"), version);
-    auto right_details = ::chihaya::validate(ritsuko::hdf5::open_group(handle, "right"), version);
+    auto left_details = internal_misc::load_seed_details(handle, "left", version);
+    auto right_details = internal_misc::load_seed_details(handle, "right", version);
 
     bool okay = internal_misc::are_dimensions_equal(left_details.dimensions, right_details.dimensions);
     if (!okay) {

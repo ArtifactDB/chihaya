@@ -63,7 +63,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     {
         auto nhandle = ritsuko::hdf5::open_dataset(handle, "native");
-        if (nhandle.getSpace().getSimpleExtentNdims() != 0) {
+        if (!ritsuko::hdf5::is_scalar(nhandle)) {
             throw std::runtime_error("'native' should be a scalar");
         }
 
@@ -72,16 +72,12 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             if (nhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'native' should have an integer datatype");
             }
-            int native_tmp;
-            nhandle.read(&native_tmp, H5::PredType::NATIVE_INT);
-            native = native_tmp;
+            native = ritsuko::hdf5::load_scalar_numeric_dataset<int>(nhandle);
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(nhandle, 8, false)) {
                 throw std::runtime_error("'native' should have a datatype that fits into an 8-bit signed integer");
             }
-            int8_t native_tmp;
-            nhandle.read(&native_tmp, H5::PredType::NATIVE_INT8);
-            native = native_tmp;
+            native = ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(nhandle);
         }
 
         if (!native) {

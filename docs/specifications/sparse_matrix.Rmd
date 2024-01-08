@@ -1,0 +1,122 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Sparse matrix (", as.character(.version), ")", sep="")
+```
+
+## Overview 
+
+```{r, echo=FALSE, results="asis"}
+if (.version > package_version("1.0")) {
+    cat("A sparse matrix is stored in the compressed sparse layout,")
+} else {
+    cat("A sparse matrix is stored in the compressed sparse column (CSC) layout,")
+}
+```
+using the same notation as the [10X Genomics feature barcode matrices](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices).
+```{r, echo=FALSE, results="asis"}
+if (.version > package_version("1.0")) {
+    cat("Both compressed sparse column (CSC) and compressed sparse row (CSR) matrices are supported.")
+}
+```
+
+## Specification
+
+A sparse matrix is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string `"array"`.
+  Any HDF5 string datatype may be used here.
+- `delayed_array` should be a scalar string `"sparse matrix"`.
+  Any HDF5 string datatype may be used here.
+
+Inside the group, we expect:
+
+- A `shape` 1-dimensional integer dataset, containing the dimensions of the matrix.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+  cat("  The datatype should be exactly represented by a 64-bit unsigned integer.")
+} else {
+  cat("  The exact integer representation is left to the implementation.")
+}
+```
+- A `data` 1-dimensional dataset, containing the values of the non-zero elements.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+    cat('  This should have a `delayed_type` scalar attribute of any string datatype, which should be one of the following:
+  - `"integer"`, in which case `data` should have a datatype that fits into a 32-bit signed integer.
+  - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
+  - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
+} else {
+    cat("  This can be integer or float; the exact datatype is left to the implementation.
+  If `data` is an integer dataset, it may additionally contain an `is_boolean` attribute.
+  This should be an integer scalar; if non-zero, it indicates that the contents of `data` should be treated as booleans where zeros are falsey and non-zeros are truthy.")
+}
+```
+- An `indices` 1-dimensional dataset, 
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+    cat("  containing the row indices (CSC) or column indiecs (CSR) for the non-zero elements.
+  This should have the same length as `data` and should contain integers in `[0, X)` where `X` is the number of rows (CSC) or columns (CSR) from `shape`.")
+} else {
+    cat("  containing the row indices for the non-zero elements.
+  This should have the same length as `data` and should contain integers in `[0, X)` where `X` is the number of rows from `shape`.")
+}
+```
+  Entries should be strictly increasing within each column, based on the ranges defined by `indptr`.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+    cat("  The datatype should be exactly represented by a 64-bit unsigned integer.")
+} else {
+    cat("  The exact integer representation is left to the implementation.")
+}
+```
+- An `indptr` 1-dimensional dataset, containing pointers into the `indices` vector.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+    cat("  This should have length equal to `Y + 1` where `Y` is the number of columns (CSC) or rows (CSR) from `shape`.")
+} else {
+    cat("  This should have length equal to `Y + 1` where `Y` is the number of columns from `shape`.")
+}
+```
+  The first element should be equal to zero and the last element should be equal to the length of `data`.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+  cat("  The datatype should be exactly represented by a 64-bit unsigned integer.")
+} else {
+  cat("  The exact integer representation is left to the implementation.")
+}
+```
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+    cat("- A `by_column` scalar dataset, indicating whether this is a CSC matrix.
+  This should have a datatype that can be exactly represented by an 8-bit signed integer.
+  A non-zero value indicates that the matrix is CSC, otherwise it is treated as CSR.")
+}
+```
+
+The group may also contain:
+
+- A `dimnames` group, representing a [list](../_general.md#lists) of length 2.
+  Each child entry corresponds to a dimension of `seed` and contains the names along that dimension, e.g., entry `0` contains row names.
+  Missing entries indicate that no names are attached to its dimension.
+  Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
+  Any HDF5 string datatype may be used here.
+
+```{r, results="asis", echo=FALSE}
+deposit_placeholder_spiel(can.be.string=FALSE, data.name="data")
+```
+
+```{r, results="asis", echo=FALSE}
+if (.version <= package_version("1.0")) {
+    cat('The type of the sparse matrix is inferred from the datatype of `data`: integer, float or string.
+Boolean matrices are identified as those with integer `data` and a truthy `is_boolean` flag.')
+} else {
+    cat('The type of the sparse matrix is set to the `delayed_type` attribute of `data`.')
+}
+```
+

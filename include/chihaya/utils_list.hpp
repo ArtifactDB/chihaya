@@ -34,7 +34,7 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
 
     {
         auto lhandle = ritsuko::hdf5::open_attribute(handle, "delayed_length");
-        if (len.getSpace().getSimpleExtentNdims() != 0) {
+        if (!ritsuko::hdf5::is_scalar(lhandle)) {
             throw std::runtime_error("expected a 'delayed_length' integer scalar for a list");
         } 
 

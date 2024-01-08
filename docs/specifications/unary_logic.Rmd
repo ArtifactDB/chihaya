@@ -46,7 +46,7 @@ if (.version > package_version("1.0")) {
   - `"float"`, in which case `data` should have a datatype that fits into a 64-bit float.
   - `"boolean"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.')
 } else {
-    cat("  This can be either integer or float; the exact type is left to the implementation.')
+    cat('  This can be either integer or float; the exact type is left to the implementation.')
 }
 ```
 

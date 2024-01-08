@@ -2,6 +2,7 @@
 #define CHIHAYA_UNARY_COMPARISON_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
@@ -20,14 +21,6 @@
 namespace chihaya {
 
 /**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
-/**
- * @endcond
- */
-
-/**
  * @namespace chihaya::unary_comparison
  * @brief Namespace for delayed unary comparisons.
  */
@@ -41,7 +34,7 @@ namespace unary_comparison {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = ::chihaya::validate(handle.openGroup("seed"), version);
+    auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
 
     auto method = internal_unary::load_method(handle);
     if (!internal_comparison::is_valid_operation(method)) {
