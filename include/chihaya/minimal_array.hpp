@@ -42,15 +42,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     ArrayType atype;
     {
-        auto thandle = ritsuko::hdf5::open_dataset(handle, "type");
-        if (!ritsuko::hdf5::is_scalar(thandle)) {
-            throw std::runtime_error("'type' should be a scalar");
-        }
-        if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-            throw std::runtime_error("datatype for 'type' should be compatible with a UTF-8 encoded string");
-        }
-
-        auto type = ritsuko::hdf5::load_scalar_string_dataset(thandle);
+        auto type = internal_misc::load_scalar_string_dataset(thandle);
         if (type == "BOOLEAN") {
             atype = BOOLEAN;
         } else if (type == "INTEGER") {

@@ -80,6 +80,17 @@ inline ArrayDetails load_seed_details(const H5::Group& handle, const std::string
     return output;
 }
 
+inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
+    auto shandle = ritsuko::hdf5::open_dataset(handle, name);
+    if (!ritsuko::hdf5::is_scalar(shandle)) {
+        throw std::runtime_error("'" + name + "' should be scalar");
+    }
+    if (!ritsuko::hdf5::is_utf8_string(shandle)) {
+        throw std::runtime_error("datatype of '" + name + "' should be compatible with a UTF-8 encoded string");
+    }
+    return ritsuko::hdf5::load_scalar_string_dataset(shandle);
+}
+
 }
 
 }

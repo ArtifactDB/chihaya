@@ -19,19 +19,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version&);
 namespace internal_unary {
 
 inline std::string load_method(const H5::Group& handle) {
-    auto mhandle = ritsuko::hdf5::open_dataset(handle, "method");
-    if (!ritsuko::hdf5::is_scalar(mhandle) || mhandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'method' should be a scalar string");
-    }
-    return ritsuko::hdf5::load_scalar_string_dataset(mhandle);
+    return internal_misc::load_scalar_string_dataset(handle, "method");
 }
 
 inline std::string load_side(const H5::Group& handle) {
-    auto shandle = ritsuko::hdf5::open_dataset(handle, "side");
-    if (!ritsuko::hdf5::is_scalar(shandle) || shandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'side' should be a scalar string");
-    }
-    return ritsuko::hdf5::load_scalar_string_dataset(shandle);
+    return internal_misc::load_scalar_string_dataset(handle, "side");
 }
 
 inline void check_along(const H5::Group& handle, const ritsuko::Version& version, const std::vector<size_t>& seed_dimensions, size_t extent) {

@@ -28,7 +28,8 @@ Inside the group, we expect:
   This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions.
 ```{r, results="asis", echo=FALSE}
 if (.version <= package_version("1.0")) {
-    cat("  Any integer datatype can be used here.")
+    cat("  Any integer datatype can be used here.
+  All values should be non-negative.")
 } else {
     cat("  It can be of any datatype that can be represented by a 64-bit unsigned integer.")
 }

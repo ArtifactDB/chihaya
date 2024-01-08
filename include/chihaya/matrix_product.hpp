@@ -3,53 +3,41 @@
 
 /**
  * @file matrix_product.hpp
- *
  * @brief Validation for delayed matrix products.
  */
 
 namespace chihaya {
 
 /**
+ * @namespace chihaya::matrix_product
+ * @brief Namespace for delayed matrix products.
+ */
+namespace matrix_product {
+
+/**
  * @cond
  */
-inline std::pair<ArrayDetails, bool> fetch_seed_for_product(
-    const H5::Group& handle, 
-    const std::string& target, 
-    const std::string& orientation, 
-    const std::string& name,
-    const Version& version)
-{
-    // Checking the seed.
-    if (!handle.exists(target) || handle.childObjType(target) != H5O_TYPE_GROUP) {
-        throw std::runtime_error(std::string("expected '") + target + "' group for a matrix product");
-    }
+namespace internal {
 
-    auto seed_details = validate(handle.openGroup(target), name + "/" + target, version);
+inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version) {
+    // Checking the seed.
+    auto seed_details = internal_misc::load_seed_details(handle, target);
     if (seed_details.dimensions.size() != 2) {
         throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array for a matrix product");
     }
-
     if (seed_details.type == STRING) {
         throw std::runtime_error(std::string("type of '") + target + "' should be numeric or boolean for a matrix product");
     }
     
     // Checking the orientation.
-    if (!handle.exists(orientation) || handle.childObjType(orientation) != H5O_TYPE_DATASET) {
-        throw std::runtime_error(std::string("expected '") + orientation + "' dataset for a matrix product");
-    }
-
-    auto ahandle = handle.openDataSet(orientation);
-    if (ahandle.getSpace().getSimpleExtentNdims() != 0 || ahandle.getTypeClass() != H5T_STRING) {
-        throw std::runtime_error("'" + orientation + "' should be a string for a matrix product");
-    }
-
-    std::string oristr;
-    ahandle.read(oristr, ahandle.getStrType());
+    auto oritstr = internal_misc::load_scalar_string_dataset(handle, orientation);
     if (oristr != "N" && oristr != "T") {
         throw std::runtime_error("'" + orientation + "' should be either 'N' or 'T' for a matrix product");
     }
 
     return std::pair<ArrayDetails, bool>(seed_details, oristr == "T");
+}
+
 }
 /**
  * @endcond
@@ -86,9 +74,9 @@ inline std::pair<ArrayDetails, bool> fetch_seed_for_product(
  * If either `left_seed` or `right_seed` are floating-point, the output type will also be `FLOAT`.
  * Otherwise, the output type will be `INTEGER`.
  */
-inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::string& name, const Version& version) try {
-    auto left_details = fetch_seed_for_product(handle, "left_seed", "left_orientation", name, version);
-    auto right_details = fetch_seed_for_product(handle, "right_seed", "right_orientation", name, version);
+inline ArrayDetails validate_matrix_product(const H5::Group& handle, const ritsuko::Version& version) {
+    auto left_details = internal::fetch_seed(handle, "left_seed", "left_orientation", version);
+    auto right_details = internal::fetch_seed(handle, "right_seed", "right_orientation", version);
 
     ArrayDetails output;
     output.dimensions.resize(2);
@@ -113,7 +101,7 @@ inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::
     }
 
     if (common != common2) {
-        throw std::runtime_error("inconsistent common dimensions (" + std::to_string(common) + " vs " + std::to_string(common2) + ") in the matrix product");
+        throw std::runtime_error("inconsistent common dimensions (" + std::to_string(common) + " vs " + std::to_string(common2) + ")");
     }
 
     if (left_details.first.type == FLOAT || right_details.first.type == FLOAT) {
@@ -123,8 +111,8 @@ inline ArrayDetails validate_matrix_product(const H5::Group& handle, const std::
     }
 
     return output;
-} catch (std::exception& e) {
-    throw std::runtime_error("failed to validate matrix product at '" + name + "'\n- " + std::string(e.what()));
+}
+
 }
 
 }
