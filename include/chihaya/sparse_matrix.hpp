@@ -125,8 +125,8 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         if (!ritsuko::hdf5::is_scalar(bhandle)) {
             throw std::runtime_error("'by_column' should be a scalar");
         }
-        if (!ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
-            throw std::runtime_error("datatype of 'by_column' should fit into an 8-bit integer");
+        if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
+            throw std::runtime_error("datatype of 'by_column' should fit into an 8-bit signed integer");
         }
         csc = (ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(bhandle) != 0);
     }

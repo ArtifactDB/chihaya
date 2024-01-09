@@ -30,7 +30,7 @@ add_executable(
     src/binary_comparison.cpp
     src/binary_logic.cpp
     src/dense_array.cpp
-#    src/sparse_matrix.cpp
+    src/sparse_matrix.cpp
     src/matrix_product.cpp
     src/constant_array.cpp
 )
