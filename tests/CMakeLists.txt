@@ -20,7 +20,7 @@ add_executable(
 #    src/list.cpp
     src/combine.cpp
 #    src/transpose.cpp
-#    src/dimnames.cpp
+    src/dimnames.cpp
 #    src/unary_arithmetic.cpp
 #    src/unary_comparison.cpp
 #    src/unary_logic.cpp
