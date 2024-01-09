@@ -24,8 +24,9 @@ TEST_P(CombineTest, Simple) {
         add_along(ghandle, 0, version);
 
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        custom_array_opener(lhandle, "0", { 13, 19 });
-        custom_array_opener(lhandle, "1", { 20, 19 }); 
+        CustomArrayOptions opt(version, "FLOAT");
+        custom_array_opener(lhandle, "0", { 13, 19 }, opt);
+        custom_array_opener(lhandle, "1", { 20, 19 }, opt); 
     }
 
     auto output = chihaya::validate(path, "hello"); 
@@ -46,9 +47,9 @@ TEST_P(CombineTest, Mixed) {
         add_version_string(ghandle, version);
 
         auto lhandle = list_opener(ghandle, "seeds", 3, version);
-        custom_array_opener(lhandle, "0", { 13, 10 }, "BOOLEAN");
-        custom_array_opener(lhandle, "1", { 13, 20 }, "INTEGER"); 
-        custom_array_opener(lhandle, "2", { 13, 30 }, "BOOLEAN"); 
+        custom_array_opener(lhandle, "0", { 13, 10 }, CustomArrayOptions(version, "BOOLEAN"));
+        custom_array_opener(lhandle, "1", { 13, 20 }, CustomArrayOptions(version, "INTEGER")); 
+        custom_array_opener(lhandle, "2", { 13, 30 }, CustomArrayOptions(version, "BOOLEAN")); 
     }
 
     auto output = chihaya::validate(path, "hello"); 
@@ -96,7 +97,7 @@ TEST_P(CombineTest, AlongErrors) {
         add_along(ghandle, 2, version);
 
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
-        custom_array_opener(lhandle, "0", { 13, 10 }, "BOOLEAN");
+        custom_array_opener(lhandle, "0", { 13, 10 }, CustomArrayOptions(version, "BOOLEAN"));
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be less than the seed dimensionality");
 }
@@ -144,8 +145,9 @@ TEST_P(CombineTest, SeedErrors) {
         add_version_string(ghandle, version);
 
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        custom_array_opener(lhandle, "0", { 13, 10 }, "BOOLEAN");
-        custom_array_opener(lhandle, "1", { 13, 10, 5 }, "BOOLEAN");
+        CustomArrayOptions opt(version, "BOOLEAN");
+        custom_array_opener(lhandle, "0", { 13, 10 }, opt);
+        custom_array_opener(lhandle, "1", { 13, 10, 5 }, opt);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "dimensionality mismatch");
 
@@ -156,8 +158,9 @@ TEST_P(CombineTest, SeedErrors) {
         add_version_string(ghandle, version);
 
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        custom_array_opener(lhandle, "0", { 13, 10 }, "BOOLEAN");
-        custom_array_opener(lhandle, "1", { 5, 15 }, "BOOLEAN");
+        CustomArrayOptions opt(version, "BOOLEAN");
+        custom_array_opener(lhandle, "0", { 13, 10 }, opt);
+        custom_array_opener(lhandle, "1", { 5, 15 }, opt);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "inconsistent dimension extents");
 }

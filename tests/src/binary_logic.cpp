@@ -12,8 +12,10 @@ TEST_P(BinaryLogicTest, Simple) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
-        custom_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
+
+        CustomArrayOptions opt(version, "INTEGER");
+        custom_array_opener(ghandle, "left", { 13, 19 }, opt);
+        custom_array_opener(ghandle, "right", { 13, 19 }, opt);
         add_scalar(ghandle, "method", std::string("&&"));
     }
     auto output = chihaya::validate(path, "hello"); 
@@ -28,8 +30,9 @@ TEST_P(BinaryLogicTest, Mixed) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
-        custom_array_opener(ghandle, "right", { 13, 19 }, "FLOAT"); 
+
+        custom_array_opener(ghandle, "left", { 13, 19 }, CustomArrayOptions(version, "INTEGER"));
+        custom_array_opener(ghandle, "right", { 13, 19 }, CustomArrayOptions(version, "FLOAT"));
         add_scalar(ghandle, "method", std::string("||"));
     }
     auto output = chihaya::validate(path, "hello"); 
@@ -51,7 +54,7 @@ TEST_P(BinaryLogicTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "STRING"); 
+        custom_array_opener(ghandle, "left", { 13, 19 }, CustomArrayOptions(version, "STRING"));
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'left' should be integer, float or boolean");
 
@@ -59,7 +62,7 @@ TEST_P(BinaryLogicTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
+        custom_array_opener(ghandle, "left", { 13, 19 }, CustomArrayOptions(version, "INTEGER"));
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'right'");
 
@@ -67,8 +70,10 @@ TEST_P(BinaryLogicTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 10, 5 }, "INTEGER"); 
-        custom_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
+
+        CustomArrayOptions opt(version, "INTEGER");
+        custom_array_opener(ghandle, "left", { 10, 5 }, opt);
+        custom_array_opener(ghandle, "right", { 13, 19 }, opt);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'left' and 'right' should have the same");
 
@@ -76,8 +81,10 @@ TEST_P(BinaryLogicTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
-        custom_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
+
+        CustomArrayOptions opt(version, "INTEGER");
+        custom_array_opener(ghandle, "left", { 13, 19 }, opt);
+        custom_array_opener(ghandle, "right", { 13, 19 }, opt);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'method'");
 
@@ -85,8 +92,10 @@ TEST_P(BinaryLogicTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         add_version_string(ghandle, version);
-        custom_array_opener(ghandle, "left", { 13, 19 }, "INTEGER"); 
-        custom_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
+
+        CustomArrayOptions opt(version, "INTEGER");
+        custom_array_opener(ghandle, "left", { 13, 19 }, opt);
+        custom_array_opener(ghandle, "right", { 13, 19 }, opt);
         add_scalar(ghandle, "method", std::string("foo"));
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized 'method'");
