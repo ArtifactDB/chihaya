@@ -40,7 +40,7 @@ H5::DataSet add_numeric_vector(const H5::Group& handle, const std::string& name,
     return dhandle;
 }
 
-inline H5::DataSet add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n, hsize_t len) {
+inline H5::DataSet add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n, hsize_t len = H5T_VARIABLE) {
     H5::DataSpace dspace(1, &n);
     return handle.createDataSet(name, H5::StrType(0, len), dspace); 
 }
@@ -59,18 +59,11 @@ inline H5::DataSet add_string_scalar(const H5::Group& handle, const std::string&
     return dhandle;
 }
 
-struct CustomArrayOptions {
-    CustomArrayOptions(int v = 0, std::string t = "FLOAT", std::string at = "custom thingy") : version(v), type(std::move(t)), array_type(std::move(at)) {}
-    int version;
-    std::string type;
-    std::string array_type;
-};
+inline H5::Group mock_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
+    auto ghandle = array_opener(parent, name, "custom mock");
+    add_string_scalar(ghandle, "type", type);
 
-inline H5::Group custom_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, const CustomArrayOptions& options) {
-    auto ghandle = array_opener(parent, name, options.array_type);
-    add_string_scalar(ghandle, "type", options.type);
-
-    if (options.version < 1100000) {
+    if (version < 1100000) {
         add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
     } else {
         add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);

@@ -3,7 +3,11 @@
 #include "utils.h"
 
 class ConstantArrayTest : public ::testing::TestWithParam<int> {
+public:
+    ConstantArrayTest() : path("Test_constant_array.h5") {}
 protected:
+    std::string path;
+
     H5::Group constant_array_opener(H5::Group& handle, std::string name, const std::vector<int>& dimensions, int version) {
         auto ghandle = array_opener(handle, name, "constant array");
         add_version_string(ghandle, version);
@@ -18,7 +22,6 @@ protected:
 
 TEST_P(ConstantArrayTest, Basic) {
     auto version = GetParam();
-    std::string path = "Test_constant_array.h5";
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -53,8 +56,11 @@ TEST_P(ConstantArrayTest, Basic) {
         EXPECT_EQ(dims[0], 5);
         EXPECT_EQ(dims[1], 17);
     }
+}
 
-    // Check for correct behavior with missing placeholders.
+TEST_P(ConstantArrayTest, Missing) {
+    auto version = GetParam();
+
     if (version == 1000000) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -70,9 +76,7 @@ TEST_P(ConstantArrayTest, Basic) {
             auto ghandle = constant_array_opener(fhandle, "constant", { 20, 17 }, version);
             auto dhandle = add_numeric_scalar(ghandle, "value", 1, H5::PredType::NATIVE_UINT8);
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_UINT8);
-            if (version >= 1100000) {
-                add_string_attribute(dhandle, "type", "INTEGER");
-            }
+            add_string_attribute(dhandle, "type", "INTEGER");
         }
         auto output = chihaya::validate(path, "constant"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
@@ -85,9 +89,7 @@ TEST_P(ConstantArrayTest, Basic) {
             auto ghandle = constant_array_opener(fhandle, "constant", { 20, 17 }, version);
             auto dhandle = add_string_scalar(ghandle, "value", "foo");
             add_string_missing_placeholder(dhandle, "bar", /* len = */ 10);
-            if (version >= 1100000) {
-                add_string_attribute(dhandle, "type", "STRING");
-            }
+            add_string_attribute(dhandle, "type", "STRING");
         }
         auto output = chihaya::validate(path, "constant"); 
         EXPECT_EQ(output.type, chihaya::STRING);
@@ -96,7 +98,6 @@ TEST_P(ConstantArrayTest, Basic) {
 
 TEST_P(ConstantArrayTest, Errors) {
     auto version = GetParam();
-    std::string path = "Test_constant_array.h5";
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -141,6 +142,10 @@ TEST_P(ConstantArrayTest, Errors) {
         add_numeric_vector<int>(ghandle, "value", { 20, 20 }, H5::PredType::NATIVE_INT);
     }
     expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "should be a scalar");
+}
+
+TEST_P(ConstantArrayTest, MissingErrors) {
+    auto version = GetParam();
 
     if (version >= 1000000) {
         {

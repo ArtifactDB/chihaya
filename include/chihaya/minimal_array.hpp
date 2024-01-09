@@ -37,7 +37,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
             throw std::runtime_error("datatype of 'dimensions' should fit in a 64-bit unsigned integer");
         }
-        dhandle.read(dimensions.data(), H5::PredType::NATIVE_INT64);
+        dhandle.read(dimensions.data(), H5::PredType::NATIVE_UINT64);
     }
 
     ArrayType atype;

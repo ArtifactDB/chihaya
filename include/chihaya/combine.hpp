@@ -59,6 +59,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     ArrayType type = BOOLEAN;
     {
         bool first = true;
+        size_t num_strings = 0;
 
         for (const auto& p : list_params.present) {
             auto current = ritsuko::hdf5::open_group(shandle, p.second.c_str());
@@ -92,6 +93,12 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                     }
                 }
             }
+
+            num_strings += (cur_seed.type == STRING);
+        }
+
+        if (num_strings != 0 && num_strings != list_params.length) {
+            throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
         }
     }
 

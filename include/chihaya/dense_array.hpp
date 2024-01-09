@@ -74,7 +74,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
             native = ritsuko::hdf5::load_scalar_numeric_dataset<int>(nhandle);
         } else {
-            if (ritsuko::hdf5::exceeds_integer_limit(nhandle, 8, false)) {
+            if (ritsuko::hdf5::exceeds_integer_limit(nhandle, 8, true)) {
                 throw std::runtime_error("'native' should have a datatype that fits into an 8-bit signed integer");
             }
             native = ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(nhandle);
