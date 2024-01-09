@@ -20,7 +20,7 @@ inline bool is_valid_operation(const std::string& method) {
 }
 
 inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version) {
-    const auto& ghandle = internal_misc::load_seed_details(handle, target, version);
+    auto output = internal_misc::load_seed_details(handle, target, version);
     if (output.type == STRING) {
         throw std::runtime_error("type of '" + target + "' should be integer, float or boolean");
     }

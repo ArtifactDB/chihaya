@@ -71,21 +71,21 @@ TEST(UnaryMath, CommonErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "unary math");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary math");
         external_array_opener(ghandle, "seed", { 13, 19 }, "STRING"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should contain numeric or boolean");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary math");
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'method'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -93,7 +93,7 @@ TEST(UnaryMath, CommonErrors) {
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
         add_scalar<int>(ghandle, "method", 1);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "scalar string");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -123,7 +123,7 @@ TEST(UnaryMath, MethodErrors) {
         add_scalar(ghandle, "method", std::string("log"));
         add_scalar<int>(ghandle, "base", 2);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'base' should be a scalar float");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'base' should be a float");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -131,7 +131,7 @@ TEST(UnaryMath, MethodErrors) {
         external_array_opener(ghandle, "seed", { 13, 19 }, "FLOAT"); 
         add_scalar(ghandle, "method", std::string("round"));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'digits'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'digits'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -140,5 +140,5 @@ TEST(UnaryMath, MethodErrors) {
         add_scalar(ghandle, "method", std::string("round"));
         add_scalar<double>(ghandle, "digits", 2);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'digits' should be a scalar integer");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'digits' should be an integer");
 }

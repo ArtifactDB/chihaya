@@ -23,7 +23,7 @@ TEST(UnarySpecialCheck, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "unary special check");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -38,7 +38,7 @@ TEST(UnarySpecialCheck, Errors) {
         ghandle.unlink("seed");
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'method'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

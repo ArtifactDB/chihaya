@@ -18,10 +18,12 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate(const H5::Group&, const Version&);
+inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 /**
  * @endcond
  */
+
+namespace dimnames {
 
 /**
  * @param handle An open handle on a HDF5 group representing a dimnames assignment operation.
@@ -30,20 +32,25 @@ inline ArrayDetails validate(const H5::Group&, const Version&);
  * @return Details of the object after assigning dimnames.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_dimnames(const H5::Group& handle, const ritsuko::Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto ghandle = ritsuko::hdf5::open_group(handle, "seed");
 
-    ArrayDetails output;
+    ArrayDetails seed_details;
     try {
-        output = ::chihaya::validate(ghandle, version);
+        seed_details = ::chihaya::validate(ghandle, version);
     } catch (std::exception& e) {
-        throw std::runtime_error("failed to validate 'seed'; " + std::string(e.what());
+        throw std::runtime_error("failed to validate 'seed'; " + std::string(e.what()));
     }
 
+    if (!handle.exists("dimnames")) {
+        throw std::runtime_error("expected a 'dimnames' group");
+    }
     internal_dimnames::validate(handle, seed_details.dimensions, version);
+
     return seed_details;
 }
 
+}
 
 }
 

@@ -29,7 +29,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         dhandle.read(dimensions_tmp.data(), H5::PredType::NATIVE_INT64);
         for (auto d : dimensions_tmp) {
             if (d < 0) {
-                throw std::runtime_error("elements in 'dimensions' should be non-negative for " + fun());
+                throw std::runtime_error("elements in 'dimensions' should be non-negative");
             }
         } 
         std::copy(dimensions_tmp.begin(), dimensions_tmp.end(), dimensions.begin());
@@ -42,7 +42,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     ArrayType atype;
     {
-        auto type = internal_misc::load_scalar_string_dataset(thandle);
+        auto type = internal_misc::load_scalar_string_dataset(handle, "type");
         if (type == "BOOLEAN") {
             atype = BOOLEAN;
         } else if (type == "INTEGER") {
@@ -52,11 +52,13 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         } else if (type == "STRING") {
             atype = STRING;
         } else {
-            throw std::runtime_error(std::string("unknown 'type' (") + type + ") for " + fun());
+            throw std::runtime_error("unknown 'type' (" + type + ")");
         }
     }
 
     return ArrayDetails(atype, std::vector<size_t>(dimensions.begin(), dimensions.end()));
+}
+
 }
 
 }

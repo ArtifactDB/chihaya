@@ -10,7 +10,6 @@
 #include "ritsuko/hdf5/hdf5.hpp"
 
 #include "utils_misc.hpp"
-#include "utils_internal.hpp"
 
 namespace chihaya {
 
@@ -24,13 +23,13 @@ struct ListDetails {
 inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     ListDetails output;
 
-    {
-        auto thandle = ritsuko::hdf5::open_attribute(dhandle, "delayed_type");
+    if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        auto thandle = ritsuko::hdf5::open_attribute(handle, "delayed_type");
         if (!ritsuko::hdf5::is_scalar(thandle)) {
             throw std::runtime_error("'delayed_type' should be a scalar");
         }
         if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-            throw std::runtime_error("datatype of 'delayed_type' should be compatible with a UTF-8 encoded string");
+            throw std::runtime_error("'delayed_type' should have a datatype that can be represented by a UTF-8 encoded string");
         }
         auto dtype = ritsuko::hdf5::load_scalar_string_attribute(thandle);
         if (dtype != "list") {
@@ -38,25 +37,28 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
         }
     }
 
+    const char* old_name = "delayed_length";
+    const char* new_name = "length";
+    const char* actual_name = (internal_misc::is_version_at_or_below(version, 1, 0) ? old_name : new_name);
     {
-        auto lhandle = ritsuko::hdf5::open_attribute(handle, "delayed_length");
+        auto lhandle = ritsuko::hdf5::open_attribute(handle, actual_name);
         if (!ritsuko::hdf5::is_scalar(lhandle)) {
-            throw std::runtime_error("expected a 'delayed_length' integer scalar for a list");
+            throw std::runtime_error("expected a '" + std::string(actual_name) + "' integer scalar for a list");
         } 
 
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (lhandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'delayed_length' should be an integer scalar");
+                throw std::runtime_error("'" + std::string(actual_name) + "' should be an integer scalar");
             }
             int l = 0;
-            len.read(H5::PredType::NATIVE_INT, &l);
+            lhandle.read(H5::PredType::NATIVE_INT, &l);
             if (l < 0) {
-                throw std::runtime_error("'delayed_length' should be non-negative");
+                throw std::runtime_error("'" + std::string(actual_name) + "' should be non-negative");
             }
             output.length = l;
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(lhandle, 64, false)) {
-                throw std::runtime_error("datatype of 'delayed_length' should fit inside a 64-bit unsigned integer");
+                throw std::runtime_error("datatype of '" + std::string(actual_name) + "' should fit inside a 64-bit unsigned integer");
             }
             output.length = ritsuko::hdf5::load_scalar_numeric_attribute<uint64_t>(lhandle);
         }
@@ -64,14 +66,25 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
 
     size_t n = handle.getNumObjs();
     if (n > output.length) {
-        throw std::runtime_error("more objects in the list than are specified by 'delayed_length'");
+        throw std::runtime_error("more objects in the list than are specified by '" + std::string(actual_name) + "'");
     }
     for (size_t i = 0; i < n; ++i) {
-        std::string name = std::to_string(i);
-        if (!handle.exists(name)) {
-            throw std::runtime_error("missing child " + name + " from a group of type 'list'"); 
+        std::string name = handle.getObjnameByIdx(i);
+
+        // Aaron's cheap and dirty atoi!
+        int sofar = 0;
+        for (auto c : name) {
+            if (c < '0' || c > '9') {
+                throw std::runtime_error("'" + name + "' is not a valid name for a list index");
+            }
+            sofar *= 10;
+            sofar += (c - '0'); 
         }
-        output.present[i] = std::move(name);
+
+        if (static_cast<size_t>(sofar) >= output.length) {
+            throw std::runtime_error("'" + name + "' is out of range for a list"); 
+        }
+        output.present[sofar] = name;
     }
 
     return output;

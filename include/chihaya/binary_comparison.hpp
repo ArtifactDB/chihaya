@@ -41,7 +41,7 @@ namespace binary_comparison {
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto left_details = internal_misc::load_seed_details(handle, "left", version);
     auto right_details = internal_misc::load_seed_details(handle, "right", version);
 
@@ -54,7 +54,7 @@ inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
         throw std::runtime_error("both or neither of 'left' and 'right' should contain strings");
     }
 
-    auto mhandle = internal_unary::load_method(handle);
+    auto method = internal_unary::load_method(handle);
     if (!internal_comparison::is_valid_operation(method)) {
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }

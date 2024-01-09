@@ -34,8 +34,11 @@ namespace unary_math {
  * Otherwise, if the validation failed, an error is raised.
  * 
  */
-inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::Version& version) try {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
+    if (seed_details.type == STRING) {
+        throw std::runtime_error("type of 'seed' should be integer, float or boolean");
+    }
 
     // Checking the method.
     auto method = internal_unary::load_method(handle);
@@ -75,7 +78,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::
             }
             auto vhandle = handle.openDataSet("base");
             if (!ritsuko::hdf5::is_scalar(vhandle)) {
-                throw std::runtime_error("'base' should be a scalar for a log transformation");
+                throw std::runtime_error("'base' should be a scalar");
             }
 
             if (internal_misc::is_version_at_or_below(version, 1, 0)) {
@@ -93,25 +96,27 @@ inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::
     } else if (method == "round" || method == "signif") {
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "digits");
         if (!ritsuko::hdf5::is_scalar(vhandle)) {
-            throw std::runtime_error("'digits' should be a scalar for a log transformation");
+            throw std::runtime_error("'digits' should be a scalar");
         }
 
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (vhandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'digit' should be an integer");
+                throw std::runtime_error("'digits' should be an integer");
             }
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(vhandle, 32, true)) {
-                throw std::runtime_error("'digit' should have a datatype that fits into a 32-bit integer");
+                throw std::runtime_error("'digits' should have a datatype that fits into a 32-bit integer");
             }
         }
         seed_details.type = FLOAT;
 
     } else {
-        throw std::runtime_error("unrecognized 'method' (" + method + ")")
+        throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }
 
     return seed_details;
+}
+
 }
 
 }

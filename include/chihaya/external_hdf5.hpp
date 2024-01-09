@@ -36,7 +36,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'file' should be a scalar");
         }
         if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-            throw std::runtime_error("datatype of 'file' should be compatible with a UTF-8 encoded string");
+            throw std::runtime_error("'file' should have a datatype that can be represented by a UTF-8 encoded string");
         }
     }
 
@@ -46,7 +46,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'name' should be a scalar");
         }
         if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-            throw std::runtime_error("datatype of 'name' should be compatible with a UTF-8 encoded string");
+            throw std::runtime_error("'name' should have a datatype that can be represented by a UTF-8 encoded string");
         }
     }
 

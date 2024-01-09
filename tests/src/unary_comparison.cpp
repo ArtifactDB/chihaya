@@ -78,14 +78,14 @@ TEST(UnaryComparison, CommonErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "unary comparison");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "unary comparison");
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'method'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -93,7 +93,7 @@ TEST(UnaryComparison, CommonErrors) {
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
         add_scalar<int>(ghandle, "method", 1);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "scalar string");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "can be represented by a UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -109,7 +109,7 @@ TEST(UnaryComparison, CommonErrors) {
         external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
         add_scalar(ghandle, "method", std::string("=="));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'side'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'side'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -118,7 +118,7 @@ TEST(UnaryComparison, CommonErrors) {
         add_scalar(ghandle, "method", std::string("=="));
         add_scalar<int>(ghandle, "side", 1);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "scalar string");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "can be represented by a UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -127,7 +127,7 @@ TEST(UnaryComparison, CommonErrors) {
         add_scalar(ghandle, "method", std::string("=="));
         add_scalar(ghandle, "side", std::string("foo"));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized 'side' (foo)");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized side 'foo'");
 }
 
 TEST(UnaryComparison, MethodErrors) {
@@ -140,7 +140,7 @@ TEST(UnaryComparison, MethodErrors) {
         add_scalar(ghandle, "method", std::string("!="));
         add_scalar(ghandle, "side", std::string("left"));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'value'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'value'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -150,7 +150,7 @@ TEST(UnaryComparison, MethodErrors) {
         add_scalar(ghandle, "side", std::string("left"));
         add_scalar(ghandle, "value", std::string("WHEE"));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "both or none");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "both or neither");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -179,14 +179,14 @@ TEST(UnaryComparison, AlongErrors) {
         add_scalar(ghandle, "side", std::string("left"));
         add_vector<int>(ghandle, "value", { 1, 2, 3, 4 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'along'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'along'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         add_scalar(ghandle, "along", std::string("WHEE"));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be a scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be an integer dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -217,5 +217,5 @@ TEST(UnaryComparison, AlongErrors) {
         hsize_t dim = 3;
         dhandle.createAttribute("missing_placeholder", H5::PredType::NATIVE_DOUBLE, H5::DataSpace(1, &dim));
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "to be a scalar");
 }

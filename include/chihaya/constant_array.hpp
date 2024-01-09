@@ -39,7 +39,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'dimensions' should have non-zero length");
         }
 
-        if (is_version_at_or_below(version, 1, 0)) {
+        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (dhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'dimensions' should be integer");
             }
@@ -50,7 +50,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                     throw std::runtime_error("'dimensions' should contain non-negative values");
                 }
             }
-            output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());
+            output.dimensions.insert(output.dimensions.end(), dims_tmp.begin(), dims_tmp.end());
 
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
@@ -68,12 +68,12 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'value' should be a scalar");
         }
 
-        if (is_version_at_or_below(version, 1, 0)) {
-            output.type = translate_type_0_0(vhandle.getTypeClass());
+        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            output.type = internal_type::translate_type_0_0(vhandle.getTypeClass());
         } else {
-            auto type = internal_type::fetch_data_type(thandle);
-            check_type_1_1(vhandle, type);
-            output.type = translate_type_1_1(type);
+            auto type = internal_type::fetch_data_type(vhandle);
+            internal_type::check_type_1_1(vhandle, type);
+            output.type = internal_type::translate_type_1_1(type);
         }
 
         internal_misc::validate_missing_placeholder(vhandle, version);

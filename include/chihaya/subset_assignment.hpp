@@ -42,14 +42,15 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionalities");
     }
 
-    auto collected = internal_subset::validate_index_list(ihandle, list_params, seed_dims);
+    auto ihandle = ritsuko::hdf5::open_group(handle, "index");
+    auto collected = internal_subset::validate_index_list(ihandle, seed_dims, version);
     auto expected_dims = seed_dims;
     for (auto p : collected) {
         expected_dims[p.first] = p.second;
     }
 
     if (!internal_misc::are_dimensions_equal(expected_dims, value_details.dimensions)) {
-        throw std::runtime_error("'value' dimension extents are not consistent with lengths of indices in 'index'"):
+        throw std::runtime_error("'value' dimension extents are not consistent with lengths of indices in 'index'");
     }
 
     // Promotion.

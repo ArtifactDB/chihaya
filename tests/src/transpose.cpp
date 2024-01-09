@@ -58,14 +58,14 @@ TEST(Transpose, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "transpose");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         external_array_opener(ghandle, "seed", { 13, 19 }); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'permutation'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'permutation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

@@ -34,7 +34,7 @@ TEST(ExternalHDF5, Errors) {
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("file");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'file'");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'file'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -45,7 +45,7 @@ TEST(ExternalHDF5, Errors) {
         H5::DataSpace dspace(1, &dims);
         ghandle.createDataSet("file", H5::PredType::NATIVE_INT, dspace);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'file' should be a string scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'file' should be a scalar");
 
     // Checking for name.
     {
@@ -53,7 +53,7 @@ TEST(ExternalHDF5, Errors) {
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("name");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'name'");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'name'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -64,5 +64,5 @@ TEST(ExternalHDF5, Errors) {
         H5::DataSpace dspace(1, &dims);
         ghandle.createDataSet("name", H5::PredType::NATIVE_INT, dspace);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'name' should be a string scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'name' should be a scalar");
 }

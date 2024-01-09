@@ -77,7 +77,7 @@ TEST(MatrixProduct, Errors) {
         auto ghandle = operation_opener(fhandle, "foos", "matrix product");
         add_seed<true>(ghandle, { 10, 20 }, "FLOAT", false);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected 'right_seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected a group at 'right_seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -93,7 +93,7 @@ TEST(MatrixProduct, Errors) {
         add_seed<true>(ghandle, { 10, 20 }, "FLOAT", false);
         external_array_opener(ghandle, "right_seed", { 10, 20 }, "STRING");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "numeric or boolean");
+    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "integer, float or boolean");
 
     // Checking the orientation.
     {
@@ -102,7 +102,7 @@ TEST(MatrixProduct, Errors) {
         add_seed<true>(ghandle, { 10, 20 }, "FLOAT", false);
         ghandle.unlink("left_orientation");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected 'left_orientation'");
+    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected a dataset at 'left_orientation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -111,7 +111,7 @@ TEST(MatrixProduct, Errors) {
         ghandle.unlink("left_orientation");
         add_scalar(ghandle, "left_orientation", 10);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "'left_orientation' should be a string");
+    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

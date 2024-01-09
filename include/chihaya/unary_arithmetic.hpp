@@ -36,7 +36,7 @@ namespace unary_arithmetic {
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version);
 
-    auto method = internal_unary::load_side(handle);
+    auto method = internal_unary::load_method(handle);
     if (!internal_arithmetic::is_valid_operation(method)) {
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }
@@ -87,6 +87,8 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     seed_details.type = internal_arithmetic::determine_output_type(min_type, seed_details.type, method);
 
     return seed_details;
+}
+
 }
 
 }

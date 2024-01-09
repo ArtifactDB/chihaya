@@ -67,7 +67,7 @@ TEST(CustomArray, Errors) {
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("dimensions");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'dimensions'");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'dimensions'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -94,7 +94,7 @@ TEST(CustomArray, Errors) {
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }); 
         ghandle.unlink("type");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected 'type'");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'type'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -105,7 +105,7 @@ TEST(CustomArray, Errors) {
         H5::DataSpace dspace(1, &dims);
         ghandle.createDataSet("type", H5::PredType::NATIVE_INT, dspace);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'type' should be a string scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'type' should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

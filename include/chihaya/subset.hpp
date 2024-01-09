@@ -34,11 +34,12 @@ namespace subset {
  * @return Details of the subsetted object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
     auto& seed_dims = seed_details.dimensions;
 
-    auto collected = internal_subset::validate_index_list(ihandle, list_params, seed_dims);
+    auto ihandle = ritsuko::hdf5::open_group(handle, "index");
+    auto collected = internal_subset::validate_index_list(ihandle, seed_dims, version);
     for (auto p : collected) {
         seed_dims[p.first] = p.second;
     }

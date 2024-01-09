@@ -44,7 +44,7 @@ TEST(BinaryLogic, Errors) {
         auto ghandle = operation_opener(fhandle, "hello", "binary logic");
         external_array_opener(ghandle, "left", { 13, 19 }, "STRING"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'left' should be numeric");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'left' should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

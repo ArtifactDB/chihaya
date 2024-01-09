@@ -62,7 +62,7 @@ TEST(BinaryComparison, Errors) {
         external_array_opener(ghandle, "left", { 13, 19 }, "STRING"); 
         external_array_opener(ghandle, "right", { 13, 19 }, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "both or none");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "both or neither");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

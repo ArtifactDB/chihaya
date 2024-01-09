@@ -3,7 +3,7 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hd5/hdf5.hpp"
+#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
 
@@ -56,11 +56,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 throw std::runtime_error("'value' should contain numeric or boolean values for an unary logic operation");
             }
         } else {
-            auto type = internal_type::fetch_data_type(dhandle);
-            internal_type::check_numeric_type_1_1(dhandle, type);
+            auto type = internal_type::fetch_data_type(vhandle);
+            internal_type::check_numeric_type_1_1(vhandle, type);
         }
 
-        validate_missing_placeholder(vhandle, version);
+        internal_misc::validate_missing_placeholder(vhandle, version);
 
         size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
         if (ndims == 0) {

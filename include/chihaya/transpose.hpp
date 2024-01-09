@@ -70,7 +70,7 @@ std::vector<size_t> check_permutation(const H5::DataSet& phandle, size_t ndims, 
  * @return Details of the transposed object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_transpose(const H5::Group& handle, const ritsuko::Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
 
     auto phandle = ritsuko::hdf5::open_dataset(handle, "permutation");
@@ -89,8 +89,8 @@ inline ArrayDetails validate_transpose(const H5::Group& handle, const ritsuko::V
     }
 
     return seed_details;
-} catch (std::exception& e) {
-    throw std::runtime_error("failed to validate transposition at '" + name + "'\n- " + std::string(e.what()));
+}
+
 }
 
 }

@@ -15,7 +15,7 @@ namespace chihaya {
 namespace internal_subset {
 
 template<typename Index_>
-void validate_indices(const H5::DataSet& dhandle, size_t len, const H5::PredType& h5type, size_t extent) {
+void validate_indices(const H5::DataSet& dhandle, size_t len, size_t extent) {
     ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&dhandle, len, 1000000);
     for (size_t i = 0; i < len; ++i, stream.next()) {
         auto b = stream.get();
@@ -25,7 +25,7 @@ void validate_indices(const H5::DataSet& dhandle, size_t len, const H5::PredType
     }
 }
 
-inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Group& ihandle, const std::vector<size_t>& seed_dims) {
+inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Group& ihandle, const std::vector<size_t>& seed_dims, const ritsuko::Version& version) {
     internal_list::ListDetails list_params;
     try {
         list_params = internal_list::validate(ihandle, version);
@@ -48,12 +48,12 @@ inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Gro
                 if (dhandle.getTypeClass() != H5T_INTEGER) {
                     throw std::runtime_error("expected an integer dataset");
                 }
-                validate_indices<int>(dhandle, len, H5::PredType::NATIVE_INT, seed_dims[p.first]);
+                validate_indices<int>(dhandle, len, seed_dims[p.first]);
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
                     throw std::runtime_error("datatype should be exactly represented by a 64-bit unsigned integer");
                 }
-                validate_indices<uint64_t>(dhandle, len, H5::PredType::NATIVE_UINT64, seed_dims[p.first]);
+                validate_indices<uint64_t>(dhandle, len, seed_dims[p.first]);
             }
 
             collected.emplace_back(p.first, len);
@@ -63,6 +63,8 @@ inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Gro
     }
 
     return collected;
+}
+
 }
 
 }

@@ -19,7 +19,7 @@ namespace chihaya {
  * @namespace chihaya::unary_special_check
  * @brief Namespace for delayed unary special checks.
  */
-namespace unary_check {
+namespace unary_special_check {
 
 /**
  * @param handle An open handle on a HDF5 group representing an unary special check operation.
@@ -28,7 +28,7 @@ namespace unary_check {
  * @return Details of the object after applying the special check.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const ritsuko::Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
     if (seed_details.type == STRING) {
         throw std::runtime_error("'seed' should contain numeric or boolean values");
@@ -45,6 +45,8 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const 
 
     seed_details.type = BOOLEAN;
     return seed_details;
+}
+
 }
 
 }

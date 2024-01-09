@@ -70,21 +70,21 @@ TEST(SubsetAssignment, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         operation_opener(fhandle, "hello", "subset assignment");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         external_array_opener(ghandle, "seed", { 13, 19 }); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'value'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'value'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         external_array_opener(ghandle, "value", { 6, 7 }); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'index'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'index'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -101,7 +101,7 @@ TEST(SubsetAssignment, Errors) {
         lhandle.unlink("2"); // removing the above.
         lhandle.createGroup("0");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -110,7 +110,7 @@ TEST(SubsetAssignment, Errors) {
         lhandle.unlink("0"); // removing the above.
         add_vector<double>(lhandle, "0", { 1, 3, 0, 2, 9 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a 1-dimensional integer dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected an integer dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -119,7 +119,7 @@ TEST(SubsetAssignment, Errors) {
         lhandle.unlink("0"); // removing the above.
         add_vector<int>(lhandle, "0", { 1, 3, 0, 2, 1, 9, 5 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "extent of the corresponding dimension of 'value'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "dimension extents are not consistent");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -128,5 +128,5 @@ TEST(SubsetAssignment, Errors) {
         lhandle.unlink("0"); // removing the above.
         add_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9, 100 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out of range for element '0'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out of range");
 }

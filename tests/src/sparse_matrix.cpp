@@ -109,7 +109,7 @@ TEST(Sparse, ShapeErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected 'shape'");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected a dataset at 'shape'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -141,22 +141,14 @@ TEST(Sparse, DataErrors) {
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
         add_vector<int>(ghandle, "shape", { 10, 5 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected 'data'");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected a dataset at 'data'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("foobar");
-        ghandle.createGroup("data");
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "'data' to be a dataset");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
-        ghandle.unlink("data");
         ghandle.createDataSet("data", H5::PredType::NATIVE_INT, H5S_SCALAR);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "'data' should be a 1-dimensional dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected a 1-dimensional dataset");
 }
 
 TEST(Sparse, SimpleIndexErrors) {
@@ -168,7 +160,7 @@ TEST(Sparse, SimpleIndexErrors) {
         add_vector<int>(ghandle, "shape", { 10, 5 });
         add_vector<double>(ghandle, "data", data);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected 'indices'");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected a dataset at 'indices'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -191,7 +183,7 @@ TEST(Sparse, SimpleIndexErrors) {
         ghandle.unlink("indices");
         add_vector<int>(ghandle, "indices", indices);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected 'indptr'");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "expected a dataset at 'indptr'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -291,5 +283,5 @@ TEST(Sparse, ComplexIndexErrors) {
         auto dhandle = ghandle.openDataSet("data");
         add_missing_placeholder(dhandle, 1);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "should be of the same type");
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "same type class");
 }

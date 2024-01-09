@@ -48,7 +48,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }
 
-    left_details.type = internal_arithmeric::determine_output_type(left_details.type, right_details.type, method);
+    left_details.type = internal_arithmetic::determine_output_type(left_details.type, right_details.type, method);
     return left_details;
 }
 

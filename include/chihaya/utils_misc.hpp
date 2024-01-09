@@ -10,6 +10,8 @@
 
 namespace chihaya {
 
+ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
+
 namespace internal_misc {
 
 inline bool is_version_at_or_below(const ritsuko::Version& v, int major, int minor) {
@@ -41,7 +43,7 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
     }
 
     auto ahandle = handle.openAttribute(placeholder);
-    ritsuko::hdf5::check_missing_placeholder_attribute(handle, ahandle, /* type_class_only = */ (version.major == 1 && version.minor == 0));
+    ritsuko::hdf5::check_missing_placeholder_attribute(handle, ahandle, /* type_class_only = */ (version.major == 1 && version.minor == 0) || handle.getTypeClass() == H5T_STRING);
 }
 
 inline uint64_t load_along(const H5::Group& handle, const ritsuko::Version& version) {
@@ -62,7 +64,7 @@ inline uint64_t load_along(const H5::Group& handle, const ritsuko::Version& vers
         return along_tmp;
 
     } else {
-        if (ritsuko::hdf5::exceeds_integer_limits(ahandle, 64, false)) {
+        if (ritsuko::hdf5::exceeds_integer_limit(ahandle, 64, false)) {
             throw std::runtime_error("'along' should have a datatype that fits in a 64-bit unsigned integer");
         }
         return ritsuko::hdf5::load_scalar_numeric_dataset<uint64_t>(ahandle);
@@ -73,7 +75,7 @@ inline ArrayDetails load_seed_details(const H5::Group& handle, const std::string
     ArrayDetails output;
     auto shandle = ritsuko::hdf5::open_group(handle, name.c_str());
     try {
-        seed_details = ::chihaya::validate(shandle, version);
+        output = ::chihaya::validate(shandle, version);
     } catch (std::exception& e) {
         throw std::runtime_error("failed to validate '" + name + "'; " + std::string(e.what()));
     }
@@ -81,12 +83,12 @@ inline ArrayDetails load_seed_details(const H5::Group& handle, const std::string
 }
 
 inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
-    auto shandle = ritsuko::hdf5::open_dataset(handle, name);
+    auto shandle = ritsuko::hdf5::open_dataset(handle, name.c_str());
     if (!ritsuko::hdf5::is_scalar(shandle)) {
         throw std::runtime_error("'" + name + "' should be scalar");
     }
     if (!ritsuko::hdf5::is_utf8_string(shandle)) {
-        throw std::runtime_error("datatype of '" + name + "' should be compatible with a UTF-8 encoded string");
+        throw std::runtime_error("'" + name + "' should have a datatype that can be represented by a UTF-8 encoded string");
     }
     return ritsuko::hdf5::load_scalar_string_dataset(shandle);
 }

@@ -65,14 +65,14 @@ TEST(Dimnames, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "dimnames");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed' group");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "dimnames");
         external_array_opener(ghandle, "seed", { 5, 7 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'dimnames' group");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a 'dimnames' group");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -98,7 +98,7 @@ TEST(Dimnames, Errors) {
         auto lhandle = list_opener(ghandle, "dimnames", 2);
         lhandle.createGroup("0");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at '0'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

@@ -42,20 +42,18 @@ namespace combine {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    internal_list::ListDetails list_params;
-    {
-        auto shandle = ritsuko::hdf5::open_group(handle, "seeds");
-        try {
-            list_params = internal_list::validate(shandle, version);
-        } catch (std::exception& e) {
-            throw std::runtime_error(std::string("failed to load 'seeds' list; ") + e.what());
-        }
-        if (list_params.present.size() != list_params.length) {
-            throw std::runtime_error("missing elements in the 'seeds' list");
-        }
-    }
-
     uint64_t along = internal_misc::load_along(handle, version);
+
+    auto shandle = ritsuko::hdf5::open_group(handle, "seeds");
+    internal_list::ListDetails list_params;
+    try {
+        list_params = internal_list::validate(shandle, version);
+    } catch (std::exception& e) {
+        throw std::runtime_error(std::string("failed to load 'seeds' list; ") + e.what());
+    }
+    if (list_params.present.size() != list_params.length) {
+        throw std::runtime_error("missing elements in the 'seeds' list");
+    }
 
     std::vector<size_t> dimensions;
     ArrayType type = BOOLEAN;
@@ -63,7 +61,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         bool first = true;
 
         for (const auto& p : list_params.present) {
-            auto current = ritsuko::hdf5::open_group(shandle, p.second);
+            auto current = ritsuko::hdf5::open_group(shandle, p.second.c_str());
 
             ArrayDetails cur_seed;
             try {
@@ -98,6 +96,8 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     return ArrayDetails(type, std::move(dimensions));
+}
+
 }
 
 }

@@ -13,8 +13,11 @@ namespace chihaya {
 namespace internal_dimnames {
 
 template<class V>
-void validate(const H5::Group& handle, const V& dimensions, const ritsuko::Version& version) {
-    auto ghandle = ritsuko::open_group(handle, "dimnames");
+void validate(const H5::Group& handle, const V& dimensions, const ritsuko::Version& version) try {
+    if (handle.childObjType("dimnames") != H5O_TYPE_GROUP) {
+        throw std::runtime_error("expected a group at 'dimnames'");
+    }
+    auto ghandle = handle.openGroup("dimnames");
 
     internal_list::ListDetails list_params;
     try {
@@ -36,6 +39,8 @@ void validate(const H5::Group& handle, const V& dimensions, const ritsuko::Versi
             throw std::runtime_error("each entry of 'dimnames' should have length equal to the extent of its corresponding dimension");
         }
     }
+} catch (std::exception& e) {
+    throw std::runtime_error("failed to validate the 'dimnames'; " + std::string(e.what()));
 }
 
 }

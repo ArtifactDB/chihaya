@@ -33,7 +33,7 @@ inline void check_along(const H5::Group& handle, const ritsuko::Version& version
         throw std::runtime_error("'along' should be less than the seed dimensionality");
     }
 
-    if (extent != seed_details.dimensions[along]) {
+    if (extent != seed_dimensions[along]) {
         throw std::runtime_error("length of 'value' dataset should be equal to the dimension specified in 'along'");
     }
 }

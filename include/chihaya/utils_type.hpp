@@ -5,7 +5,7 @@
 #include "ritsuko/hdf5/hdf5.hpp"
 
 #include <string>
-#include <stdxcept>
+#include <stdexcept>
 
 #include "utils_public.hpp"
 
@@ -31,12 +31,12 @@ inline bool is_boolean(const H5::DataSet& handle) {
 }
 
 inline std::string fetch_data_type(const H5::DataSet& handle) {
-    auto thandle = ritsuko::hdf5::open_attribute(dhandle, "type");
+    auto thandle = ritsuko::hdf5::open_attribute(handle, "type");
     if (!ritsuko::hdf5::is_scalar(thandle)) {
         throw std::runtime_error("'type' should be a scalar");
     }
     if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-        throw std::runtime_error("datatype of 'type' should be compatible with a UTF-8 encoded string");
+        throw std::runtime_error("'type' should have a datatype that can be represented by a UTF-8 encoded string");
     }
     return ritsuko::hdf5::load_scalar_string_attribute(thandle);
 }
@@ -51,7 +51,7 @@ inline void check_numeric_type_1_1(const H5::DataSet& handle, const std::string&
             throw std::runtime_error("boolean 'value' should have a datatype that fits into a 8-bit signed integer");
         }
     } else if (type == "FLOAT") {
-        if (ritsuko::hdf5::exceeds_limit(handle, 64)) {
+        if (ritsuko::hdf5::exceeds_float_limit(handle, 64)) {
             throw std::runtime_error("floating-point 'value' should have a datatype that fits into a 64-bit float");
         }
     } else {

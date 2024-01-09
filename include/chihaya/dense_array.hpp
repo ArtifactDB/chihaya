@@ -47,9 +47,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         dspace.getSimpleExtentDims(dims.data());
         output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());
 
-        if (is_version_at_or_below(version, 1, 0)) {
-            output.type = translate_type_0_0(dhandle.getTypeClass());
-            if (is_boolean(dhandle)) {
+        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());
+            if (internal_type::is_boolean(dhandle)) {
                 output.type = BOOLEAN;
             }
         } else {
@@ -58,7 +58,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             output.type = internal_type::translate_type_1_1(type);
         }
 
-        validate_missing_placeholder(dhandle, version);
+        internal_misc::validate_missing_placeholder(dhandle, version);
     }
 
     {
@@ -68,7 +68,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
         bool native;
-        if (is_version_at_or_below(version, 1, 0)) {
+        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (nhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'native' should have an integer datatype");
             }

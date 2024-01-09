@@ -81,7 +81,7 @@ TEST(Constant, Errors) {
         ghandle.unlink("value");
         ghandle.createGroup("value");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "should be a dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "expected a dataset at 'value'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -98,7 +98,7 @@ TEST(Constant, Errors) {
         auto dhandle = fhandle.openDataSet("constant/value");
         add_missing_placeholder(dhandle, 1.0);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "should be of the same type");
+    expect_error([&]() -> void { chihaya::validate(path, "constant"); }, "have the same type class");
 
 }
 

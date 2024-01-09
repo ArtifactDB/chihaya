@@ -43,7 +43,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     auto method = internal_unary::load_method(handle);
-    if (internal_logic::is_valid_operation(method)) {
+    if (!internal_logic::is_valid_operation(method)) {
         throw std::runtime_error("unrecognized 'method' (" + method + ")");
     }
 

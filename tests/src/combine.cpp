@@ -50,21 +50,21 @@ TEST(Combine, AlongErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "combine");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'along' dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'along'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "combine");
         add_vector<int>(ghandle, "along", { 1 });
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be an integer scalar");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be a scalar dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "combine");
         add_scalar(ghandle, "along", -1);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should contain a non-negative value");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be non-negative");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -85,7 +85,7 @@ TEST(Combine, SeedErrors) {
         auto ghandle = operation_opener(fhandle, "hello", "combine");
         add_scalar(ghandle, "along", 0);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seeds' group");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seeds'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

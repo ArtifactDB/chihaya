@@ -48,7 +48,7 @@ void validate_indices(const H5::DataSet& ihandle, const std::vector<uint64_t>& i
             if (i < 0) {
                 throw std::runtime_error("entries of 'indices' should be non-negative");
             }
-            if (i > start && i <= previous) {
+            if (x > start && i <= previous) {
                 throw std::runtime_error("'indices' should be strictly increasing within each " + (csc ? std::string("column") : std::string("row")));
             }
             if (static_cast<size_t>(i) >= secondary) {
@@ -71,7 +71,7 @@ void validate_indices(const H5::DataSet& ihandle, const std::vector<uint64_t>& i
  * @return Details of the sparse matrix.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuko::Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     std::vector<uint64_t> dims(2);
     ArrayType array_type;
 
@@ -107,7 +107,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
 
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             array_type = internal_type::translate_numeric_type_0_0(dhandle.getTypeClass());
-            if (is_boolean(dhandle)) {
+            if (internal_type::is_boolean(dhandle)) {
                 array_type = BOOLEAN;
             }
         } else {
@@ -116,7 +116,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
             array_type = internal_type::translate_type_1_1(type);
         }
 
-        validate_missing_placeholder(dhandle, version);
+        internal_misc::validate_missing_placeholder(dhandle, version);
     }
 
     bool csc = true;
@@ -133,9 +133,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
 
     {
         auto ihandle = ritsuko::hdf5::open_dataset(handle, "indices");
-        if (ntriplets != ritsuko::hdf5::get_1d_length(ihandle, false)) {
-            throw std::runtime_error("'indices' and 'data' should have the same length");
-        }
+
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (ihandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'indices' should be integer");
@@ -146,7 +144,11 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
             }
         }
 
-        auto iphandle = check_vector(handle, "indptr", "sparse matrix");
+        if (nnz != ritsuko::hdf5::get_1d_length(ihandle, false)) {
+            throw std::runtime_error("'indices' and 'data' should have the same length");
+        }
+
+        auto iphandle = ritsuko::hdf5::open_dataset(handle, "indptr");
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (iphandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'indptr' should be integer");
@@ -183,7 +185,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
         internal_dimnames::validate(handle, dims, version);
     }
 
-    return ArrayDetails(type, std::vector<size_t>(dims.begin(), dims.end()));
+    return ArrayDetails(array_type, std::vector<size_t>(dims.begin(), dims.end()));
 }
 
 }

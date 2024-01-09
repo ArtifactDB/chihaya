@@ -124,7 +124,7 @@ TEST(Dense, Errors) {
         auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT);
         ghandle.unlink("data");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "'data' should be a dataset");
+    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "expected a dataset at 'data'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -165,5 +165,5 @@ TEST(Dense, Errors) {
         auto dhandle = fhandle.openDataSet("dense/data");
         add_missing_placeholder(dhandle, 2.5);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be of the same type");
+    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "have the same type class");
 }

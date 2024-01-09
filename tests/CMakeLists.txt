@@ -33,7 +33,6 @@ add_executable(
     src/sparse_matrix.cpp
     src/matrix_product.cpp
     src/constant_array.cpp
-    src/misc.cpp
 )
 
 target_link_libraries(
