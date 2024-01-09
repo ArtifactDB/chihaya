@@ -2,6 +2,21 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
+inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
+    auto ghandle = custom_array_opener(parent, name, dimensions, type, "external hdf5 dense array");
+
+    H5::StrType stype(0, H5T_VARIABLE);
+    auto fhandle = ghandle.createDataSet("file", stype, H5S_SCALAR);
+    std::string dummy = "WHEEE";
+    fhandle.write(dummy, stype, H5S_SCALAR);
+
+    auto nhandle = ghandle.createDataSet("name", stype, H5S_SCALAR);
+    nhandle.write(dummy, stype, H5S_SCALAR);
+
+    return ghandle;
+}
+
+
 TEST(ExternalHDF5, Basic) {
     std::string path = "Test_external.h5";
 

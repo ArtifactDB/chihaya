@@ -2,35 +2,61 @@
 #define UTILS_H
 
 #include "H5Cpp.h"
+#include "ritsuko/hdf5/hdf5.hpp"
+
 #include <iostream>
-#include <map>
 #include <vector>
 #include <string>
 #include <type_traits>
 #include <cstdint>
 
-inline H5::Group super_group_opener(const H5::Group& parent, const std::string& name, const std::map<std::string, std::string>& attributes) {
-    auto ghandle = parent.createGroup(name);
-    for (const auto& p : attributes) {
-        H5::StrType stype(0, H5T_VARIABLE);
-        auto ahandle = ghandle.createAttribute(p.first, stype, H5S_SCALAR);
-        ahandle.write(stype, p.second);
-    }
-    return ghandle;
+template<typename H5Obj_>
+void add_string_attribute(const H5Obj_& handle, const std::string& name, const std::string& value, size_t len = H5T_VARIABLE) {
+    H5::StrType stype(0, len);
+    auto ahandle = handle.createAttribute(name, stype, H5S_SCALAR);
+    ahandle.write(stype, value);
 }
 
 inline H5::Group operation_opener(const H5::Group& parent, const std::string& name, const std::string& operation) {
-    std::map<std::string, std::string> attrs;
-    attrs["delayed_type"] = "operation";
-    attrs["delayed_operation"] = operation;
-    return super_group_opener(parent, name, attrs);
+    auto ghandle = parent.createGroup(name);
+    add_string_attribute(ghandle, "delayed_type", "operation");
+    add_string_attribute(ghandle, "delayed_operation", operation);
+    return ghandle;
 }
 
 inline H5::Group array_opener(const H5::Group& parent, const std::string& name, const std::string& array) {
-    std::map<std::string, std::string> attrs;
-    attrs["delayed_type"] = "array";
-    attrs["delayed_array"] = array;
-    return super_group_opener(parent, name, attrs);
+    auto ghandle = parent.createGroup(name);
+    add_string_attribute(ghandle, "delayed_type", "array");
+    add_string_attribute(ghandle, "delayed_array", array);
+    return ghandle;
+}
+
+template<typename T>
+H5::DataSet add_numeric_vector(const H5::Group& handle, const std::string& name, const std::vector<T>& values, const H5::DataType& dtype) {
+    hsize_t n = values.size();
+    H5::DataSpace dspace(1, &n);
+    auto dhandle = handle.createDataSet(name, dtype, dspace); 
+    dhandle.write(values.data(), ritsuko::hdf5::as_numeric_datatype<T>());
+    return dhandle;
+}
+
+inline H5::DataSet add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n, hsize_t len) {
+    H5::DataSpace dspace(1, &n);
+    return handle.createDataSet(name, H5::StrType(0, len), dspace); 
+}
+
+template<typename T>
+H5::DataSet add_numeric_scalar(const H5::Group& handle, const std::string& name, T value, const H5::DataType& dtype) {
+    auto dhandle = handle.createDataSet(name, dtype, H5S_SCALAR); 
+    dhandle.write(&value, ritsuko::hdf5::as_numeric_datatype<T>());
+    return dhandle;
+}
+
+inline H5::DataSet add_string_scalar(const H5::Group& handle, const std::string& name, const std::string& value, size_t len = H5T_VARIABLE) {
+    H5::StrType stype(0, len);
+    auto dhandle = handle.createDataSet(name, stype, H5S_SCALAR); 
+    dhandle.write(value, stype);
+    return dhandle;
 }
 
 struct CustomArrayOptions {
@@ -42,48 +68,22 @@ struct CustomArrayOptions {
 
 inline H5::Group custom_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, const CustomArrayOptions& options) {
     auto ghandle = array_opener(parent, name, options.array_type);
+    add_string_scalar(ghandle, "type", options.type);
 
-    hsize_t ndim = dimensions.size();
-    H5::DataSpace dspace(1, &ndim);
     if (options.version < 1100000) {
-        auto dhandle = ghandle.createDataSet("dimensions", H5::PredType::NATIVE_INT, dspace);
-        dhandle.write(dimensions.data(), H5::PredType::NATIVE_INT);
+        add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
     } else {
-        auto dhandle = ghandle.createDataSet("dimensions", H5::PredType::NATIVE_UINT32, dspace);
-        dhandle.write(dimensions.data(), H5::PredType::NATIVE_INT);
+        add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);
     }
-
-    H5::StrType stype(0, H5T_VARIABLE);
-    auto thandle = ghandle.createDataSet("type", stype, H5S_SCALAR);
-    thandle.write(options.type, stype, H5S_SCALAR);
-
-    return ghandle;
-}
-
-inline H5::Group custom_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT", std::string array_type = "custom thingy") {
-    return custom_array_opener(parent, name, dimensions, CustomArrayOptions(0, std::move(type), std::move(array_type)));
-}
-
-inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
-    auto ghandle = custom_array_opener(parent, name, dimensions, type, "external hdf5 dense array");
-
-    H5::StrType stype(0, H5T_VARIABLE);
-    auto fhandle = ghandle.createDataSet("file", stype, H5S_SCALAR);
-    std::string dummy = "WHEEE";
-    fhandle.write(dummy, stype, H5S_SCALAR);
-
-    auto nhandle = ghandle.createDataSet("name", stype, H5S_SCALAR);
-    nhandle.write(dummy, stype, H5S_SCALAR);
 
     return ghandle;
 }
 
 inline H5::Group list_opener(const H5::Group& parent, const std::string& name, int length, int version = 0) {
-    std::map<std::string, std::string> attrs;
+    auto ghandle = parent.createGroup(name);
     if (version < 1100000) {
-        attrs["delayed_type"] = "list";
+        add_string_attribute(ghandle, "delayed_type", "list");
     }
-    auto ghandle = super_group_opener(parent, name, attrs);
 
     if (version < 1100000) {
         auto ahandle = ghandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5S_SCALAR);
@@ -94,49 +94,6 @@ inline H5::Group list_opener(const H5::Group& parent, const std::string& name, i
     }
 
     return ghandle;
-}
-
-template <class T> struct dependent_false : std::false_type {};
-
-template<typename T>
-void add_vector(const H5::Group& handle, const std::string& name, const std::vector<T>& values) {
-    hsize_t n = values.size();
-    H5::DataSpace dspace(1, &n);
-    if constexpr(std::is_same<T, int>::value) {
-        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_INT, dspace); 
-        dhandle.write(values.data(), H5::PredType::NATIVE_INT);
-    } else if constexpr(std::is_same<T, double>::value) {
-        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
-        dhandle.write(values.data(), H5::PredType::NATIVE_DOUBLE);
-    } else {
-        static_assert(dependent_false<T>::value, "vector type should be either an 'int' or 'double'"); 
-    }
-}
-
-inline void add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n) {
-    H5::DataSpace dspace(1, &n);
-    handle.createDataSet(name, H5::StrType(0, 10), dspace); 
-}
-
-template<typename T>
-void add_scalar(const H5::Group& handle, const std::string& name, T value) {
-    H5::DataSpace dspace;
-    if constexpr(std::is_same<T, int>::value) {
-        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_INT, dspace); 
-        dhandle.write(&value, H5::PredType::NATIVE_INT);
-    } else if constexpr(std::is_same<T, double>::value) {
-        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, dspace); 
-        dhandle.write(&value, H5::PredType::NATIVE_DOUBLE);
-    } else if constexpr(std::is_same<T, std::string>::value) {
-        H5::StrType stype(0, H5T_VARIABLE);
-        auto dhandle = handle.createDataSet(name, stype, dspace); 
-        dhandle.write(value, stype);
-    } else if constexpr(std::is_same<T, uint32_t>::value) {
-        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_UINT32, dspace); 
-        dhandle.write(&value, H5::PredType::NATIVE_UINT32);
-    } else {
-        static_assert(dependent_false<T>::value, "scalar type should be either an 'int', 'string' or 'double'"); 
-    }
 }
 
 template<class Function>
@@ -158,33 +115,20 @@ void expect_error(Function op, std::string message) {
 }
 
 template<typename T>
-void add_missing_placeholder(const H5::DataSet& handle, T value) {
-    if constexpr(std::is_same<T, int>::value) {
-        auto dhandle = handle.createAttribute("missing_placeholder", H5::PredType::NATIVE_INT, H5S_SCALAR); 
-        dhandle.write(H5::PredType::NATIVE_INT, &value);
-    } else if constexpr(std::is_same<T, double>::value) {
-        auto dhandle = handle.createAttribute("missing_placeholder", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR); 
-        dhandle.write(H5::PredType::NATIVE_DOUBLE, &value);
-    } else if constexpr(std::is_same<T, std::string>::value) {
-        H5::StrType stype(0, H5T_VARIABLE);
-        auto dhandle = handle.createAttribute("missing_placeholder", stype, H5S_SCALAR); 
-        dhandle.write(stype, value);
-    } else {
-        static_assert(dependent_false<T>::value, "scalar type should be either an 'int', 'string' or 'double'"); 
-    }
+void add_numeric_missing_placeholder(const H5::DataSet& handle, T value, const H5::DataType& dtype) {
+    auto dhandle = handle.createAttribute("missing_placeholder", dtype, H5S_SCALAR); 
+    dhandle.write(ritsuko::hdf5::as_numeric_datatype<T>(), &value);
 }
 
-inline void add_version_string(const H5::Group& handle, const std::string& version) {
-    H5::StrType stype(0, H5T_VARIABLE);
-    auto dhandle = handle.createAttribute("delayed_version", stype, H5S_SCALAR); 
-    dhandle.write(stype, version);
+inline void add_string_missing_placeholder(const H5::DataSet& handle, const std::string& value, size_t len = H5T_VARIABLE) {
+    add_string_attribute(handle, "missing_placeholder", value, len);
 }
 
 inline void add_version_string(const H5::Group& handle, int version) {
     if (version == 1000000) {
-        add_version_string(handle, "1.0.0");
+        add_string_attribute(handle, "delayed_version", "1.0.0");
     } else if (version >= 1100000) {
-        add_version_string(handle, "1.1.0");
+        add_string_attribute(handle, "delayed_version", "1.1.0");
     }
 }
 

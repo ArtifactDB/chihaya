@@ -6,9 +6,9 @@ class CombineTest : public ::testing::TestWithParam<int> {
 protected:
     void add_along(H5::Group& handle, int along, int version) {
         if (version < 1100000) {
-            add_scalar(handle, "along", along);
+            add_numeric_scalar(handle, "along", along, H5::PredType::NATIVE_INT);
         } else {
-            add_scalar<uint32_t>(handle, "along", along);
+            add_numeric_scalar(handle, "along", along, H5::PredType::NATIVE_UINT32);
         }
     }
 };
@@ -74,7 +74,7 @@ TEST_P(CombineTest, AlongErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "combine");
         add_version_string(ghandle, version);
-        add_vector<int>(ghandle, "along", { 1 });
+        add_numeric_vector<int>(ghandle, "along", { 1 }, H5::PredType::NATIVE_INT);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be a scalar dataset");
 
@@ -82,7 +82,7 @@ TEST_P(CombineTest, AlongErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "hello", "combine");
         add_version_string(ghandle, version);
-        add_scalar(ghandle, "along", -1);
+        add_numeric_scalar(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
     if (version >= 1100000) {
         expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
