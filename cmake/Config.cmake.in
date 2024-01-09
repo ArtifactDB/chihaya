@@ -1,5 +1,8 @@
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+find_dependency(artifactdb_ritsuko CONFIG REQUIRED)
+
 if(@CHIHAYA_FIND_HDF5@)
     find_package(HDF5 COMPONENTS C CXX)
 endif()
