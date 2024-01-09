@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <cstdint>
 
 inline H5::Group super_group_opener(const H5::Group& parent, const std::string& name, const std::map<std::string, std::string>& attributes) {
     auto ghandle = parent.createGroup(name);
@@ -37,7 +38,7 @@ inline H5::Group custom_array_opener(const H5::Group& parent, const std::string&
 
     hsize_t ndim = dimensions.size();
     H5::DataSpace dspace(1, &ndim);
-    auto dhandle = ghandle.createDataSet("dimensions", H5::PredType::NATIVE_INT, dspace);
+    auto dhandle = ghandle.createDataSet("dimensions", H5::PredType::NATIVE_UINT32, dspace);
     dhandle.write(dimensions.data(), H5::PredType::NATIVE_INT);
 
     H5::StrType stype(0, H5T_VARIABLE);
@@ -61,13 +62,21 @@ inline H5::Group external_array_opener(const H5::Group& parent, const std::strin
     return ghandle;
 }
 
-inline H5::Group list_opener(const H5::Group& parent, const std::string& name, int length) {
+inline H5::Group list_opener(const H5::Group& parent, const std::string& name, int length, int version = 0) {
     std::map<std::string, std::string> attrs;
-    attrs["delayed_type"] = "list";
+    if (version < 1100000) {
+        attrs["delayed_type"] = "list";
+    }
     auto ghandle = super_group_opener(parent, name, attrs);
 
-    auto ahandle = ghandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5S_SCALAR);
-    ahandle.write(H5::PredType::NATIVE_INT, &length);
+    if (version < 1100000) {
+        auto ahandle = ghandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5S_SCALAR);
+        ahandle.write(H5::PredType::NATIVE_INT, &length);
+    } else {
+        auto ahandle = ghandle.createAttribute("length", H5::PredType::NATIVE_UINT32, H5S_SCALAR);
+        ahandle.write(H5::PredType::NATIVE_INT, &length);
+    }
+
     return ghandle;
 }
 
@@ -106,6 +115,9 @@ void add_scalar(const H5::Group& handle, const std::string& name, T value) {
         H5::StrType stype(0, H5T_VARIABLE);
         auto dhandle = handle.createDataSet(name, stype, dspace); 
         dhandle.write(value, stype);
+    } else if constexpr(std::is_same<T, uint32_t>::value) {
+        auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_UINT32, dspace); 
+        dhandle.write(&value, H5::PredType::NATIVE_UINT32);
     } else {
         static_assert(dependent_false<T>::value, "scalar type should be either an 'int', 'string' or 'double'"); 
     }
@@ -146,10 +158,18 @@ void add_missing_placeholder(const H5::DataSet& handle, T value) {
     }
 }
 
-inline void add_version_string(const H5::Group& handle, std::string version) {
+inline void add_version_string(const H5::Group& handle, const std::string& version) {
     H5::StrType stype(0, H5T_VARIABLE);
     auto dhandle = handle.createAttribute("delayed_version", stype, H5S_SCALAR); 
     dhandle.write(stype, version);
+}
+
+inline void add_version_string(const H5::Group& handle, int version) {
+    if (version == 1000000) {
+        add_version_string(handle, "1.0.0");
+    } else if (version >= 1100000) {
+        add_version_string(handle, "1.1.0");
+    }
 }
 
 #endif

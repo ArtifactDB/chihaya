@@ -127,6 +127,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
  */
 inline ArrayDetails validate(const H5::Group& handle) {
     ritsuko::Version version;
+
     if (handle.attrExists("delayed_version")) {
         auto ahandle = handle.openAttribute("delayed_version");
         if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
@@ -135,6 +136,7 @@ inline ArrayDetails validate(const H5::Group& handle) {
         auto vstring = ritsuko::hdf5::load_scalar_string_attribute(ahandle);
         version = ritsuko::parse_version_string(vstring.c_str(), vstring.size());
     }
+
     return validate(handle, version);
 }
 
