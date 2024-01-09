@@ -2,14 +2,32 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-TEST(List, Basic) {
-    std::string path = "test_list.h5";
-    ritsuko::Version version;
+class ListTest : public ::testing::TestWithParam<int> {
+public:
+    ListTest() : path("test_list.h5") {}
+protected:
+    std::string path;
+
+    static ritsuko::Version convert_from_int(int version) {
+        ritsuko::Version output;
+        output.patch = version % 1000;
+        version /= 1000;
+        output.minor = version % 1000;
+        version /= 1000;
+        output.major = version;
+        return output;
+    }
+};
+
+
+TEST_P(ListTest, Basic) {
+    auto raw_version = GetParam();
+    auto version = convert_from_int(raw_version);
 
     // Mocking up a file.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "x52", 4);
+        auto lhandle = list_opener(fhandle, "x52", 4, raw_version);
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
@@ -60,52 +78,81 @@ TEST(List, Basic) {
     }
 }
 
-TEST(List, Errors) {
-    std::string path = "test_list.h5";
-    ritsuko::Version version;
+TEST_P(ListTest, Errors) {
+    auto raw_version = GetParam();
+    auto version = convert_from_int(raw_version);
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = fhandle.createGroup("x52");
+    if (raw_version < 1100000) {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = fhandle.createGroup("x52");
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("x52"), version);
+        }, "delayed_type");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            operation_opener(fhandle, "foo", "whee");
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "delayed_type = \"list\"");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("delayed_length");
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "delayed_length");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("delayed_length");
+            lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_FLOAT, H5S_SCALAR);
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "delayed_length");
+
+    } else {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("length");
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "length");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("length");
+            lhandle.createAttribute("length", H5::PredType::NATIVE_FLOAT, H5S_SCALAR);
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "length");
     }
-    expect_error([&]() -> void { 
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("x52"), version);
-    }, "delayed_type");
+}
+
+TEST_P(ListTest, ElementErrors) {
+    auto raw_version = GetParam();
+    auto version = convert_from_int(raw_version);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        operation_opener(fhandle, "foo", "whee");
-    }
-    expect_error([&]() -> void { 
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
-    }, "delayed_type = \"list\"");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1);
-        lhandle.removeAttr("delayed_length");
-    }
-    expect_error([&]() -> void { 
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
-    }, "delayed_length");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1);
-        lhandle.removeAttr("delayed_length");
-        lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_FLOAT, H5S_SCALAR);
-    }
-    expect_error([&]() -> void { 
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
-    }, "delayed_length");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1);
+        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
         lhandle.createGroup("0");
         lhandle.createGroup("1");
     }
@@ -116,7 +163,7 @@ TEST(List, Errors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1);
+        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
         lhandle.createGroup("blah");
     }
     expect_error([&]() -> void { 
@@ -126,7 +173,7 @@ TEST(List, Errors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1);
+        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
         lhandle.createGroup("2");
     }
     expect_error([&]() -> void { 
@@ -134,3 +181,9 @@ TEST(List, Errors) {
         chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
     }, "out of range");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    List,
+    ListTest,
+    ::testing::Values(0, 1000000, 1100000)
+);

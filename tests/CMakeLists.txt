@@ -15,9 +15,9 @@ add_executable(
     libtest 
 #    src/subset.cpp
 #    src/subset_assignment.cpp
-#    src/external_hdf5.cpp
+    src/external_hdf5.cpp
     src/custom_array.cpp
-#    src/list.cpp
+    src/list.cpp
     src/combine.cpp
 #    src/transpose.cpp
     src/dimnames.cpp
@@ -31,7 +31,7 @@ add_executable(
     src/binary_logic.cpp
     src/dense_array.cpp
 #    src/sparse_matrix.cpp
-#    src/matrix_product.cpp
+    src/matrix_product.cpp
     src/constant_array.cpp
 )
 

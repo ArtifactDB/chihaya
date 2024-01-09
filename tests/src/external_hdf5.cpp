@@ -2,29 +2,41 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-inline H5::Group external_array_opener(const H5::Group& parent, const std::string& name, const std::vector<int>& dimensions, std::string type = "FLOAT") {
-    auto ghandle = custom_array_opener(parent, name, dimensions, type, "external hdf5 dense array");
+class ExternalHdf5Test : public ::testing::TestWithParam<int> {
+public:
+    ExternalHdf5Test() : path("Test_external.h5") {}
 
-    H5::StrType stype(0, H5T_VARIABLE);
-    auto fhandle = ghandle.createDataSet("file", stype, H5S_SCALAR);
-    std::string dummy = "WHEEE";
-    fhandle.write(dummy, stype, H5S_SCALAR);
+protected:
+    std::string path;
 
-    auto nhandle = ghandle.createDataSet("name", stype, H5S_SCALAR);
-    nhandle.write(dummy, stype, H5S_SCALAR);
+    static H5::Group external_array_opener(const H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
+        auto ghandle = array_opener(handle, name, "external hdf5 thingy");
+        add_version_string(ghandle, version);
+        add_string_scalar(ghandle, "type", type);
 
-    return ghandle;
-}
+        if (version < 1100000) {
+            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);
+        }
 
+        add_string_scalar(ghandle, "file", "WHEE");
+        add_string_scalar(ghandle, "name", "WHEE");
+        return ghandle;
+    }
+};
 
-TEST(ExternalHDF5, Basic) {
-    std::string path = "Test_external.h5";
+TEST_P(ExternalHdf5Test, Basic) {
+    auto version = GetParam();
+    if (version >= 1100000) {
+        return;
+    }
 
     // Re-run of the same tests in custom_array.cpp,
     // so we won't go through that whole thing again.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
     }
     {
         auto output = chihaya::validate(path, "ext"); 
@@ -38,46 +50,71 @@ TEST(ExternalHDF5, Basic) {
     }
 }
 
-TEST(ExternalHDF5, Errors) {
-    std::string path = "Test_external.h5";
+TEST_P(ExternalHdf5Test, Errors) {
+    auto version = GetParam();
+    if (version >= 1100000) {
+        // Deprecated...
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
+        }
+        expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "unknown array type");
+        return;
+    }
 
     /*** Skipping the checks that are shared with custom_array.cpp. ***/
 
     // Checking for file.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("file");
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'file'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("file");
-
-        hsize_t dims = 10;
-        H5::DataSpace dspace(1, &dims);
-        ghandle.createDataSet("file", H5::PredType::NATIVE_INT, dspace);
+        add_string_vector(ghandle, "file", 5);
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'file' should be a scalar");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
+        ghandle.unlink("file");
+        add_numeric_scalar<int>(ghandle, "file", 5, H5::PredType::NATIVE_INT);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "string");
 
     // Checking for name.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("name");
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'name'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }); 
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("name");
-
-        hsize_t dims = 10;
-        H5::DataSpace dspace(1, &dims);
-        ghandle.createDataSet("name", H5::PredType::NATIVE_INT, dspace);
+        add_string_vector(ghandle, "name", 5);
     }
     expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'name' should be a scalar");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
+        ghandle.unlink("name");
+        add_numeric_scalar<int>(ghandle, "name", 5, H5::PredType::NATIVE_INT);
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "string");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ExternalHdf5,
+    ExternalHdf5Test,
+    ::testing::Values(0, 1000000, 1100000)
+);
