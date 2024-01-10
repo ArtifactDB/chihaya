@@ -35,6 +35,7 @@ add_executable(
     src/validate.cpp
     src/utils_type.cpp
     src/utils_list.cpp
+    src/utils_misc.cpp
 )
 
 target_link_libraries(

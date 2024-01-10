@@ -48,7 +48,7 @@ inline uint64_t load_along(const H5::Group& handle, const ritsuko::Version& vers
         throw std::runtime_error("'along' should be a scalar dataset");
     }
 
-    if (version.le(1, 0, 0)) {
+    if (version.lt(1, 1, 0)) {
         if (ahandle.getTypeClass() != H5T_INTEGER) {
             throw std::runtime_error("'along' should be an integer dataset");
         }
