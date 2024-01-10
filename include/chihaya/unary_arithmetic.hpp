@@ -38,16 +38,16 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     auto method = internal_unary::load_method(handle);
     if (!internal_arithmetic::is_valid_operation(method)) {
-        throw std::runtime_error("unrecognized 'method' (" + method + ")");
+        throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
     }
 
     auto side = internal_unary::load_side(handle);
     if (side == "none") {
         if (method != "+" && method != "-") {
-            throw std::runtime_error("'side' cannot be 'none' for method '" + method + "'");
+            throw std::runtime_error("'side' cannot be 'none' for operation '" + method + "'");
         } 
     } else if (side != "left" && side != "right") {
-        throw std::runtime_error("unrecognized side '" + side + "'");
+        throw std::runtime_error("'side' for operation '" + method + "' should be 'left' or 'right' (got '" + side + "')");
     }
 
     // If side = none, we set it to INTEGER to promote BOOLEANs to integer (implicit multiplication by +/-1).
