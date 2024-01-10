@@ -119,6 +119,7 @@ void expect_error(Function op, std::string message) {
     EXPECT_ANY_THROW({ 
         try {
             op();
+            std::cerr << "expected \"" << message << "\" for non-failing test" << std::endl;
         } catch (std::exception& e) {
             std::string msg(e.what());
             bool found = (msg.find(message) != std::string::npos);
