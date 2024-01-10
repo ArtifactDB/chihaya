@@ -24,7 +24,7 @@ add_executable(
     src/unary_arithmetic.cpp
     src/unary_comparison.cpp
     src/unary_logic.cpp
-#    src/unary_math.cpp
+    src/unary_math.cpp
 #    src/unary_special_check.cpp
     src/binary_arithmetic.cpp
     src/binary_comparison.cpp

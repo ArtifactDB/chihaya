@@ -105,13 +105,13 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(vhandle, 32, true)) {
-                throw std::runtime_error("'digits' should have a datatype that fits into a 32-bit integer");
+                throw std::runtime_error("'digits' should have a datatype that fits into a 32-bit signed integer");
             }
         }
         seed_details.type = FLOAT;
 
     } else {
-        throw std::runtime_error("unrecognized 'method' (" + method + ")");
+        throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
     }
 
     return seed_details;
