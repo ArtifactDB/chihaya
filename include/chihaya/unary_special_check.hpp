@@ -31,7 +31,7 @@ namespace unary_special_check {
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
     if (seed_details.type == STRING) {
-        throw std::runtime_error("'seed' should contain numeric or boolean values");
+        throw std::runtime_error("'seed' should contain integer, float or boolean values");
     }
 
     // Checking the method.
