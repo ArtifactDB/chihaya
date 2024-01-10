@@ -54,7 +54,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
             }
         } else {
-            auto type = internal_type::fetch_data_type(vhandle);
+            auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
             auto tt = internal_type::translate_type_1_1(type);
             if ((tt == STRING) != (seed_details.type == STRING)) {
                 throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");

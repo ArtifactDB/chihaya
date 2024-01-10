@@ -58,7 +58,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                     throw std::runtime_error("dataset should be integer, float or boolean");
                 }
             } else {
-                auto type = internal_type::fetch_data_type(vhandle);
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
                 auto array_type = internal_type::translate_type_1_1(type);
                 if (array_type != INTEGER && array_type != BOOLEAN && array_type != FLOAT) {
                     throw std::runtime_error("dataset should be integer, float or boolean");

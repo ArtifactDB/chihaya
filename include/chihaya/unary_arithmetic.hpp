@@ -64,7 +64,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                     min_type = FLOAT;
                 }
             } else {
-                auto type = internal_type::fetch_data_type(vhandle);
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
                 min_type = internal_type::translate_type_1_1(type);
                 if (min_type != INTEGER && min_type != BOOLEAN && min_type != FLOAT) {
                     throw std::runtime_error("dataset should be integer, float or boolean");

@@ -34,6 +34,7 @@ add_executable(
     src/matrix_product.cpp
     src/constant_array.cpp
     src/validate.cpp
+    src/utils_type.cpp
 )
 
 target_link_libraries(

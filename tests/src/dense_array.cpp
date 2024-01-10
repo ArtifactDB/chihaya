@@ -245,19 +245,11 @@ TEST_P(DenseArrayTest, BooleanErrors) {
     if (version < 1100000) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_FLOAT, version); 
-            auto dhandle = ghandle.openDataSet("data");
-            dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
-        }
-        expect_error(path, "dense", "should only exist for integer");
-
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version); 
             auto dhandle = ghandle.openDataSet("data");
             add_string_attribute(dhandle, "is_boolean", "YAY");
         }
-        expect_error(path, "dense", "should be an integer scalar");
+        expect_error(path, "dense", "should be integer");
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);

@@ -72,7 +72,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             if (internal_misc::is_version_at_or_below(version, 1, 0)) {
                 output.type = internal_type::translate_type_0_0(vhandle.getTypeClass());
             } else {
-                auto type = internal_type::fetch_data_type(vhandle);
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
                 output.type = internal_type::translate_type_1_1(type);
                 internal_type::check_type_1_1(vhandle, output.type);
             }

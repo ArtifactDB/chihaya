@@ -113,7 +113,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                     array_type = BOOLEAN;
                 }
             } else {
-                auto type = internal_type::fetch_data_type(dhandle);
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(dhandle, "type");
                 array_type = internal_type::translate_type_1_1(type);
                 internal_type::check_type_1_1(dhandle, array_type);
             }

@@ -21,24 +21,16 @@ inline bool is_boolean(const H5::DataSet& handle) {
         }
 
         auto ahandle = handle.openAttribute("is_boolean");
-        if (!ritsuko::hdf5::is_scalar(ahandle) || ahandle.getTypeClass() != H5T_INTEGER) {
-            throw std::runtime_error("'is_boolean' attribute should be an integer scalar");
+        if (!ritsuko::hdf5::is_scalar(ahandle)) {
+            throw std::runtime_error("'is_boolean' attribute should be a scalar");
+        }
+        if (ahandle.getTypeClass() != H5T_INTEGER) {
+            throw std::runtime_error("'is_boolean' attribute should be integer");
         }
 
         ahandle.read(H5::PredType::NATIVE_INT, &is_bool);
     }
     return is_bool;
-}
-
-inline std::string fetch_data_type(const H5::DataSet& handle) {
-    auto thandle = ritsuko::hdf5::open_attribute(handle, "type");
-    if (!ritsuko::hdf5::is_scalar(thandle)) {
-        throw std::runtime_error("'type' should be a scalar");
-    }
-    if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-        throw std::runtime_error("'type' should have a datatype that can be represented by a UTF-8 encoded string");
-    }
-    return ritsuko::hdf5::load_scalar_string_attribute(thandle);
 }
 
 inline ArrayType translate_type_1_1(const std::string& type) {
@@ -48,6 +40,8 @@ inline ArrayType translate_type_1_1(const std::string& type) {
         return BOOLEAN;
     } else if (type == "FLOAT") {
         return FLOAT;
+    } else if (type != "STRING") {
+        throw std::runtime_error("unknown type '" + type + "'");
     }
     return STRING;
 }
@@ -80,7 +74,7 @@ inline ArrayType translate_type_0_0(H5T_class_t cls) {
     } else if (cls == H5T_STRING) {
         return STRING;
     } else if (cls != H5T_INTEGER) {
-        throw std::runtime_error("unrecognized HDF5 datatype class");
+        throw std::runtime_error("unsupported HDF5 datatype class");
     }
     return INTEGER;
 }
