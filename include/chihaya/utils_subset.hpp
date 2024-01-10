@@ -19,7 +19,10 @@ void validate_indices(const H5::DataSet& dhandle, size_t len, size_t extent) {
     ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&dhandle, len, 1000000);
     for (size_t i = 0; i < len; ++i, stream.next()) {
         auto b = stream.get();
-        if (b < 0 || static_cast<size_t>(b) >= extent) {
+        if (b < 0) {
+            throw std::runtime_error("indices should be non-negative");
+        }
+        if (static_cast<size_t>(b) >= extent) {
             throw std::runtime_error("indices out of range");
         }
     }

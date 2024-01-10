@@ -2,83 +2,110 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-TEST(Subset, NoOp) {
-    std::string path = "Test_subset.h5";
+class SubsetTest : public ::testing::TestWithParam<int> {
+public:
+    SubsetTest() : path("Test_subset.h5") {}
 
-    // Mocking up a file.
+protected:
+    std::string path;
+
+    static H5::Group subset_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
+        auto ghandle = operation_opener(handle, name, "subset");
+        add_version_string(ghandle, version);
+        mock_array_opener(ghandle, "seed", dimensions, version, type);
+        return ghandle;
+    }
+};
+
+TEST_P(SubsetTest, NoOp) {
+    auto version = GetParam();
+
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "subset");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
-        auto lhandle = list_opener(ghandle, "index", 2);
+        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER");
+        list_opener(ghandle, "index", 2, version);
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
     EXPECT_EQ(dims[1], 19);
 }
 
-TEST(Subset, AllSubsets) {
-    std::string path = "Test_subset.h5";
+TEST_P(SubsetTest, AllSubsets) {
+    auto version = GetParam();
+    std::vector<int> first { 1, 3, 0, 2, 9, 12 };
+    std::vector<int> second { 2, 2, 15, 7, 9, 9, 12 };
 
-    // Mocking up a file.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "subset");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
-        auto lhandle = list_opener(ghandle, "index", 2);
-        add_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9, 12 });
-        add_vector<int>(lhandle, "1", { 2, 2, 5, 7, 9, 9, 12 });
+        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "STRING");
+        auto lhandle = list_opener(ghandle, "index", 2, version);
+
+        if (version < 1100000) {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_INT);
+            add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_UINT8);
+        }
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::STRING);
     const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 6);
-    EXPECT_EQ(dims[1], 7);
+    EXPECT_EQ(dims[0], first.size());
+    EXPECT_EQ(dims[1], second.size());
 }
 
-TEST(Subset, OneSubset) {
-    std::string path = "Test_subset.h5";
+TEST_P(SubsetTest, OneSubset) {
+    auto version = GetParam();
+    std::vector<int> second{ 2, 2, 5, 7, 9, 9, 12 };
 
-    // Mocking up a file.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "subset");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
-        auto lhandle = list_opener(ghandle, "index", 2);
-        add_vector<int>(lhandle, "1", { 2, 2, 5, 7, 9, 9, 12 });
+        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
+        auto lhandle = list_opener(ghandle, "index", 2, version);
+
+        if (version < 1100000) {
+            add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_UINT16);
+        }
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::BOOLEAN);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
     EXPECT_EQ(dims[1], 7);
 }
 
-TEST(Subset, Errors) {
-    std::string path = "Test_subset.h5";
+TEST_P(SubsetTest, Errors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        operation_opener(fhandle, "hello", "subset");
+        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
+        ghandle.unlink("seed");
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
+        mock_array_opener(ghandle, "seed", { 13, 19 }, version, "INTEGER"); 
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'index'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = list_opener(ghandle, "index", 2);
-        add_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9, 100 });
+        auto lhandle = list_opener(ghandle, "index", 2, version);
+        add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_UINT16);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "failed to load 'index'");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out of range");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -94,16 +121,40 @@ TEST(Subset, Errors) {
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
         lhandle.unlink("0"); // removing the above.
-        add_vector<double>(lhandle, "0", { 1, 3, 0, 2, 9 });
+        add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_DOUBLE);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected an integer dataset");
+    if (version < 1100000) {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected an integer dataset");
+    } else {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+    }
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
-        add_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9, 100 });
+        lhandle.unlink("1"); // removing the above.
+        add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, -2, 9 }, H5::PredType::NATIVE_INT);
+    }
+    if (version < 1100000) {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "non-negative");
+    } else {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        auto lhandle = ghandle.openGroup("index");
+        lhandle.unlink("1"); // removing the above.
+        add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 1009 }, H5::PredType::NATIVE_UINT32);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "indices out of range");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    Subset,
+    SubsetTest,
+    ::testing::Values(0, 1000000, 1100000)
+);
+
