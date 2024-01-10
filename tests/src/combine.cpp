@@ -144,6 +144,14 @@ TEST_P(CombineTest, SeedErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
+        auto lhandle = list_opener(ghandle, "seeds", 1, version);
+        lhandle.createGroup("0");
+    }
+    expect_error(path, "hello", "failed to validate 'seeds/0'");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
         mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
         mock_array_opener(lhandle, "1", { 13, 10, 5 }, version, "BOOLEAN");
