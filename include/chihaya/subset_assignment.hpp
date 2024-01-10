@@ -38,6 +38,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     auto& seed_dims = seed_details.dimensions;
 
     auto value_details = internal_misc::load_seed_details(handle, "value", version);
+    if ((value_details.type == STRING) != (seed_details.type == STRING)) {
+        throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
+    }
     if (seed_dims.size() != value_details.dimensions.size()) {
         throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionalities");
     }

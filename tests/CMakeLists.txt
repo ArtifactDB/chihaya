@@ -14,7 +14,7 @@ enable_testing()
 add_executable(
     libtest 
     src/subset.cpp
-#    src/subset_assignment.cpp
+    src/subset_assignment.cpp
     src/external_hdf5.cpp
     src/custom_array.cpp
     src/list.cpp
