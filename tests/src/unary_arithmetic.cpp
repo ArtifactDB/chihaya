@@ -144,6 +144,23 @@ TEST_P(UnaryArithmeticTest, Missing) {
     EXPECT_EQ(output.dimensions[1], 7);
 }
 
+TEST_P(UnaryArithmeticTest, SeedErrors) {
+    auto version = GetParam();
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "STRING");
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "integer, float or boolean");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("seed");
+    }
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+}
+
 TEST_P(UnaryArithmeticTest, SideErrors) {
     auto version = GetParam();
 
