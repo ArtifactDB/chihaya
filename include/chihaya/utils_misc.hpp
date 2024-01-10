@@ -14,10 +14,6 @@ ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
 
 namespace internal_misc {
 
-inline bool is_version_at_or_below(const ritsuko::Version& v, int major, int minor) {
-    return v.major < major || (v.major == major && v.minor <= minor);
-}
-
 template<class V>
 bool are_dimensions_equal(const V& left, const V& right) {
     if (left.size() != right.size()) {
@@ -52,7 +48,7 @@ inline uint64_t load_along(const H5::Group& handle, const ritsuko::Version& vers
         throw std::runtime_error("'along' should be a scalar dataset");
     }
 
-    if (is_version_at_or_below(version, 1, 0)) {
+    if (version.le(1, 0, 0)) {
         if (ahandle.getTypeClass() != H5T_INTEGER) {
             throw std::runtime_error("'along' should be an integer dataset");
         }

@@ -23,7 +23,7 @@ struct ListDetails {
 inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
     ListDetails output;
 
-    if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+    if (version.lt(1, 1, 0)) {
         auto dtype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_type");
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
@@ -32,14 +32,14 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
 
     const char* old_name = "delayed_length";
     const char* new_name = "length";
-    const char* actual_name = (internal_misc::is_version_at_or_below(version, 1, 0) ? old_name : new_name);
+    const char* actual_name = (version.lt(1, 1, 0) ? old_name : new_name);
     {
         auto lhandle = ritsuko::hdf5::open_attribute(handle, actual_name);
         if (!ritsuko::hdf5::is_scalar(lhandle)) {
             throw std::runtime_error("expected a '" + std::string(actual_name) + "' integer scalar for a list");
         } 
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (lhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'" + std::string(actual_name) + "' should be integer");
             }

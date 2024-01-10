@@ -48,7 +48,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());
 
         try {
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            if (version.lt(1, 1, 0)) {
                 output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());
                 if (internal_type::is_boolean(dhandle)) {
                     output.type = BOOLEAN;
@@ -72,7 +72,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
         bool native;
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (nhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'native' should have an integer datatype");
             }

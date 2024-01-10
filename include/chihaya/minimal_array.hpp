@@ -21,7 +21,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     auto len = ritsuko::hdf5::get_1d_length(dhandle, false);
     std::vector<uint64_t> dimensions(len);
 
-    if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+    if (version.lt(1, 1, 0)) {
         if (dhandle.getTypeClass() != H5T_INTEGER) {
             throw std::runtime_error("'dimensions' should be integer");
         }

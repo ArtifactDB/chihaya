@@ -39,7 +39,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'dimensions' should have non-zero length");
         }
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (dhandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'dimensions' should be integer");
             }
@@ -69,7 +69,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
         try {
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            if (version.lt(1, 1, 0)) {
                 output.type = internal_type::translate_type_0_0(vhandle.getTypeClass());
             } else {
                 auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");

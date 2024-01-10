@@ -61,7 +61,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 output = constant_array::validate(handle, version);
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 output = custom_array::validate(handle, version);
-            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && internal_misc::is_version_at_or_below(version, 1, 0)) {
+            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
                 output = external_hdf5::validate(handle, version);
             } else {
                 throw std::runtime_error("unknown array type");

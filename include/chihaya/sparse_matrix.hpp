@@ -82,7 +82,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("'shape' should have length 2");
         }
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (shandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'shape' should be integer");
             }
@@ -107,7 +107,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         try {
             nnz = ritsuko::hdf5::get_1d_length(dhandle, false);
 
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            if (version.lt(1, 1, 0)) {
                 array_type = internal_type::translate_type_0_0(dhandle.getTypeClass());
                 if (internal_type::is_boolean(dhandle)) {
                     array_type = BOOLEAN;
@@ -129,7 +129,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     bool csc = true;
-    if (!internal_misc::is_version_at_or_below(version, 1, 0)) {
+    if (!version.lt(1, 1, 0)) {
         auto bhandle = ritsuko::hdf5::open_dataset(handle, "by_column");
         if (!ritsuko::hdf5::is_scalar(bhandle)) {
             throw std::runtime_error("'by_column' should be a scalar");
@@ -143,7 +143,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     {
         auto ihandle = ritsuko::hdf5::open_dataset(handle, "indices");
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (ihandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'indices' should be integer");
             }
@@ -158,7 +158,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
         auto iphandle = ritsuko::hdf5::open_dataset(handle, "indptr");
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             if (iphandle.getTypeClass() != H5T_INTEGER) {
                 throw std::runtime_error("'indptr' should be integer");
             }
@@ -182,7 +182,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data'");
         }
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+        if (version.lt(1, 1, 0)) {
             internal::validate_indices<int>(ihandle, indptrs, primary, secondary, csc);
         } else {
             internal::validate_indices<uint64_t>(ihandle, indptrs, primary, secondary, csc);

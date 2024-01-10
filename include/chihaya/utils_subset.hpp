@@ -47,7 +47,7 @@ inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Gro
             auto dhandle = ritsuko::hdf5::open_dataset(ihandle, p.second.c_str());
             auto len = ritsuko::hdf5::get_1d_length(dhandle, false);
 
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            if (version.lt(1, 1, 0)) {
                 if (dhandle.getTypeClass() != H5T_INTEGER) {
                     throw std::runtime_error("expected an integer dataset");
                 }

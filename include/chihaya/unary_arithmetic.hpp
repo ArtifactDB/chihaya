@@ -57,7 +57,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
         
         try {
-            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+            if (version.lt(1, 1, 0)) {
                 if (vhandle.getTypeClass() == H5T_STRING) {
                     throw std::runtime_error("dataset should be integer, float or boolean");
                 } else if (vhandle.getTypeClass() == H5T_FLOAT) {
