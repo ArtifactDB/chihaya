@@ -17,8 +17,7 @@ deposit_placeholder_spiel <- function(can.be.string, data.name) {
         cat("`", data.name, "` may contain a `missing_placeholder` attribute.\n", sep="")
         if (.version == package_version("1.0")) {
             cat("This should be a scalar dataset of the same type class as `", data.name, "`, specifying the placeholder value used for all missing elements,
-i.e., any elements in `", data.name, "` with the same value as the placeholder should be treated as missing.
-Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.", sep="")
+i.e., any elements in `", data.name, "` with the same value as the placeholder should be treated as missing.", sep="")
         } else {
             msg <- paste0("This should be a scalar dataset of the same type as `", data.name, "`")
             if (can.be.string) {
@@ -27,8 +26,7 @@ Note that, for floating-point datasets, the placeholder itself may be NaN, so by
                 msg <- paste0(msg, ".");
             }
             msg <- paste(msg, "\nThe value of this dataset is the missing placeholder used for all missing elements,
-i.e., any elements in `", data.name, "` with the same value as the placeholder should be treated as missing.
-Note that, for floating-point datasets, the placeholder itself may be NaN; in this case, any NaN value in `", data.name, "` should be treated as missing.", sep="")
+i.e., any elements in `", data.name, "` with the same value as the placeholder should be treated as missing.", sep="")
             cat(msg)
         }
     }

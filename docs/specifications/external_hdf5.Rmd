@@ -17,11 +17,11 @@ An external HDF5 array contains a reference to a HDF5 array in an external file.
 
 Each external array is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"array"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_array` should be any scalar string that starts with `"external hdf5 "` (note the space).
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"array"`.
+- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  The value of the string should start with `"external hdf5 "` (note the space).
   Implementations are expected to add their own descriptors to define specific interprations.
-  Any HDF5 string datatype may be used here.
 
 Inside the group, we expect:
 
@@ -29,16 +29,16 @@ Inside the group, we expect:
   This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions.
   Any integer datatype can be used here.
   All values should be non-negative.
-- `type`, a scalar string specifying the type.
-  This should be one of `BOOLEAN`, `INTEGER`, `FLOAT` or `STRING`.
-  Any HDF5 string datatype may be used here.
-- `file`, a scalar string containing the path to the external HDF5 file.
+- `type`, a scalar string dataset specifying the type of the array.
+  This should be one of `"BOOLEAN"`, `"INTEGER"`, `"FLOAT"` or `"STRING"`.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+- `file`, a scalar string dataset containing the path to the external HDF5 file.
   The forward slash `/` is assumed to be a file separator.
   If the `file` starts with `/`, it is assumed to be an absolute path; otherwise it should be treated as a relative path.
-  Any HDF5 string datatype may be used here.
-- `name`, a scalar string containing the name of the dataset or group inside `file` corresponding to the array/matrix. 
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+- `name`, a scalar string dataset containing the name of the dataset or group inside `file` corresponding to the array/matrix. 
   The forward slash `/` is assumed to be a group separator.
-  Any HDF5 string datatype may be used here.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
 
 This function will not check that `file` actually exists with the specified `name` entry.
 The structure of the array data at `name` in the external file is also left to the implementation.

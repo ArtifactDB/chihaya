@@ -21,11 +21,11 @@ Of course, it is assumed that clients will know how to retrieve specific resourc
 
 Each custom array is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"array"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_array` should be any scalar string that starts with `"custom "` (note the space).
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"array"`.
+- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  The value of the string should start with `"custom "` (note the space).
   Implementations are expected to add their own descriptors to define specific interprations.
-  Any HDF5 string datatype may be used here.
 
 Inside the group, we expect at least the following children:
 
@@ -39,7 +39,6 @@ if (.version <= package_version("1.0")) {
     cat("  It can be of any datatype that can be represented by a 64-bit unsigned integer.")
 }
 ```
-- `type`, a scalar string specifying the type.
-  This should be one of `BOOLEAN`, `INTEGER`, `FLOAT` or `STRING`.
-  Any HDF5 string datatype may be used here.
-
+- `type`, a scalar string dataset specifying the type of the array.
+  This should be one of `"BOOLEAN"`, `"INTEGER"`, `"FLOAT"` or `"STRING"`.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.

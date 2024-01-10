@@ -29,10 +29,10 @@ if (.version > package_version("1.0")) {
 
 A sparse matrix is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"array"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_array` should be a scalar string `"sparse matrix"`.
-  Any HDF5 string datatype may be used here.
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"array"`.
+- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"sparse matrix"`.
 
 Inside the group, we expect:
 
@@ -105,7 +105,7 @@ The group may also contain:
   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension, e.g., entry `0` contains row names.
   Missing entries indicate that no names are attached to its dimension.
   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
-  Any HDF5 string datatype may be used here.
+  The datatype of each dataset should be representable by a UTF-8 encoded string.
 
 ```{r, results="asis", echo=FALSE}
 deposit_placeholder_spiel(can.be.string=FALSE, data.name="data")

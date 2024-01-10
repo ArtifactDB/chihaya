@@ -17,10 +17,10 @@ A constant array is an array with a constant value, typically used to store plac
 
 A constant array is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"array"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_operation` should be a scalar string `"constant array"`.
-  Any HDF5 string datatype may be used here.
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"array"`.
+- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"constant array"`.
 
 Inside the group, we expect:
 

@@ -18,10 +18,10 @@ If slices are applied to multiple dimensions, the subset is defined as the outer
 
 A delayed subset is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"operation"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_operation` should be a scalar string `"subset"`.
-  Any HDF5 string datatype may be used here.
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"subset"`.
 
 Inside the group, we expect:
 

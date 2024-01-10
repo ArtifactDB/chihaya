@@ -17,17 +17,17 @@ A unary logic operation involves applying an element-wise mathematical operation
 
 A delayed unary math operation is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string `"operation"`.
-  Any HDF5 string datatype may be used here.
-- `delayed_operation` should be a scalar string `"unary math"`.
-  Any HDF5 string datatype may be used here.
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"unary math"`.
 
 Inside the group, we expect:
 
 - A `seed` group, containing a delayed object for which the mathematical operation is to be applied.
   This can be boolean (coerced to integer), integer or float.
 - A `method` string scalar dataset, specifying the mathematical operation to perform.
-  Any HDF5 string datatype may be used here.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
   The value of the string can be any one of:
   - `abs`, absolute value.
   - `log1p`, log-transformation after adding 1.
