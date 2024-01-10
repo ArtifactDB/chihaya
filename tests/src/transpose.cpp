@@ -2,83 +2,118 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-TEST(Transpose, NoOp) {
-    std::string path = "Test_transpose.h5";
+class TransposeTest : public ::testing::TestWithParam<int> {
+public:
+    TransposeTest() : path("Test_transpose.h5") {}
+
+protected:
+    std::string path;
+
+    static H5::Group transpose_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
+        auto ghandle = operation_opener(handle, name, "transpose");
+        add_version_string(ghandle, version);
+        mock_array_opener(ghandle, "seed", dimensions, version, type);
+        return ghandle;
+    }
+};
+
+TEST_P(TransposeTest, NoOp) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "transpose");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
-        add_vector<int>(ghandle, "permutation", { 0, 1 });
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
+        if (version < 1100000) {
+            add_numeric_vector<int>(ghandle, "permutation", { 0, 1 }, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector<int>(ghandle, "permutation", { 0, 1 }, H5::PredType::NATIVE_UINT32);
+        }
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
     EXPECT_EQ(dims[1], 19);
 }
 
-TEST(Transpose, Simple) {
-    std::string path = "Test_transpose.h5";
+TEST_P(TransposeTest, Simple) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "transpose");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
-        add_vector<int>(ghandle, "permutation", { 1, 0 });
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "STRING"); 
+        if (version < 1100000) {
+            add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_UINT32);
+        }
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::STRING);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 19);
     EXPECT_EQ(dims[1], 13);
 }
 
-TEST(Transpose, Complex) {
-    std::string path = "Test_transpose.h5";
+TEST_P(TransposeTest, Complex) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "transpose");
-        external_array_opener(ghandle, "seed", { 13, 19, 5 }); 
-        add_vector<int>(ghandle, "permutation", { 1, 2, 0 });
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19, 5 }, version, "BOOLEAN"); 
+        if (version < 1100000) {
+            add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
+        }
     }
 
     auto output = chihaya::validate(path, "hello"); 
+    EXPECT_EQ(output.type, chihaya::BOOLEAN);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 19);
     EXPECT_EQ(dims[1], 5);
     EXPECT_EQ(dims[2], 13);
 }
 
-TEST(Transpose, Errors) {
-    std::string path = "Test_transpose.h5";
+TEST_P(TransposeTest, Errors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        operation_opener(fhandle, "hello", "transpose");
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        external_array_opener(ghandle, "seed", { 13, 19 }); 
+        transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'permutation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
-        add_vector<double>(ghandle, "permutation", { 1, 2, 0 });
+        ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'permutation' should be a 1-dimensional integer");
+    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+}
+
+TEST_P(TransposeTest, PermutationErrors) {
+    auto version = GetParam();
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
+        add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_DOUBLE);
+    }
+    if (version < 1100000) {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'permutation' should be integer");
+    } else {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+    }
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("permutation");
-        add_vector<int>(ghandle, "permutation", { 1, 2, 0 });
+        add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'permutation'");
 
@@ -86,7 +121,7 @@ TEST(Transpose, Errors) {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("permutation");
-        add_vector<int>(ghandle, "permutation", { 1, 5 });
+        add_numeric_vector<int>(ghandle, "permutation", { 1, 5 }, H5::PredType::NATIVE_UINT8);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out-of-bounds");
 
@@ -94,7 +129,25 @@ TEST(Transpose, Errors) {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("permutation");
-        add_vector<int>(ghandle, "permutation", { 0, 0 });
+        add_numeric_vector<int>(ghandle, "permutation", { -1, 0 }, H5::PredType::NATIVE_INT);
+    }
+    if (version < 1100000) {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "non-negative");
+    } else {
+        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("permutation");
+        add_numeric_vector<int>(ghandle, "permutation", { 0, 0 }, H5::PredType::NATIVE_UINT8);
     }
     expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unique");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    Transpose,
+    TransposeTest,
+    ::testing::Values(0, 1000000, 1100000)
+);

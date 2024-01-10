@@ -19,7 +19,7 @@ add_executable(
     src/custom_array.cpp
     src/list.cpp
     src/combine.cpp
-#    src/transpose.cpp
+    src/transpose.cpp
     src/dimnames.cpp
 #    src/unary_arithmetic.cpp
 #    src/unary_comparison.cpp

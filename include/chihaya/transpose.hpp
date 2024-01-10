@@ -42,8 +42,11 @@ std::vector<size_t> check_permutation(const H5::DataSet& phandle, size_t ndims, 
     std::vector<size_t> new_dimensions(ndims);
     for (size_t p = 0; p < ndims; ++p) {
         auto current = permutation[p];
-        if (current < 0 || static_cast<size_t>(current) >= ndims) {
-            throw std::runtime_error("'permutation' contains out-of-bounds indices for a transpose operation");
+        if (current < 0) {
+            throw std::runtime_error("'permutation' should contain non-negative indices");
+        }
+        if (static_cast<size_t>(current) >= ndims) {
+            throw std::runtime_error("'permutation' contains out-of-bounds indices");
         }
         new_dimensions[p] = input_dimensions[permutation[p]];
     }
@@ -78,7 +81,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     if (internal_misc::is_version_at_or_below(version, 1, 0)) {
         if (phandle.getTypeClass() != H5T_INTEGER) {
-            throw std::runtime_error("'permutation' should be a 1-dimensional integer dataset");
+            throw std::runtime_error("'permutation' should be integer");
         }
         seed_details.dimensions = internal::check_permutation<int>(phandle, ndims, H5::PredType::NATIVE_INT, seed_details.dimensions);
     } else {
