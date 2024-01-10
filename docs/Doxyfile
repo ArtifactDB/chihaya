@@ -873,7 +873,17 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../include/chihaya/minimal_array.hpp
+EXCLUDE                = ../include/chihaya/minimal_array.hpp \
+                         ../include/chihaya/utils_arithmetic.hpp \
+                         ../include/chihaya/utils_comparison.hpp \
+                         ../include/chihaya/utils_dimnames.hpp \
+                         ../include/chihaya/utils_list.hpp \
+                         ../include/chihaya/utils_logic.hpp \
+                         ../include/chihaya/utils_misc.hpp \
+                         ../include/chihaya/utils_public.hpp \
+                         ../include/chihaya/utils_subset.hpp \
+                         ../include/chihaya/utils_type.hpp \
+                         ../include/chihaya/utils_unary.hpp
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

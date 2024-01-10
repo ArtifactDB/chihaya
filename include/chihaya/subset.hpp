@@ -29,7 +29,7 @@ namespace subset {
 
 /**
  * @param handle An open handle on a HDF5 group representing a subset operation.
- * @param name Name of the group inside the file.
+ * @param version Verison of the **chihaya** specification.
  *
  * @return Details of the subsetted object.
  * Otherwise, if the validation failed, an error is raised.
