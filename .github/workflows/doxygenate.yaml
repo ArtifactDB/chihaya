@@ -2,6 +2,10 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'tests/**'
+      - 'extern/**'
+      - 'cmake/**'
 
 name: Build documentation
 

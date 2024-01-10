@@ -2,7 +2,13 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
+      - README.md
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - README.md
 
 name: Check CMake install
 
