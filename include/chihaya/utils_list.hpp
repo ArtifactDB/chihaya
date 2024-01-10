@@ -24,14 +24,7 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
     ListDetails output;
 
     if (internal_misc::is_version_at_or_below(version, 1, 0)) {
-        auto thandle = ritsuko::hdf5::open_attribute(handle, "delayed_type");
-        if (!ritsuko::hdf5::is_scalar(thandle)) {
-            throw std::runtime_error("'delayed_type' should be a scalar");
-        }
-        if (!ritsuko::hdf5::is_utf8_string(thandle)) {
-            throw std::runtime_error("'delayed_type' should have a datatype that can be represented by a UTF-8 encoded string");
-        }
-        auto dtype = ritsuko::hdf5::load_scalar_string_attribute(thandle);
+        auto dtype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_type");
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
         }
@@ -48,7 +41,7 @@ inline ListDetails validate(const H5::Group& handle, const ritsuko::Version& ver
 
         if (internal_misc::is_version_at_or_below(version, 1, 0)) {
             if (lhandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'" + std::string(actual_name) + "' should be an integer scalar");
+                throw std::runtime_error("'" + std::string(actual_name) + "' should be integer");
             }
             int l = 0;
             lhandle.read(H5::PredType::NATIVE_INT, &l);

@@ -2,9 +2,9 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-class ListTest : public ::testing::TestWithParam<int> {
+class UtilsListTest : public ::testing::TestWithParam<int> {
 public:
-    ListTest() : path("Test_list.h5") {}
+    UtilsListTest() : path("Test_list.h5") {}
 protected:
     std::string path;
 
@@ -19,8 +19,7 @@ protected:
     }
 };
 
-
-TEST_P(ListTest, Basic) {
+TEST_P(UtilsListTest, Basic) {
     auto raw_version = GetParam();
     auto version = convert_from_int(raw_version);
 
@@ -76,22 +75,29 @@ TEST_P(ListTest, Basic) {
             EXPECT_EQ(deets.present[i], std::to_string(i));
         }
     }
+
+    // Works with double-digit groups.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "x52", 20, raw_version);
+        lhandle.createGroup("9");
+        lhandle.createGroup("11");
+        lhandle.createGroup("16");
+    }
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ghandle = fhandle.openGroup("x52");
+        auto deets = chihaya::internal_list::validate(ghandle, version);
+        EXPECT_EQ(deets.length, 20);
+        EXPECT_EQ(deets.present.size(), 3);
+    }
 }
 
-TEST_P(ListTest, Errors) {
+TEST_P(UtilsListTest, Errors) {
     auto raw_version = GetParam();
     auto version = convert_from_int(raw_version);
 
     if (raw_version < 1100000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = fhandle.createGroup("x52");
-        }
-        expect_error([&]() -> void { 
-            H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("x52"), version);
-        }, "delayed_type");
-
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             operation_opener(fhandle, "foo", "whee");
@@ -115,12 +121,37 @@ TEST_P(ListTest, Errors) {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
             lhandle.removeAttr("delayed_length");
-            lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_FLOAT, H5S_SCALAR);
+            hsize_t dims[1] = {9};
+            lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5::DataSpace(1, dims));
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
             chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
-        }, "delayed_length");
+        }, "scalar");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("delayed_length");
+            add_string_attribute(lhandle, "delayed_length", "FOO");
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "integer");
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            lhandle.removeAttr("delayed_length");
+            auto ahandle = lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5S_SCALAR);
+            int val = -1;
+            ahandle.write(H5::PredType::NATIVE_INT, &val);
+        }
+        expect_error([&]() -> void { 
+            H5::H5File fhandle(path, H5F_ACC_RDONLY);
+            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        }, "non-negative");
 
     } else {
         {
@@ -146,7 +177,7 @@ TEST_P(ListTest, Errors) {
     }
 }
 
-TEST_P(ListTest, ElementErrors) {
+TEST_P(UtilsListTest, ElementErrors) {
     auto raw_version = GetParam();
     auto version = convert_from_int(raw_version);
 
@@ -183,7 +214,7 @@ TEST_P(ListTest, ElementErrors) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    List,
-    ListTest,
+    UtilsList,
+    UtilsListTest,
     ::testing::Values(0, 1000000, 1100000)
 );

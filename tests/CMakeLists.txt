@@ -17,7 +17,6 @@ add_executable(
     src/subset_assignment.cpp
     src/external_hdf5.cpp
     src/custom_array.cpp
-    src/list.cpp
     src/combine.cpp
     src/transpose.cpp
     src/dimnames.cpp
@@ -35,6 +34,7 @@ add_executable(
     src/constant_array.cpp
     src/validate.cpp
     src/utils_type.cpp
+    src/utils_list.cpp
 )
 
 target_link_libraries(
