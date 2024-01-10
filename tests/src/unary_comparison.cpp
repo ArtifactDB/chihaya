@@ -30,7 +30,7 @@ TEST_P(UnaryComparisonTest, ScalarUnary) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 17);
@@ -46,7 +46,7 @@ TEST_P(UnaryComparisonTest, ScalarUnary) {
         }
     }
 
-    output = chihaya::validate(path, "hello"); 
+    output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 17);
@@ -66,7 +66,7 @@ TEST_P(UnaryComparisonTest, VectorUnary) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 5);
@@ -92,7 +92,7 @@ TEST_P(UnaryComparisonTest, Missing) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
 }
 
@@ -104,14 +104,14 @@ TEST_P(UnaryComparisonTest, SideErrors) {
         auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("side");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'side'");
+    expect_error(path, "hello", "expected a dataset at 'side'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "side", 1, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "can be represented by a UTF-8 encoded string");
+    expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -119,7 +119,7 @@ TEST_P(UnaryComparisonTest, SideErrors) {
         ghandle.unlink("side");
         add_string_scalar(ghandle, "side", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "either 'left' or 'right'");
+    expect_error(path, "hello", "either 'left' or 'right'");
 }
 
 TEST_P(UnaryComparisonTest, MethodErrors) {
@@ -130,14 +130,14 @@ TEST_P(UnaryComparisonTest, MethodErrors) {
         auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("method");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
+    expect_error(path, "hello", "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "can be represented by a UTF-8 encoded string");
+    expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -145,7 +145,7 @@ TEST_P(UnaryComparisonTest, MethodErrors) {
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized operation");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 TEST_P(UnaryComparisonTest, ValueErrors) {
@@ -155,7 +155,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "INTEGER");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'value'");
+    expect_error(path, "hello", "expected a dataset at 'value'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -165,7 +165,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
             add_string_attribute(dhandle, "type", "STRING");
         }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "both or neither");
+    expect_error(path, "hello", "both or neither");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -181,7 +181,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'value' dataset should be scalar or 1-dimensional");
+    expect_error(path, "hello", "'value' dataset should be scalar or 1-dimensional");
 }
 
 TEST_P(UnaryComparisonTest, AlongErrors) {
@@ -195,7 +195,7 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'along'");
+    expect_error(path, "hello", "expected a dataset at 'along'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -203,9 +203,9 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         add_string_scalar(ghandle, "along", "WHEE");
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be an integer dataset");
+        expect_error(path, "hello", "'along' should be an integer dataset");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -215,9 +215,9 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         add_numeric_scalar<int>(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be non-negative");
+        expect_error(path, "hello", "'along' should be non-negative");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -226,7 +226,7 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         ghandle.unlink("along");
         add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'value' dataset");
+    expect_error(path, "hello", "length of 'value' dataset");
 }
 
 TEST_P(UnaryComparisonTest, MissingErrors) {
@@ -243,9 +243,9 @@ TEST_P(UnaryComparisonTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_FLOAT);
         }
         if (version < 1100000) {
-            expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "same type class");
+            expect_error(path, "hello", "same type class");
         } else {
-            expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "same type as ");
+            expect_error(path, "hello", "same type as ");
         }
     }
 
@@ -259,7 +259,7 @@ TEST_P(UnaryComparisonTest, MissingErrors) {
             }
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_INT8);
         }
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "same type as ");
+        expect_error(path, "hello", "same type as ");
     }
 }
 

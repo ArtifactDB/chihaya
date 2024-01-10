@@ -24,7 +24,7 @@ TEST_P(UnaryMathTest, PureUnary) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "abs", { 13, 19 }, version, "INTEGER");
     }
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 13);
@@ -34,14 +34,14 @@ TEST_P(UnaryMathTest, PureUnary) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "sign", { 13, 19 }, version, "FLOAT");
     }
-    output = chihaya::validate(path, "hello");
+    output = test_validate(path, "hello");
     EXPECT_EQ(output.type, chihaya::INTEGER);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "log1p", { 13, 19 }, version, "BOOLEAN");
     }
-    output = chihaya::validate(path, "hello");
+    output = test_validate(path, "hello");
     EXPECT_EQ(output.type, chihaya::FLOAT);
 }
 
@@ -54,7 +54,7 @@ TEST_P(UnaryMathTest, LogBase) {
         add_numeric_scalar<double>(ghandle, "base", 2, H5::PredType::NATIVE_DOUBLE);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 14);
@@ -70,7 +70,7 @@ TEST_P(UnaryMathTest, RoundDigits) {
         add_numeric_scalar<int>(ghandle, "digits", 2, H5::PredType::NATIVE_INT32);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 5);
@@ -84,14 +84,14 @@ TEST_P(UnaryMathTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "round", { 5, 12 }, version, "STRING");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be integer, float or boolean");
+    expect_error(path, "hello", "should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(UnaryMathTest, MethodErrors) {
@@ -102,14 +102,14 @@ TEST_P(UnaryMathTest, MethodErrors) {
         auto ghandle = unary_math_opener(fhandle, "hello", "sin", { 5, 12 }, version, "FLOAT");
         ghandle.unlink("method");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
+    expect_error(path, "hello", "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "UTF-8 encoded string");
+    expect_error(path, "hello", "UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -117,7 +117,7 @@ TEST_P(UnaryMathTest, MethodErrors) {
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized operation");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 TEST_P(UnaryMathTest, OtherErrors) {
@@ -128,7 +128,7 @@ TEST_P(UnaryMathTest, OtherErrors) {
         auto ghandle = unary_math_opener(fhandle, "hello", "log", { 5, 12 }, version, "FLOAT");
         ghandle.createGroup("base");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'base'");
+    expect_error(path, "hello", "expected 'base'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -137,16 +137,16 @@ TEST_P(UnaryMathTest, OtherErrors) {
         add_string_scalar(ghandle, "base", "foo");
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'base' should be a float");
+        expect_error(path, "hello", "'base' should be a float");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit float");
+        expect_error(path, "hello", "64-bit float");
     }
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "signif", { 5, 12 }, version, "FLOAT");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'digits'");
+    expect_error(path, "hello", "expected a dataset at 'digits'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -154,9 +154,9 @@ TEST_P(UnaryMathTest, OtherErrors) {
         add_numeric_scalar<double>(ghandle, "digits", 2, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'digits' should be an integer");
+        expect_error(path, "hello", "'digits' should be an integer");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "32-bit signed integer");
+        expect_error(path, "hello", "32-bit signed integer");
     }
 }
 

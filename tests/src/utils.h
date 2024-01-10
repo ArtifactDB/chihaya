@@ -1,14 +1,19 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <gtest/gtest.h>
+
 #include "H5Cpp.h"
 #include "ritsuko/hdf5/hdf5.hpp"
+#include "chihaya/chihaya.hpp"
 
 #include <iostream>
 #include <vector>
 #include <string>
 #include <type_traits>
 #include <cstdint>
+
+/*** HDF5-related utilities ***/
 
 template<typename H5Obj_>
 void add_string_attribute(const H5Obj_& handle, const std::string& name, const std::string& value, size_t len = H5T_VARIABLE) {
@@ -89,24 +94,6 @@ inline H5::Group list_opener(const H5::Group& parent, const std::string& name, i
     return ghandle;
 }
 
-template<class Function>
-void expect_error(Function op, std::string message) {
-    EXPECT_ANY_THROW({
-        try {
-            op();
-            std::cout << message << std::endl;
-        } catch (std::exception& e) {
-            std::string msg(e.what());
-            bool found = (msg.find(message) != std::string::npos);
-            if (!found) {
-                std::cout << "expected \"" << message << "\" (got \"" << msg << "\")" << std::endl;
-            }
-            EXPECT_TRUE(found);
-            throw;
-        }
-    });
-}
-
 template<typename T>
 void add_numeric_missing_placeholder(const H5::DataSet& handle, T value, const H5::DataType& dtype) {
     auto dhandle = handle.createAttribute("missing_placeholder", dtype, H5S_SCALAR); 
@@ -123,6 +110,28 @@ inline void add_version_string(const H5::Group& handle, int version) {
     } else if (version >= 1100000) {
         add_string_attribute(handle, "delayed_version", "1.1.0");
     }
+}
+
+/*** Testing functions ***/
+
+template<class Function>
+void expect_error(Function op, std::string message) {
+    EXPECT_ANY_THROW({ 
+        try {
+            op();
+        } catch (std::exception& e) {
+            std::string msg(e.what());
+            bool found = (msg.find(message) != std::string::npos);
+            EXPECT_TRUE(found) << "expected \"" << message << "\" (got \"" << msg << "\")" << std::endl;
+            throw;
+        }
+    });
+}
+
+chihaya::ArrayDetails test_validate(const std::string&, const std::string&);
+
+inline void expect_error(const std::string& path, const std::string& name, std::string message) {
+    expect_error([&]() { test_validate(path, name); }, std::move(message));
 }
 
 #endif

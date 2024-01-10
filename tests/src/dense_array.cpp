@@ -45,7 +45,7 @@ TEST_P(DenseArrayTest, Basic) {
         dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT16, version); 
     }
     {
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
@@ -58,7 +58,7 @@ TEST_P(DenseArrayTest, Basic) {
         dense_array_opener(fhandle, "dense", { 5, 17 }, H5::PredType::NATIVE_FLOAT, version); 
     }
     {
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
@@ -72,7 +72,7 @@ TEST_P(DenseArrayTest, Basic) {
         dense_array_opener(fhandle, "dense", { 3, 4, 5 }, H5::StrType(0, 3), version); 
     }
     {
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::STRING);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 3);
@@ -90,7 +90,7 @@ TEST_P(DenseArrayTest, NonNative) {
         dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version, false); 
     }
     {
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
@@ -109,7 +109,7 @@ TEST_P(DenseArrayTest, Missing) {
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder<int>(dhandle, 2, H5::PredType::NATIVE_INT8);
         }
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
     } else if (version >= 1100000) {
         {
@@ -118,7 +118,7 @@ TEST_P(DenseArrayTest, Missing) {
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder<int>(dhandle, 2, H5::PredType::NATIVE_INT32);
         }
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
     }
 
@@ -129,7 +129,7 @@ TEST_P(DenseArrayTest, Missing) {
             auto dhandle = ghandle.openDataSet("data");
             add_string_missing_placeholder(dhandle, "foo", H5T_VARIABLE);
         }
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::STRING);
     }
 }
@@ -145,7 +145,7 @@ TEST_P(DenseArrayTest, Dimnames) {
         add_string_vector(lhandle, "1", 17, /* len = */ 2);
     }
     {
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
     }
 }
@@ -162,7 +162,7 @@ TEST_P(DenseArrayTest, Boolean) {
             int val = 1;
             ahandle.write(H5::PredType::NATIVE_INT, &val);
         }
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::BOOLEAN);
     } else {
         {
@@ -172,7 +172,7 @@ TEST_P(DenseArrayTest, Boolean) {
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
         }
-        auto output = chihaya::validate(path, "dense"); 
+        auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::BOOLEAN);
     }
 }
@@ -185,14 +185,14 @@ TEST_P(DenseArrayTest, DataErrors) {
         auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
         ghandle.unlink("data");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "expected a dataset at 'data'");
+    expect_error(path, "dense", "expected a dataset at 'data'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("dense");
         add_numeric_scalar<int>(ghandle, "data", 50, H5::PredType::NATIVE_INT32);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "'data' should have non-zero");
+    expect_error(path, "dense", "'data' should have non-zero");
 }
 
 TEST_P(DenseArrayTest, NativeErrors) {
@@ -204,7 +204,7 @@ TEST_P(DenseArrayTest, NativeErrors) {
         ghandle.unlink("native");
         ghandle.createGroup("native");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "expected a dataset at 'native'");
+    expect_error(path, "dense", "expected a dataset at 'native'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -212,7 +212,7 @@ TEST_P(DenseArrayTest, NativeErrors) {
         ghandle.unlink("native");
         add_numeric_vector<int>(ghandle, "native", { 2 }, H5::PredType::NATIVE_INT8);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be a scalar");
+    expect_error(path, "dense", "should be a scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -221,9 +221,9 @@ TEST_P(DenseArrayTest, NativeErrors) {
         add_numeric_scalar<int>(ghandle, "native", 2, H5::PredType::NATIVE_FLOAT);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should have an integer datatype");
+        expect_error(path, "dense", "should have an integer datatype");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "8-bit signed integer");
+        expect_error(path, "dense", "8-bit signed integer");
     }
 }
 
@@ -236,7 +236,7 @@ TEST_P(DenseArrayTest, DimnameErrors) {
         auto lhandle = list_opener(ghandle, "dimnames", 2);
         lhandle.createGroup("0");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "dimnames");
+    expect_error(path, "dense", "dimnames");
 }
 
 TEST_P(DenseArrayTest, BooleanErrors) {
@@ -249,7 +249,7 @@ TEST_P(DenseArrayTest, BooleanErrors) {
             auto dhandle = ghandle.openDataSet("data");
             dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
         }
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should only exist for integer");
+        expect_error(path, "dense", "should only exist for integer");
 
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -257,7 +257,7 @@ TEST_P(DenseArrayTest, BooleanErrors) {
             auto dhandle = ghandle.openDataSet("data");
             add_string_attribute(dhandle, "is_boolean", "YAY");
         }
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "should be an integer scalar");
+        expect_error(path, "dense", "should be an integer scalar");
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -266,7 +266,7 @@ TEST_P(DenseArrayTest, BooleanErrors) {
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
         }
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "8-bit signed integer");
+        expect_error(path, "dense", "8-bit signed integer");
     }
 }
 
@@ -281,9 +281,9 @@ TEST_P(DenseArrayTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_DOUBLE);
         }
         if (version < 1100000) {
-            expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "have the same type class");
+            expect_error(path, "dense", "have the same type class");
         } else {
-            expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "have the same type as");
+            expect_error(path, "dense", "have the same type as");
         }
     }
 
@@ -294,7 +294,7 @@ TEST_P(DenseArrayTest, MissingErrors) {
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT8);
         }
-        expect_error([&]() -> void { chihaya::validate(path, "dense"); }, "same type as");
+        expect_error(path, "dense", "same type as");
     }
 }
 

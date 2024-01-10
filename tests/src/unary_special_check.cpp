@@ -25,7 +25,7 @@ TEST_P(UnarySpecialCheckTest, Basic) {
         unary_special_check_opener(fhandle, "hello", "is_nan", { 13, 19 }, version, "INTEGER");
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 13);
@@ -39,14 +39,14 @@ TEST_P(UnarySpecialCheckTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_special_check_opener(fhandle, "hello", "is_nan", { 13, 19 }, version, "STRING");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "integer, float or boolean");
+    expect_error(path, "hello", "integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(UnarySpecialCheckTest, MethodErrors) {
@@ -57,14 +57,14 @@ TEST_P(UnarySpecialCheckTest, MethodErrors) {
         auto ghandle = unary_special_check_opener(fhandle, "hello", "is_nan", { 13, 19 }, version, "FLOAT");
         ghandle.unlink("method");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'method'");
+    expect_error(path, "hello", "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized 'method'");
+    expect_error(path, "hello", "unrecognized 'method'");
 }
 
 INSTANTIATE_TEST_SUITE_P(

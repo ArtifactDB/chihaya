@@ -30,7 +30,7 @@ TEST_P(CustomArrayTest, Basic) {
         custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT");
     }
     {
-        auto output = chihaya::validate(path, "ext"); 
+        auto output = test_validate(path, "ext"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
 
         const auto& dims = output.dimensions;
@@ -45,7 +45,7 @@ TEST_P(CustomArrayTest, Basic) {
         custom_array_opener(fhandle, "ext", { 17 }, version, "BOOLEAN");
     }
     {
-        auto output = chihaya::validate(path, "ext"); 
+        auto output = test_validate(path, "ext"); 
         EXPECT_EQ(output.type, chihaya::BOOLEAN);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 1);
@@ -57,7 +57,7 @@ TEST_P(CustomArrayTest, Basic) {
         custom_array_opener(fhandle, "ext", { 20, 10 }, version, "STRING");
     }
     {
-        auto output = chihaya::validate(path, "ext"); 
+        auto output = test_validate(path, "ext"); 
         EXPECT_EQ(output.type, chihaya::STRING);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
@@ -70,7 +70,7 @@ TEST_P(CustomArrayTest, Basic) {
         custom_array_opener(fhandle, "ext", { 20, 17 }, version, "INTEGER");
     }
     {
-        auto output = chihaya::validate(path, "ext"); 
+        auto output = test_validate(path, "ext"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims.size(), 2);
@@ -87,7 +87,7 @@ TEST_P(CustomArrayTest, Errors) {
         auto ghandle = custom_array_opener(fhandle, "ext", { 99, 12 }, version, "INTEGER");
         ghandle.unlink("dimensions");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'dimensions'");
+    expect_error(path, "ext", "expected a dataset at 'dimensions'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -96,9 +96,9 @@ TEST_P(CustomArrayTest, Errors) {
         add_numeric_vector<int>(ghandle, "dimensions", { 50, -20 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "should be integer");
+        expect_error(path, "ext", "should be integer");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "64-bit unsigned integer");
+        expect_error(path, "ext", "64-bit unsigned integer");
     }
 
     {
@@ -108,9 +108,9 @@ TEST_P(CustomArrayTest, Errors) {
         add_numeric_vector<int>(ghandle, "dimensions", { 50, -20 }, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "non-negative");
+        expect_error(path, "ext", "non-negative");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "64-bit unsigned integer");
+        expect_error(path, "ext", "64-bit unsigned integer");
     }
 
     {
@@ -124,7 +124,7 @@ TEST_P(CustomArrayTest, Errors) {
         H5::DataSpace dspace(2, dims);
         ghandle.createDataSet("dimensions", H5::PredType::NATIVE_UINT32, dspace);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "1-dimensional");
+    expect_error(path, "ext", "1-dimensional");
 }
 
 TEST_P(CustomArrayTest, TypeErrors) {
@@ -135,7 +135,7 @@ TEST_P(CustomArrayTest, TypeErrors) {
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "INTEGER"); 
         ghandle.unlink("type");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "expected a dataset at 'type'");
+    expect_error(path, "ext", "expected a dataset at 'type'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -143,13 +143,13 @@ TEST_P(CustomArrayTest, TypeErrors) {
         ghandle.unlink("type");
         add_string_vector(ghandle, "type", 10);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "'type' should be scalar");
+    expect_error(path, "ext", "'type' should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FOOBAR");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "ext"); }, "(FOOBAR)");
+    expect_error(path, "ext", "(FOOBAR)");
 }
 
 INSTANTIATE_TEST_SUITE_P(

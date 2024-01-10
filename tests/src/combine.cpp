@@ -33,7 +33,7 @@ TEST_P(CombineTest, Simple) {
         mock_array_opener(lhandle, "1", { 20, 19 }, version, "FLOAT"); 
     }
     {
-        auto output = chihaya::validate(path, "hello"); 
+        auto output = test_validate(path, "hello"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims[0], 33);
@@ -48,7 +48,7 @@ TEST_P(CombineTest, Simple) {
         mock_array_opener(lhandle, "1", { 10, 12 }, version, "STRING"); 
     }
     {
-        auto output = chihaya::validate(path, "hello"); 
+        auto output = test_validate(path, "hello"); 
         EXPECT_EQ(output.type, chihaya::STRING);
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims[0], 10);
@@ -67,7 +67,7 @@ TEST_P(CombineTest, Mixed) {
         mock_array_opener(lhandle, "1", { 13, 20 }, version, "INTEGER"); 
         mock_array_opener(lhandle, "2", { 13, 30 }, version, "BOOLEAN"); 
     }
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -82,7 +82,7 @@ TEST_P(CombineTest, AlongErrors) {
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         ghandle.unlink("along");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'along'");
+    expect_error(path, "hello", "expected a dataset at 'along'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -90,7 +90,7 @@ TEST_P(CombineTest, AlongErrors) {
         ghandle.unlink("along");
         add_numeric_vector<int>(ghandle, "along", { 1 }, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be a scalar dataset");
+    expect_error(path, "hello", "'along' should be a scalar dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -99,9 +99,9 @@ TEST_P(CombineTest, AlongErrors) {
         add_numeric_scalar(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
     if (version >= 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be non-negative");
+        expect_error(path, "hello", "'along' should be non-negative");
     }
 
     {
@@ -110,7 +110,7 @@ TEST_P(CombineTest, AlongErrors) {
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
         mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be less than the seed dimensionality");
+    expect_error(path, "hello", "'along' should be less than the seed dimensionality");
 }
 
 TEST_P(CombineTest, SeedErrors) {
@@ -120,7 +120,7 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         combine_opener(fhandle, "hello", 0, version);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seeds'");
+    expect_error(path, "hello", "expected a group at 'seeds'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -132,14 +132,14 @@ TEST_P(CombineTest, SeedErrors) {
             lhandle.removeAttr("length");
         }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "failed to load 'seeds' list");
+    expect_error(path, "hello", "failed to load 'seeds' list");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         list_opener(ghandle, "seeds", 1, version);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "missing elements in the 'seeds' list");
+    expect_error(path, "hello", "missing elements in the 'seeds' list");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -148,7 +148,7 @@ TEST_P(CombineTest, SeedErrors) {
         mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
         mock_array_opener(lhandle, "1", { 13, 10, 5 }, version, "BOOLEAN");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "dimensionality mismatch");
+    expect_error(path, "hello", "dimensionality mismatch");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -157,7 +157,7 @@ TEST_P(CombineTest, SeedErrors) {
         mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
         mock_array_opener(lhandle, "1", { 5, 15 }, version, "BOOLEAN");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "inconsistent dimension extents");
+    expect_error(path, "hello", "inconsistent dimension extents");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -166,7 +166,7 @@ TEST_P(CombineTest, SeedErrors) {
         mock_array_opener(lhandle, "0", { 13, 10 }, version, "STRING");
         mock_array_opener(lhandle, "1", { 13, 15 }, version, "INTEGER");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "contain strings");
+    expect_error(path, "hello", "contain strings");
 }
 
 INSTANTIATE_TEST_SUITE_P(

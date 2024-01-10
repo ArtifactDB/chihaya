@@ -25,7 +25,7 @@ TEST_P(DimnamesTest, NoOp) {
         dimnames_opener(fhandle, "hello", { 13, 19 }, "FLOAT", version);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -42,7 +42,7 @@ TEST_P(DimnamesTest, Partial) {
         add_string_vector(lhandle, "1", 10, /* len = */ 5);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -60,7 +60,7 @@ TEST_P(DimnamesTest, Full) {
         add_string_vector(lhandle, "1", 10, /* len = */ 2);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -75,14 +75,14 @@ TEST_P(DimnamesTest, Errors) {
         auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
         ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+    expect_error(path, "hello", "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
         ghandle.unlink("dimnames");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a 'dimnames' group");
+    expect_error(path, "hello", "expected a 'dimnames' group");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -94,7 +94,7 @@ TEST_P(DimnamesTest, Errors) {
             lhandle.removeAttr("delayed_length");
         }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected an attribute at");
+    expect_error(path, "hello", "expected an attribute at");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -102,7 +102,7 @@ TEST_P(DimnamesTest, Errors) {
         ghandle.unlink("dimnames");
         list_opener(ghandle, "dimnames", 3, version);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'dimnames' list");
+    expect_error(path, "hello", "length of 'dimnames' list");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -110,7 +110,7 @@ TEST_P(DimnamesTest, Errors) {
         auto lhandle = ghandle.openGroup("dimnames");
         lhandle.createGroup("0");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at '0'");
+    expect_error(path, "hello", "expected a dataset at '0'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -118,7 +118,7 @@ TEST_P(DimnamesTest, Errors) {
         auto lhandle = ghandle.openGroup("dimnames");
         add_numeric_vector<int>(lhandle, "0", {1}, H5::PredType::NATIVE_INT32);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a 1-dimensional string dataset");
+    expect_error(path, "hello", "should be a 1-dimensional string dataset");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -126,7 +126,7 @@ TEST_P(DimnamesTest, Errors) {
         auto lhandle = ghandle.openGroup("dimnames");
         add_string_vector(lhandle, "1", 15, /* len = */ 3);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length equal to the extent");
+    expect_error(path, "hello", "length equal to the extent");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -134,7 +134,7 @@ TEST_P(DimnamesTest, Errors) {
         auto lhandle = ghandle.openGroup("dimnames");
         add_string_vector(lhandle, "1", 20, /* len = */ H5T_VARIABLE);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "NULL");
+    expect_error(path, "hello", "NULL");
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -33,7 +33,7 @@ TEST_P(MatrixProductTest, Simple) {
         add_seed<false>(ghandle, { 20, 15 }, version, "FLOAT", false);
     }
     {
-        auto output = chihaya::validate(path, "foos"); 
+        auto output = test_validate(path, "foos"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
         EXPECT_EQ(output.dimensions[0], 10);
         EXPECT_EQ(output.dimensions[1], 15);
@@ -47,7 +47,7 @@ TEST_P(MatrixProductTest, Simple) {
         add_seed<false>(ghandle, { 10, 15 }, version, "INTEGER", false);
     }
     {
-        auto output = chihaya::validate(path, "foos"); 
+        auto output = test_validate(path, "foos"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
         EXPECT_EQ(output.dimensions[0], 20);
         EXPECT_EQ(output.dimensions[1], 15);
@@ -60,7 +60,7 @@ TEST_P(MatrixProductTest, Simple) {
         add_seed<false>(ghandle, { 30, 20 }, version, "FLOAT", true);
     }
     {
-        auto output = chihaya::validate(path, "foos"); 
+        auto output = test_validate(path, "foos"); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
         EXPECT_EQ(output.dimensions[0], 10);
         EXPECT_EQ(output.dimensions[1], 30);
@@ -74,7 +74,7 @@ TEST_P(MatrixProductTest, Simple) {
         add_seed<false>(ghandle, { 15, 20 }, version, "INTEGER", true);
     }
     {
-        auto output = chihaya::validate(path, "foos"); 
+        auto output = test_validate(path, "foos"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
         EXPECT_EQ(output.dimensions[0], 10);
         EXPECT_EQ(output.dimensions[1], 15);
@@ -89,7 +89,7 @@ TEST_P(MatrixProductTest, SeedErrors) {
         auto ghandle = matrix_product_opener(fhandle, "foos", version);
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected a group at 'right_seed'");
+    expect_error(path, "foos", "expected a group at 'right_seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -97,7 +97,7 @@ TEST_P(MatrixProductTest, SeedErrors) {
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
         add_seed<false>(ghandle, { 10, 20, 30 }, version, "FLOAT", false);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "2-dimensional");
+    expect_error(path, "foos", "2-dimensional");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -105,7 +105,7 @@ TEST_P(MatrixProductTest, SeedErrors) {
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
         add_seed<false>(ghandle, { 20, 10 }, version, "STRING", false);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "integer, float or boolean");
+    expect_error(path, "foos", "integer, float or boolean");
 }
 
 TEST_P(MatrixProductTest, OrientationErrors) {
@@ -117,7 +117,7 @@ TEST_P(MatrixProductTest, OrientationErrors) {
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
         ghandle.unlink("left_orientation");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "expected a dataset at 'left_orientation'");
+    expect_error(path, "foos", "expected a dataset at 'left_orientation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -126,7 +126,7 @@ TEST_P(MatrixProductTest, OrientationErrors) {
         ghandle.unlink("left_orientation");
         add_numeric_scalar<int>(ghandle, "left_orientation", 10, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "UTF-8 encoded string");
+    expect_error(path, "foos", "UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -135,7 +135,7 @@ TEST_P(MatrixProductTest, OrientationErrors) {
         ghandle.unlink("left_orientation");
         add_string_scalar(ghandle, "left_orientation", "FOO");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "'left_orientation' should be either 'N' or 'T'");
+    expect_error(path, "foos", "'left_orientation' should be either 'N' or 'T'");
 
     // Checking the combination.
     {
@@ -144,7 +144,7 @@ TEST_P(MatrixProductTest, OrientationErrors) {
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
         add_seed<false>(ghandle, { 10, 15 }, version, "FLOAT", false);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "foos"); }, "inconsistent common dimensions");
+    expect_error(path, "foos", "inconsistent common dimensions");
 }
 
 INSTANTIATE_TEST_SUITE_P(

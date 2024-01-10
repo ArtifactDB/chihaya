@@ -30,7 +30,7 @@ TEST_P(TransposeTest, NoOp) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -50,7 +50,7 @@ TEST_P(TransposeTest, Simple) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::STRING);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 19);
@@ -70,7 +70,7 @@ TEST_P(TransposeTest, Complex) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 19);
@@ -85,14 +85,14 @@ TEST_P(TransposeTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at 'permutation'");
+    expect_error(path, "hello", "expected a dataset at 'permutation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(TransposeTest, PermutationErrors) {
@@ -104,9 +104,9 @@ TEST_P(TransposeTest, PermutationErrors) {
         add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'permutation' should be integer");
+        expect_error(path, "hello", "'permutation' should be integer");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -115,7 +115,7 @@ TEST_P(TransposeTest, PermutationErrors) {
         ghandle.unlink("permutation");
         add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'permutation'");
+    expect_error(path, "hello", "length of 'permutation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -123,7 +123,7 @@ TEST_P(TransposeTest, PermutationErrors) {
         ghandle.unlink("permutation");
         add_numeric_vector<int>(ghandle, "permutation", { 1, 5 }, H5::PredType::NATIVE_UINT8);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out-of-bounds");
+    expect_error(path, "hello", "out-of-bounds");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -132,9 +132,9 @@ TEST_P(TransposeTest, PermutationErrors) {
         add_numeric_vector<int>(ghandle, "permutation", { -1, 0 }, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "non-negative");
+        expect_error(path, "hello", "non-negative");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -143,7 +143,7 @@ TEST_P(TransposeTest, PermutationErrors) {
         ghandle.unlink("permutation");
         add_numeric_vector<int>(ghandle, "permutation", { 0, 0 }, H5::PredType::NATIVE_UINT8);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unique");
+    expect_error(path, "hello", "unique");
 }
 
 INSTANTIATE_TEST_SUITE_P(

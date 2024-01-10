@@ -26,7 +26,7 @@ TEST_P(SubsetTest, NoOp) {
         list_opener(ghandle, "index", 2, version);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -52,7 +52,7 @@ TEST_P(SubsetTest, AllSubsets) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::STRING);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], first.size());
@@ -75,7 +75,7 @@ TEST_P(SubsetTest, OneSubset) {
         }
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
@@ -90,14 +90,14 @@ TEST_P(SubsetTest, Errors) {
         auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
         ghandle.unlink("seed");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'seed'");
+    expect_error(path, "hello", "expected a group at 'seed'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         mock_array_opener(ghandle, "seed", { 13, 19 }, version, "INTEGER"); 
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a group at 'index'");
+    expect_error(path, "hello", "expected a group at 'index'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -105,7 +105,7 @@ TEST_P(SubsetTest, Errors) {
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_UINT16);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "out of range");
+    expect_error(path, "hello", "out of range");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -114,7 +114,7 @@ TEST_P(SubsetTest, Errors) {
         lhandle.unlink("2"); // removing the above.
         lhandle.createGroup("0");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected a dataset at '0'");
+    expect_error(path, "hello", "expected a dataset at '0'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -124,9 +124,9 @@ TEST_P(SubsetTest, Errors) {
         add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected an integer dataset");
+        expect_error(path, "hello", "expected an integer dataset");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -137,9 +137,9 @@ TEST_P(SubsetTest, Errors) {
         add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, -2, 9 }, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "non-negative");
+        expect_error(path, "hello", "non-negative");
     } else {
-        expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "64-bit unsigned integer");
+        expect_error(path, "hello", "64-bit unsigned integer");
     }
 
     {
@@ -149,7 +149,7 @@ TEST_P(SubsetTest, Errors) {
         lhandle.unlink("1"); // removing the above.
         add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 1009 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "indices out of range");
+    expect_error(path, "hello", "indices out of range");
 }
 
 INSTANTIATE_TEST_SUITE_P(
