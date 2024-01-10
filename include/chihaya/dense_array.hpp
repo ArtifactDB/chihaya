@@ -47,18 +47,22 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         dspace.getSimpleExtentDims(dims.data());
         output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
-            output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());
-            if (internal_type::is_boolean(dhandle)) {
-                output.type = BOOLEAN;
+        try {
+            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+                output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());
+                if (internal_type::is_boolean(dhandle)) {
+                    output.type = BOOLEAN;
+                }
+            } else {
+                auto type = internal_type::fetch_data_type(dhandle);
+                output.type = internal_type::translate_type_1_1(type);
+                internal_type::check_type_1_1(dhandle, output.type);
             }
-        } else {
-            auto type = internal_type::fetch_data_type(dhandle);
-            internal_type::check_type_1_1(dhandle, type);
-            output.type = internal_type::translate_type_1_1(type);
-        }
 
-        internal_misc::validate_missing_placeholder(dhandle, version);
+            internal_misc::validate_missing_placeholder(dhandle, version);
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
+        }
     }
 
     {

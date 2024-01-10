@@ -4,7 +4,7 @@
 
 class ListTest : public ::testing::TestWithParam<int> {
 public:
-    ListTest() : path("test_list.h5") {}
+    ListTest() : path("Test_list.h5") {}
 protected:
     std::string path;
 

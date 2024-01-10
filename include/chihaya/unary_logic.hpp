@@ -51,26 +51,35 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
         // Checking the value.
         auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
-            if (vhandle.getTypeClass() == H5T_STRING) {
-                throw std::runtime_error("'value' should contain numeric or boolean values for an unary logic operation");
+
+        try {
+            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+                if (vhandle.getTypeClass() == H5T_STRING) {
+                    throw std::runtime_error("dataset should be integer, float or boolean");
+                }
+            } else {
+                auto type = internal_type::fetch_data_type(vhandle);
+                auto array_type = internal_type::translate_type_1_1(type);
+                if (array_type != INTEGER && array_type != BOOLEAN && array_type != FLOAT) {
+                    throw std::runtime_error("dataset should be integer, float or boolean");
+                }
+                internal_type::check_type_1_1(vhandle, array_type);
             }
-        } else {
-            auto type = internal_type::fetch_data_type(vhandle);
-            internal_type::check_numeric_type_1_1(vhandle, type);
-        }
 
-        internal_misc::validate_missing_placeholder(vhandle, version);
+            internal_misc::validate_missing_placeholder(vhandle, version);
 
-        size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
-        if (ndims == 0) {
-            // scalar operation.
-        } else if (ndims == 1) {
-            hsize_t extent;
-            vhandle.getSpace().getSimpleExtentDims(&extent);
-            internal_unary::check_along(handle, version, seed_details.dimensions, extent);
-        } else { 
-            throw std::runtime_error("'value' dataset should be scalar or 1-dimensional for an unary logic operation");
+            size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
+            if (ndims == 0) {
+                // scalar operation.
+            } else if (ndims == 1) {
+                hsize_t extent;
+                vhandle.getSpace().getSimpleExtentDims(&extent);
+                internal_unary::check_along(handle, version, seed_details.dimensions, extent);
+            } else { 
+                throw std::runtime_error("dataset should be scalar or 1-dimensional for an unary logic operation");
+            }
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
         }
     }
 

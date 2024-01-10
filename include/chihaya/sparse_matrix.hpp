@@ -103,20 +103,29 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     size_t nnz;
     {
         auto dhandle = ritsuko::hdf5::open_dataset(handle, "data");
-        nnz = ritsuko::hdf5::get_1d_length(dhandle, false);
 
-        if (internal_misc::is_version_at_or_below(version, 1, 0)) {
-            array_type = internal_type::translate_numeric_type_0_0(dhandle.getTypeClass());
-            if (internal_type::is_boolean(dhandle)) {
-                array_type = BOOLEAN;
+        try {
+            nnz = ritsuko::hdf5::get_1d_length(dhandle, false);
+
+            if (internal_misc::is_version_at_or_below(version, 1, 0)) {
+                array_type = internal_type::translate_type_0_0(dhandle.getTypeClass());
+                if (internal_type::is_boolean(dhandle)) {
+                    array_type = BOOLEAN;
+                }
+            } else {
+                auto type = internal_type::fetch_data_type(dhandle);
+                array_type = internal_type::translate_type_1_1(type);
+                internal_type::check_type_1_1(dhandle, array_type);
             }
-        } else {
-            auto type = internal_type::fetch_data_type(dhandle);
-            internal_type::check_numeric_type_1_1(dhandle, type);
-            array_type = internal_type::translate_type_1_1(type);
-        }
 
-        internal_misc::validate_missing_placeholder(dhandle, version);
+            if (array_type != INTEGER && array_type != BOOLEAN && array_type != FLOAT) {
+                throw std::runtime_error("dataset should be integer, float or boolean");
+            }
+
+            internal_misc::validate_missing_placeholder(dhandle, version);
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
+        }
     }
 
     bool csc = true;

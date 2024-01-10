@@ -41,34 +41,6 @@ inline std::string fetch_data_type(const H5::DataSet& handle) {
     return ritsuko::hdf5::load_scalar_string_attribute(thandle);
 }
 
-inline void check_numeric_type_1_1(const H5::DataSet& handle, const std::string& type) {
-    if (type == "INTEGER") {
-        if (ritsuko::hdf5::exceeds_integer_limit(handle, 32, true)) {
-            throw std::runtime_error("integer 'value' should have a datatype that fits into a 32-bit signed integer");
-        }
-    } else if (type == "BOOLEAN") {
-        if (ritsuko::hdf5::exceeds_integer_limit(handle, 8, true)) {
-            throw std::runtime_error("boolean 'value' should have a datatype that fits into a 8-bit signed integer");
-        }
-    } else if (type == "FLOAT") {
-        if (ritsuko::hdf5::exceeds_float_limit(handle, 64)) {
-            throw std::runtime_error("floating-point 'value' should have a datatype that fits into a 64-bit float");
-        }
-    } else {
-        throw std::runtime_error("unknown type '" + type + "'"); 
-    }
-}
-
-inline void check_type_1_1(const H5::DataSet& handle, const std::string& type) {
-    if (type == "STRING") {
-        if (handle.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("string 'value' should have a string datatype class");
-        }
-    } else {
-        check_numeric_type_1_1(handle, type);
-    }
-}
-
 inline ArrayType translate_type_1_1(const std::string& type) {
     if (type == "INTEGER") {
         return INTEGER;
@@ -80,20 +52,37 @@ inline ArrayType translate_type_1_1(const std::string& type) {
     return STRING;
 }
 
-inline ArrayType translate_numeric_type_0_0(H5T_class_t cls) {
+inline void check_type_1_1(const H5::DataSet& handle, ArrayType type) {
+    if (type == INTEGER) {
+        if (ritsuko::hdf5::exceeds_integer_limit(handle, 32, true)) {
+            throw std::runtime_error("integer dataset should have a datatype that fits into a 32-bit signed integer");
+        }
+    } else if (type == BOOLEAN) {
+        if (ritsuko::hdf5::exceeds_integer_limit(handle, 8, true)) {
+            throw std::runtime_error("boolean dataset should have a datatype that fits into a 8-bit signed integer");
+        }
+    } else if (type == FLOAT) {
+        if (ritsuko::hdf5::exceeds_float_limit(handle, 64)) {
+            throw std::runtime_error("float dataset should have a datatype that fits into a 64-bit float");
+        }
+    } else if (type == STRING) {
+        if (!ritsuko::hdf5::is_utf8_string(handle)) {
+            throw std::runtime_error("string dataset should have a datatype that can be represented by a UTF-8 encoded string");
+        }
+    } else {
+        throw std::runtime_error("as-yet-unsupported type");
+    }
+}
+
+inline ArrayType translate_type_0_0(H5T_class_t cls) {
     if (cls == H5T_FLOAT) {
         return FLOAT;
+    } else if (cls == H5T_STRING) {
+        return STRING;
     } else if (cls != H5T_INTEGER) {
         throw std::runtime_error("unrecognized HDF5 datatype class");
     }
     return INTEGER;
-}
-
-inline ArrayType translate_type_0_0(H5T_class_t cls) {
-    if (cls == H5T_STRING) {
-        return STRING;
-    }
-    return translate_numeric_type_0_0(cls);
 }
 
 }

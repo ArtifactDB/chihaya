@@ -203,11 +203,7 @@ TEST_P(SparseMatrixTest, DataErrors) {
             add_string_attribute(dhandle, "type", "STRING");
         }
     }
-    if (version < 1100000) {
-        expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "unrecognized HDF5 datatype class");
-    } else {
-        expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "unknown type 'STRING'");
-    }
+    expect_error([&]() -> void { chihaya::validate(path, "foobar"); }, "integer, float or boolean");
 }
 
 TEST_P(SparseMatrixTest, SimpleIndexErrors) {
