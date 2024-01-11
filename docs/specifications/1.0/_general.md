@@ -41,7 +41,7 @@ The same approach is used for arbitrarily complex "trees" of delayed operations,
 
 The outermost HDF5 group may have a `delayed_version` attribute to indicate the version of the **chihaya** specification being used.
 This document describes version 1.0 of the specification.
-If missing, the version can be assumed to be 0.99.0.
+If missing, the version is assumed to be 0.99.
 
 ## Operation types
 

@@ -173,7 +173,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Validate a delayed operation/array at the specified HDF5 group, using a version string in the <code>delayed_version</code> attribute of the <code>handle</code>. This should be a string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;.&lt;PATCH&gt;</code>; if missing, this defaults to <code>0.0.0</code>.</p>
+<p >Validate a delayed operation/array at the specified HDF5 group, using a version string in the <code>delayed_version</code> attribute of the <code>handle</code>. This should be a string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;</code>. For back-compatibility purposes, the string <code>"1.0.0"</code> is also allowed, corresponding to version 1.1; and if <code>delayed_version</code> is missing, it defaults to <code>0.99</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
