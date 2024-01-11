@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">unary_arithmetic.hpp File Reference</div></div>
 </div><!--header-->
@@ -86,95 +87,23 @@ $(function() {
 
 <p><a href="unary__arithmetic_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacechihaya"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html">chihaya</a></td></tr>
+<tr class="memdesc:namespacechihaya"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for all <b>chihaya</b> functions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacechihaya_1_1unary__arithmetic"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__arithmetic.html">chihaya::unary_arithmetic</a></td></tr>
+<tr class="memdesc:namespacechihaya_1_1unary__arithmetic"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for delayed unary arithmetic operations. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8b45b1e631a5e37d008a9029a966d0bf"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="unary__arithmetic_8hpp.html#a8b45b1e631a5e37d008a9029a966d0bf">chihaya::validate_unary_arithmetic</a> (const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</td></tr>
-<tr class="separator:a8b45b1e631a5e37d008a9029a966d0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db70fe2af38707b067a109b65a5a159"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__arithmetic.html#a9db70fe2af38707b067a109b65a5a159">chihaya::unary_arithmetic::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a9db70fe2af38707b067a109b65a5a159"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validation for delayed unary arithmetic operations. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a8b45b1e631a5e37d008a9029a966d0bf" name="a8b45b1e631a5e37d008a9029a966d0bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b45b1e631a5e37d008a9029a966d0bf">&#9670;&#160;</a></span>validate_unary_arithmetic()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">ArrayDetails chihaya::validate_unary_arithmetic </td>
-          <td>(</td>
-          <td class="paramtype">const H5::Group &amp;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Validate delayed unary arithmetic operations in a HDF5 file. This is "unary" in the sense that only one delayed object is involved.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing an unary arithmetic operation. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation. Otherwise, if the validation failed, an error is raised.</dd></dl>
-<p>An unary arithmetic operation is represented as a HDF5 group with the following attributes:</p>
-<ul>
-<li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
-<li><code>delayed_operation</code> should be a scalar string <code>"unary arithmetic"</code>.</li>
-</ul>
-<p >Inside the group, we expect:</p>
-<ul>
-<li>A <code>seed</code> group, containing a delayed object for which arithmetic is to be applied. The <code>seed</code> group handle is passed to <code>validate()</code> to check its contents recursively and to retrieve the dimensions. This can be either boolean, integer or float.</li>
-<li>A <code>method</code> string scalar dataset, specifying the arithmetic method to use. This can be any one of <code>+</code>, <code>-</code>, <code>/</code>, <code>*</code>, <code>^</code>, <code>%%</code> (modulo) or <code>%/%</code> (integer division). The exact string representation is left to the implementation.</li>
-<li>A <code>side</code> string scalar dataset, describing the side of the <code>seed</code> object to apply the operation. This can be <code>"left"</code>, when <code>value</code> is applied to the left of <code>seed</code>, e.g., <code>value - seed</code>; or <code>"right"</code>, when <code>value</code> is applied to the right of <code>seed</code>, e.g., <code>seed - value</code>. For <code>+</code> and <code>-</code> as pure unary methods, this may also be <code>"none"</code>. The exact string representation is left to the implementation.</li>
-</ul>
-<p >For <code>side != "none"</code>, we also expect:</p>
-<ul>
-<li>A <code>value</code> dataset. This can be either boolean, integer or float, and may be scalar or 1-dimensional. The exact type representation is left to the implementation.</li>
-</ul>
-<p >If <code>value</code> is 1-dimensional, we also expect:</p>
-<ul>
-<li>An <code>along</code> integer scalar dataset, specifying the dimension on which to apply the operation with <code>value</code>. The exact integer representation is left to the implementation. The length of <code>value</code> should be equal to the extent of the dimension specified in <code>along</code>.</li>
-</ul>
-<p ><code>value</code> may contain a <code>missing_placeholder</code> attribute. This should be a scalar dataset of the same type class as <code>value</code>, specifying the placeholder value used for all missing elements, i.e., any elements in <code>value</code> with the same value as the placeholder should be treated as missing. (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)</p>
-<p >The type of the output object depends on the operation, the type of <code>seed</code> and the type of <code>value</code>:</p>
-<ul>
-<li>For simple division, the output type is always float.</li>
-<li>For integer division, the output type is always integer.</li>
-<li>For modulo where both <code>seed</code> and <code>value</code> are integer, the output type is integer.</li>
-<li>In all other cases, the output type is the more advanced type of <code>seed</code> and <code>value</code>.</li>
-</ul>
-<p >Note that any boolean types in <code>seed</code> and <code>value</code> are first promoted to integer before type determination. </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5

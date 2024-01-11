@@ -82,97 +82,94 @@ $(function() {
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CHIHAYA_COMBINE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="list_8hpp.html">list.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>chihaya {</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="validate_8hpp.html#a7ed9c8c10856306b5481b7d8a8a52a4c">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp;, <span class="keyword">const</span> Version&amp; version);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="combine_8hpp.html#a89e21a1a41a32d6d88ed0fc6f152e475">   56</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="combine_8hpp.html#a89e21a1a41a32d6d88ed0fc6f152e475">validate_combine</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> <a class="code hl_struct" href="structchihaya_1_1Version.html">Version</a>&amp; version) <span class="keyword">try</span> {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;along&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;along&quot;</span>) != H5O_TYPE_DATASET) {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;along&#39; dataset for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">auto</span> ahandle = handle.openDataSet(<span class="stringliteral">&quot;along&quot;</span>);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (ahandle.getSpace().getSimpleExtentNdims() != 0 || ahandle.getTypeClass() != H5T_INTEGER) {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;along&#39; should be an integer scalar for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">int</span> along = 0;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    ahandle.read(&amp;along, H5::PredType::NATIVE_INT);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (along &lt; 0) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;along&#39; should contain a non-negative value for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;seeds&quot;</span>) || handle.childObjType(<span class="stringliteral">&quot;seeds&quot;</span>) != H5O_TYPE_GROUP) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected &#39;seeds&#39; group for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span> shandle = handle.openGroup(<span class="stringliteral">&quot;seeds&quot;</span>);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_struct" href="structchihaya_1_1ListDetails.html">ListDetails</a> list_params;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        list_params = validate_list(shandle, version);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;failed to load &#39;seeds&#39; list for a combine operation:\n  &quot;</span>) + e.what());</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (list_params.<a class="code hl_variable" href="structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f">present</a>.size() != list_params.<a class="code hl_variable" href="structchihaya_1_1ListDetails.html#a4929c96edd7e8087d850088bcba459ab">length</a>) {</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;missing elements in the &#39;seeds&#39; list for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::vector&lt;size_t&gt; dimensions;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_enumeration" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> type = BOOLEAN;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; p : list_params.<a class="code hl_variable" href="structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f">present</a>) {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">auto</span> current = shandle.openGroup(p.second);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">auto</span> cur_seed = <a class="code hl_function" href="validate_8hpp.html#a7ed9c8c10856306b5481b7d8a8a52a4c">validate</a>(current, name + <span class="stringliteral">&quot;/seeds/&quot;</span> + p.second, version);</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ritsuko/ritsuko.hpp&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;ritsuko/hdf5/hdf5.hpp&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;utils_list.hpp&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;utils_misc.hpp&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechihaya.html">chihaya</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya.html#ad6581f0bab127afd92cecfc35b1a0f64">validate</a>(<span class="keyword">const</span> H5::Group&amp;, <span class="keyword">const</span> ritsuko::Version&amp;);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">namespace </span>combine {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1combine.html#a556f1fd4882b0dc061dd0224d062f854">   44</a></span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya_1_1combine.html#a556f1fd4882b0dc061dd0224d062f854">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    uint64_t along = internal_misc::load_along(handle, version);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span> shandle = ritsuko::hdf5::open_group(handle, <span class="stringliteral">&quot;seeds&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    internal_list::ListDetails list_params;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        list_params = internal_list::validate(shandle, version);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;failed to load &#39;seeds&#39; list; &quot;</span>) + e.what());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">if</span> (list_params.present.size() != list_params.length) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;missing elements in the &#39;seeds&#39; list&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::vector&lt;size_t&gt; dimensions;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    ArrayType type = BOOLEAN;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">size_t</span> num_strings = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; p : list_params.present) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keyword">auto</span> current = ritsuko::hdf5::open_group(shandle, p.second.c_str());</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            ArrayDetails cur_seed;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                cur_seed = <a class="code hl_function" href="namespacechihaya.html#ad6581f0bab127afd92cecfc35b1a0f64">::chihaya::validate</a>(current, version);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;seeds/&quot;</span> + p.second + <span class="stringliteral">&quot;&#39;; &quot;</span> + std::string(e.what()));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span> (first) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                type = cur_seed.type;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                dimensions = cur_seed.dimensions;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(along) &gt;= dimensions.size()) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;along&#39; should be less than the seed dimensionality&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                first = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">if</span> (type &lt; cur_seed.type) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                    type = cur_seed.type;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keywordflow">if</span> (dimensions.size() != cur_seed.dimensions.size()) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dimensionality mismatch between seeds&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> d = 0; d &lt; dimensions.size(); ++d) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                    <span class="keywordflow">if</span> (d == <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(along)) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                        dimensions[d] += cur_seed.dimensions[d];</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dimensions[d] != cur_seed.dimensions[d]) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;inconsistent dimension extents between seeds&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            }</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            type = cur_seed.type;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            dimensions = cur_seed.dimensions;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(along) &gt;= dimensions.size()) {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;along&#39; should be less than the seed dimensionality for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            }</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            first = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">if</span> (type &lt; cur_seed.type) {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                type = cur_seed.type;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="keywordflow">if</span> (dimensions.size() != cur_seed.dimensions.size()) {</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dimensionality mismatch between seeds for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> d = 0; d &lt; dimensions.size(); ++d) {</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                <span class="keywordflow">if</span> (d == <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(along)) {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    dimensions[d] += cur_seed.dimensions[d];</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dimensions[d] != cur_seed.dimensions[d]) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;inconsistent dimension extents between seeds for a combine operation&quot;</span>);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            }</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(type, std::move(dimensions));</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>} <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate combine operation at &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39;\n- &quot;</span> + std::string(e.what()));</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="acombine_8hpp_html_a89e21a1a41a32d6d88ed0fc6f152e475"><div class="ttname"><a href="combine_8hpp.html#a89e21a1a41a32d6d88ed0fc6f152e475">chihaya::validate_combine</a></div><div class="ttdeci">ArrayDetails validate_combine(const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</div><div class="ttdef"><b>Definition:</b> combine.hpp:56</div></div>
-<div class="ttc" id="alist_8hpp_html"><div class="ttname"><a href="list_8hpp.html">list.hpp</a></div><div class="ttdoc">Definition of a list in HDF5.</div></div>
-<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:33</div></div>
-<div class="ttc" id="astructchihaya_1_1ListDetails_html"><div class="ttname"><a href="structchihaya_1_1ListDetails.html">chihaya::ListDetails</a></div><div class="ttdoc">Details of a list object.</div><div class="ttdef"><b>Definition:</b> list.hpp:31</div></div>
-<div class="ttc" id="astructchihaya_1_1ListDetails_html_a4929c96edd7e8087d850088bcba459ab"><div class="ttname"><a href="structchihaya_1_1ListDetails.html#a4929c96edd7e8087d850088bcba459ab">chihaya::ListDetails::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition:</b> list.hpp:35</div></div>
-<div class="ttc" id="astructchihaya_1_1ListDetails_html_ad99c49c6e04865aecd0663c79749257f"><div class="ttname"><a href="structchihaya_1_1ListDetails.html#ad99c49c6e04865aecd0663c79749257f">chihaya::ListDetails::present</a></div><div class="ttdeci">std::map&lt; int, std::string &gt; present</div><div class="ttdef"><b>Definition:</b> list.hpp:43</div></div>
-<div class="ttc" id="astructchihaya_1_1Version_html"><div class="ttname"><a href="structchihaya_1_1Version.html">chihaya::Version</a></div><div class="ttdoc">Version of the chihaya specification.</div><div class="ttdef"><b>Definition:</b> utils.hpp:59</div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Various utilities.</div></div>
-<div class="ttc" id="autils_8hpp_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition:</b> utils.hpp:24</div></div>
-<div class="ttc" id="avalidate_8hpp_html_a7ed9c8c10856306b5481b7d8a8a52a4c"><div class="ttname"><a href="validate_8hpp.html#a7ed9c8c10856306b5481b7d8a8a52a4c">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:57</div></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            num_strings += (cur_seed.type == STRING);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">if</span> (num_strings != 0 &amp;&amp; num_strings != list_params.length) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;either none or all of the arrays to be combined should contain strings&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> ArrayDetails(type, std::move(dimensions));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacechihaya_1_1combine_html_a556f1fd4882b0dc061dd0224d062f854"><div class="ttname"><a href="namespacechihaya_1_1combine.html#a556f1fd4882b0dc061dd0224d062f854">chihaya::combine::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> combine.hpp:44</div></div>
+<div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
+<div class="ttc" id="anamespacechihaya_html_ad6581f0bab127afd92cecfc35b1a0f64"><div class="ttname"><a href="namespacechihaya.html#ad6581f0bab127afd92cecfc35b1a0f64">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:48</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

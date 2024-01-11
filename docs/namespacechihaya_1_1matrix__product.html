@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chihaya: chihaya/constant_array.hpp File Reference</title>
+<title>chihaya: chihaya::matrix_product Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,39 +71,72 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_98013a9308bc8a3217b5ee75e096a657.html">chihaya</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacechihaya.html">chihaya</a></li><li class="navelem"><a class="el" href="namespacechihaya_1_1matrix__product.html">matrix_product</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">constant_array.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">chihaya::matrix_product Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Constant array, stored inside the file.  
-<a href="#details">More...</a></p>
-
-<p><a href="constant__array_8hpp_source.html">Go to the source code of this file.</a></p>
+<p>Namespace for delayed matrix products.  
+<a href="namespacechihaya_1_1matrix__product.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacechihaya"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html">chihaya</a></td></tr>
-<tr class="memdesc:namespacechihaya"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for all <b>chihaya</b> functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacechihaya_1_1constant__array"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1constant__array.html">chihaya::constant_array</a></td></tr>
-<tr class="memdesc:namespacechihaya_1_1constant__array"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for constant arrays. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a779baffd5bd0298700b9ad63633219de"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1constant__array.html#a779baffd5bd0298700b9ad63633219de">chihaya::constant_array::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
-<tr class="separator:a779baffd5bd0298700b9ad63633219de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc3c62d84792b7410c727dca7750380"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1matrix__product.html#a8cc3c62d84792b7410c727dca7750380">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a8cc3c62d84792b7410c727dca7750380"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Constant array, stored inside the file. </p>
-</div></div><!-- contents -->
+<div class="textblock"><p >Namespace for delayed matrix products. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a8cc3c62d84792b7410c727dca7750380" name="a8cc3c62d84792b7410c727dca7750380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc3c62d84792b7410c727dca7750380">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ArrayDetails chihaya::matrix_product::validate </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a matrix product. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the matrix product. Otherwise, if the validation failed, an error is raised. </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5

@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">unary_math.hpp File Reference</div></div>
 </div><!--header-->
@@ -86,102 +87,23 @@ $(function() {
 
 <p><a href="unary__math_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacechihaya"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html">chihaya</a></td></tr>
+<tr class="memdesc:namespacechihaya"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for all <b>chihaya</b> functions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacechihaya_1_1unary__math"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__math.html">chihaya::unary_math</a></td></tr>
+<tr class="memdesc:namespacechihaya_1_1unary__math"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for delayed unary math. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6650d19c923bea27da72eb74a054617f"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="unary__math_8hpp.html#a6650d19c923bea27da72eb74a054617f">chihaya::validate_unary_math</a> (const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</td></tr>
-<tr class="separator:a6650d19c923bea27da72eb74a054617f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7589ab3dcbdf97bed7e6eaad5b1e2796"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__math.html#a7589ab3dcbdf97bed7e6eaad5b1e2796">chihaya::unary_math::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a7589ab3dcbdf97bed7e6eaad5b1e2796"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validation for delayed unary math operations. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a6650d19c923bea27da72eb74a054617f" name="a6650d19c923bea27da72eb74a054617f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6650d19c923bea27da72eb74a054617f">&#9670;&#160;</a></span>validate_unary_math()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">ArrayDetails chihaya::validate_unary_math </td>
-          <td>(</td>
-          <td class="paramtype">const H5::Group &amp;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Validate delayed unary math operations in a HDF5 file. This is "unary" in the sense that only one delayed object is involved.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing an unary math operation. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the mathal operation. Otherwise, if the validation failed, an error is raised.</dd></dl>
-<p>A delayed unary math operation is represented as a HDF5 group with the following attributes:</p>
-<ul>
-<li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
-<li><code>delayed_operation</code> should be a scalar string <code>"unary math"</code>.</li>
-</ul>
-<p >Inside the group, we expect:</p>
-<ul>
-<li>A <code>seed</code> group, containing a delayed object for which the mathematical operation is to be applied. The <code>seed</code> group handle is passed to <code>validate()</code> to check its contents recursively and to retrieve the dimensions. This can be boolean (coerced to integer), integer or float.</li>
-<li>A <code>method</code> string scalar dataset, specifying the mathematical operation to perform. This can be any one of:<ul>
-<li><code>abs</code>, absolute value.</li>
-<li><code>log1p</code>, log-transformation after adding 1.</li>
-<li><code>sqrt</code>, square root.</li>
-<li><code>exp</code>, exponential.</li>
-<li><code>expm1</code>, exponential followed by subtraction of 1.</li>
-<li><code>sign</code>, sign of the value (-1, 0, or 1).</li>
-<li><code>ceiling</code>, ceiling.</li>
-<li><code>floor</code>, floor.</li>
-<li><code>trunc</code>, truncate to zero.</li>
-<li><code>cos</code>, <code>sin</code>, <code>tan</code>, <code>acos</code>, <code>asin</code>, <code>atan</code>; the usual trigonometric functions (angles in radians).</li>
-<li><code>cosh</code>, <code>sinh</code>, <code>tanh</code>, <code>acosh</code>, <code>asinh</code>, <code>atanh</code>; the usual hyperbolic functions.</li>
-<li><code>log</code>, a log-transformation.</li>
-<li><code>round</code>, rounding to a certain number of decimal places.</li>
-<li><code>signif</code>, rounding to a certain number of significant digits. The exact string representation is left to the implementation.</li>
-</ul>
-</li>
-</ul>
-<p >If <code>method = "log"</code>, we may contain:</p>
-<ul>
-<li><code>base</code>, a scalar float dataset containing the base of the log-transformation. If this is absent, it is assumed that the natural base will be used. The exact float representation is left to the implementation.</li>
-</ul>
-<p >If <code>method = "round"</code> or <code>"signif"</code>, we expect:</p>
-<ul>
-<li><code>digits</code>, a scalar integer dataset specifying the number of digits to report. The exact integer representation is left to the implementation.</li>
-</ul>
-<p >The type of the output object is usually float. The only exceptions are for <code>abs</code>, which is either integer or float depending on the input (booleans are promoted to integer); and <code>sign</code>, which is always integer. </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5

@@ -1,6 +1,26 @@
 var searchData=
 [
-  ['binary_5farithmetic_2ehpp_0',['binary_arithmetic.hpp',['../binary__arithmetic_8hpp.html',1,'']]],
-  ['binary_5fcomparison_2ehpp_1',['binary_comparison.hpp',['../binary__comparison_8hpp.html',1,'']]],
-  ['binary_5flogic_2ehpp_2',['binary_logic.hpp',['../binary__logic_8hpp.html',1,'']]]
+  ['binary_5farithmetic_0',['binary_arithmetic',['../namespacechihaya_1_1binary__arithmetic.html',1,'chihaya']]],
+  ['binary_5fcomparison_1',['binary_comparison',['../namespacechihaya_1_1binary__comparison.html',1,'chihaya']]],
+  ['binary_5flogic_2',['binary_logic',['../namespacechihaya_1_1binary__logic.html',1,'chihaya']]],
+  ['chihaya_3',['chihaya',['../namespacechihaya.html',1,'']]],
+  ['chihaya_2ehpp_4',['chihaya.hpp',['../chihaya_8hpp.html',1,'']]],
+  ['combine_5',['combine',['../namespacechihaya_1_1combine.html',1,'chihaya']]],
+  ['combine_2ehpp_6',['combine.hpp',['../combine_8hpp.html',1,'']]],
+  ['constant_5farray_7',['constant_array',['../namespacechihaya_1_1constant__array.html',1,'chihaya']]],
+  ['constant_5farray_2ehpp_8',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
+  ['custom_5farray_9',['custom_array',['../namespacechihaya_1_1custom__array.html',1,'chihaya']]],
+  ['custom_5farray_2ehpp_10',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]],
+  ['dense_5farray_11',['dense_array',['../namespacechihaya_1_1dense__array.html',1,'chihaya']]],
+  ['external_5fhdf5_12',['external_hdf5',['../namespacechihaya_1_1external__hdf5.html',1,'chihaya']]],
+  ['matrix_5fproduct_13',['matrix_product',['../namespacechihaya_1_1matrix__product.html',1,'chihaya']]],
+  ['sparse_5fmatrix_14',['sparse_matrix',['../namespacechihaya_1_1sparse__matrix.html',1,'chihaya']]],
+  ['subset_15',['subset',['../namespacechihaya_1_1subset.html',1,'chihaya']]],
+  ['subset_5fassignment_16',['subset_assignment',['../namespacechihaya_1_1subset__assignment.html',1,'chihaya']]],
+  ['transpose_17',['transpose',['../namespacechihaya_1_1transpose.html',1,'chihaya']]],
+  ['unary_5farithmetic_18',['unary_arithmetic',['../namespacechihaya_1_1unary__arithmetic.html',1,'chihaya']]],
+  ['unary_5fcomparison_19',['unary_comparison',['../namespacechihaya_1_1unary__comparison.html',1,'chihaya']]],
+  ['unary_5flogic_20',['unary_logic',['../namespacechihaya_1_1unary__logic.html',1,'chihaya']]],
+  ['unary_5fmath_21',['unary_math',['../namespacechihaya_1_1unary__math.html',1,'chihaya']]],
+  ['unary_5fspecial_5fcheck_22',['unary_special_check',['../namespacechihaya_1_1unary__special__check.html',1,'chihaya']]]
 ];

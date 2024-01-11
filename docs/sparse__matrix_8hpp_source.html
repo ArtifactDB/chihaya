@@ -82,129 +82,185 @@ $(function() {
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CHIHAYA_SPARSE_MATRIX_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="dimnames_8hpp.html">dimnames.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>chihaya {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="sparse__matrix_8hpp.html#aded30ba99ca2e6642bc933ec604e9a40">   62</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="sparse__matrix_8hpp.html#aded30ba99ca2e6642bc933ec604e9a40">validate_sparse_matrix</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> <a class="code hl_struct" href="structchihaya_1_1Version.html">Version</a>&amp; version) <span class="keyword">try</span> {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;int&gt; dims(2);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">auto</span> shandle = check_vector(handle, <span class="stringliteral">&quot;shape&quot;</span>, <span class="stringliteral">&quot;sparse_matrix&quot;</span>);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">if</span> (shandle.getTypeClass() != H5T_INTEGER) {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should be integer for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        }</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (vector_length(shandle) != 2) {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should have length 2 for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        shandle.read(dims.data(), H5::PredType::NATIVE_INT);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (dims[0] &lt; 0 || dims[1] &lt; 0) {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should contain non-negative values for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> dhandle = check_vector(handle, <span class="stringliteral">&quot;data&quot;</span>, <span class="stringliteral">&quot;sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">size_t</span> ntriplets = vector_length(dhandle);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_enumeration" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> type;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (dhandle.getTypeClass() == H5T_INTEGER) {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        type = INTEGER;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dhandle.getTypeClass() == H5T_FLOAT) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        type = FLOAT;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown type of &#39;data&#39; for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    }</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    validate_missing_placeholder(dhandle, version);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// Checking the properties of the indices.</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">auto</span> ihandle = check_vector(handle, <span class="stringliteral">&quot;indices&quot;</span>, <span class="stringliteral">&quot;sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (ihandle.getTypeClass() != H5T_INTEGER) {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; should be integer for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (ntriplets != vector_length(ihandle)) {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; and &#39;data&#39; should have the same length for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">auto</span> iphandle = check_vector(handle, <span class="stringliteral">&quot;indptr&quot;</span>, <span class="stringliteral">&quot;sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (iphandle.getTypeClass() != H5T_INTEGER) {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indptr&#39; should be integer for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (vector_length(iphandle) != <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(dims[1] + 1)) {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indptr&#39; should have length equal to the number of columns plus 1 for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::vector&lt;hsize_t&gt; indptrs(dims[1] + 1);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    iphandle.read(indptrs.data(), H5::PredType::NATIVE_HSIZE);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (indptrs[0] != 0) {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;first entry of &#39;indptr&#39; should be 0 for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">if</span> (indptrs.back() != <span class="keyword">static_cast&lt;</span>hsize_t<span class="keyword">&gt;</span>(ntriplets)) {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;last entry of &#39;indptr&#39; should be equal to the length of &#39;data&#39; for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="comment">// Validating the indices.</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">int</span> nrows = dims[0];</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">size_t</span> ncols = dims[1];</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    std::vector&lt;int&gt; indices;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    hsize_t full_len = ntriplets;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    H5::DataSpace colspace(1, &amp;full_len);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> c = 0; c &lt; ncols; ++c) {</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keyword">auto</span> start = indptrs[c];</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keyword">auto</span> end = indptrs[c + 1];</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">if</span> (start &gt; end) {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indptr&#39; must be sorted for a sparse matrix&quot;</span>);</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ritsuko/hdf5/hdf5.hpp&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;utils_public.hpp&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;utils_misc.hpp&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;utils_type.hpp&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;utils_dimnames.hpp&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechihaya.html">chihaya</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>sparse_matrix {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span>internal {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_&gt;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keywordtype">void</span> validate_indices(<span class="keyword">const</span> H5::DataSet&amp; ihandle, <span class="keyword">const</span> std::vector&lt;uint64_t&gt;&amp; indptrs, <span class="keywordtype">size_t</span> primary, <span class="keywordtype">size_t</span> secondary, <span class="keywordtype">bool</span> csc) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    ritsuko::hdf5::Stream1dNumericDataset&lt;Index_&gt; stream(&amp;ihandle, indptrs.back(), 1000000);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> p = 0; p &lt; primary; ++p) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">auto</span> start = indptrs[p];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">auto</span> end = indptrs[p + 1];</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">if</span> (start &gt; end) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indptr&#39; must be sorted&quot;</span>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="comment">// Checking for sortedness and good things.</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        Index_ previous;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> x = start; x &lt; end; ++x, stream.next()) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keyword">auto</span> i = stream.get();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">if</span> (i &lt; 0) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indices&#39; should be non-negative&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">if</span> (x &gt; start &amp;&amp; i &lt;= previous) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; should be strictly increasing within each &quot;</span> + (csc ? std::string(<span class="stringliteral">&quot;column&quot;</span>) : std::string(<span class="stringliteral">&quot;row&quot;</span>)));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i) &gt;= secondary) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indices&#39; should be less than the number of &quot;</span> + (csc ? std::string(<span class="stringliteral">&quot;row&quot;</span>) : std::string(<span class="stringliteral">&quot;column&quot;</span>)) + <span class="stringliteral">&quot;s&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            previous = i;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">   74</a></span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;uint64_t&gt; dims(2);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    ArrayType array_type;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">auto</span> shandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;shape&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">auto</span> len = ritsuko::hdf5::get_1d_length(shandle, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">if</span> (len != 2) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should have length 2&quot;</span>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordflow">if</span> (shandle.getTypeClass() != H5T_INTEGER) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should be integer&quot;</span>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            std::vector&lt;int&gt; dims_tmp(2);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            shandle.read(dims_tmp.data(), H5::PredType::NATIVE_INT);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keywordflow">if</span> (dims_tmp[0] &lt; 0 || dims_tmp[1] &lt; 0) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should contain non-negative values&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            std::copy(dims_tmp.begin(), dims_tmp.end(), dims.begin());</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;shape&#39; should have a datatype that can fit into a 64-bit unsigned integer&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            shandle.read(dims.data(), H5::PredType::NATIVE_UINT64);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">size_t</span> nnz;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">auto</span> dhandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;data&quot;</span>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            nnz = ritsuko::hdf5::get_1d_length(dhandle, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                array_type = internal_type::translate_type_0_0(dhandle.getTypeClass());</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                <span class="keywordflow">if</span> (internal_type::is_boolean(dhandle)) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    array_type = BOOLEAN;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <span class="keyword">auto</span> type = ritsuko::hdf5::open_and_load_scalar_string_attribute(dhandle, <span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                array_type = internal_type::translate_type_1_1(type);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                internal_type::check_type_1_1(dhandle, array_type);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">if</span> (array_type != INTEGER &amp;&amp; array_type != BOOLEAN &amp;&amp; array_type != FLOAT) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be integer, float or boolean&quot;</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            internal_misc::validate_missing_placeholder(dhandle, version);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;data&#39;; &quot;</span> + std::string(e.what()));</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        }</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        hsize_t len = end - start;</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        H5::DataSpace memspace(1, &amp;len);</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        indices.resize(len);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        hsize_t offset = start;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        colspace.selectHyperslab(H5S_SELECT_SET, &amp;len, &amp;offset);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        ihandle.read(indices.data(), H5::PredType::NATIVE_INT, memspace, colspace);</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="comment">// Checking for sortedness and good things.</span></div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordtype">int</span> previous = -1;</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> i : indices) {</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            <span class="keywordflow">if</span> (i &lt; 0) {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indices&#39; should be non-negative for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            }</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="keywordflow">if</span> (i &lt;= previous) {</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; should be strictly increasing within each column for a sparse matrix&quot;</span>);</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            }</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">if</span> (i &gt;= nrows) {</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indices&#39; should be less than the number of rows for a sparse matrix&quot;</span>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">bool</span> csc = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (!version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keyword">auto</span> bhandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;by_column&quot;</span>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (!ritsuko::hdf5::is_scalar(bhandle)) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;by_column&#39; should be a scalar&quot;</span>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, <span class="keyword">true</span>)) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;datatype of &#39;by_column&#39; should fit into an 8-bit signed integer&quot;</span>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        csc = (ritsuko::hdf5::load_scalar_numeric_dataset&lt;int8_t&gt;(bhandle) != 0);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">auto</span> ihandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;indices&quot;</span>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">if</span> (ihandle.getTypeClass() != H5T_INTEGER) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; should be integer&quot;</span>);</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            }</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            previous = i;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        }</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="comment">// Validating dimnames.</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (handle.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <a class="code hl_function" href="dimnames_8hpp.html#a7a0915785b3f10d3ca78dfef0e79bf09">validate_dimnames</a>(handle, dims, <span class="stringliteral">&quot;sparse matrix&quot;</span>, version);</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="comment">// Check if it&#39;s boolean.</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (is_boolean(dhandle)) {</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        type = BOOLEAN;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(type, std::vector&lt;size_t&gt;(dims.begin(), dims.end()));</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>} <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate sparse matrix at &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39;\n- &quot;</span> + std::string(e.what()));</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>}</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;datatype of &#39;indices&#39; should fit into a 64-bit unsigned integer&quot;</span>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">if</span> (nnz != ritsuko::hdf5::get_1d_length(ihandle, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indices&#39; and &#39;data&#39; should have the same length&quot;</span>);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keyword">auto</span> iphandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;indptr&quot;</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">if</span> (iphandle.getTypeClass() != H5T_INTEGER) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indptr&#39; should be integer&quot;</span>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;datatype of &#39;indptr&#39; should fit into a 64-bit unsigned integer&quot;</span>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        }</div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="adimnames_8hpp_html"><div class="ttname"><a href="dimnames_8hpp.html">dimnames.hpp</a></div><div class="ttdoc">Validation for delayed dimnames assignment.</div></div>
-<div class="ttc" id="adimnames_8hpp_html_a7a0915785b3f10d3ca78dfef0e79bf09"><div class="ttname"><a href="dimnames_8hpp.html#a7a0915785b3f10d3ca78dfef0e79bf09">chihaya::validate_dimnames</a></div><div class="ttdeci">ArrayDetails validate_dimnames(const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</div><div class="ttdef"><b>Definition:</b> dimnames.hpp:89</div></div>
-<div class="ttc" id="asparse__matrix_8hpp_html_aded30ba99ca2e6642bc933ec604e9a40"><div class="ttname"><a href="sparse__matrix_8hpp.html#aded30ba99ca2e6642bc933ec604e9a40">chihaya::validate_sparse_matrix</a></div><div class="ttdeci">ArrayDetails validate_sparse_matrix(const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</div><div class="ttdef"><b>Definition:</b> sparse_matrix.hpp:62</div></div>
-<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils.hpp:33</div></div>
-<div class="ttc" id="astructchihaya_1_1Version_html"><div class="ttname"><a href="structchihaya_1_1Version.html">chihaya::Version</a></div><div class="ttdoc">Version of the chihaya specification.</div><div class="ttdef"><b>Definition:</b> utils.hpp:59</div></div>
-<div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Various utilities.</div></div>
-<div class="ttc" id="autils_8hpp_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition:</b> utils.hpp:24</div></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">auto</span> primary = (csc ? dims[1] : dims[0]);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keyword">auto</span> secondary = (csc ? dims[0] : dims[1]);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">if</span> (ritsuko::hdf5::get_1d_length(iphandle, <span class="keyword">false</span>) != <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(primary + 1)) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indptr&#39; should have length equal to the number of &quot;</span> + (csc ? std::string(<span class="stringliteral">&quot;columns&quot;</span>) : std::string(<span class="stringliteral">&quot;rows&quot;</span>)) + <span class="stringliteral">&quot; plus 1&quot;</span>);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        std::vector&lt;uint64_t&gt; indptrs(primary + 1);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">if</span> (indptrs[0] != 0) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;first entry of &#39;indptr&#39; should be 0 for a sparse matrix&quot;</span>);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">if</span> (indptrs.back() != <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(nnz)) {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;last entry of &#39;indptr&#39; should be equal to the length of &#39;data&#39;&quot;</span>);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            internal::validate_indices&lt;int&gt;(ihandle, indptrs, primary, secondary, csc);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            internal::validate_indices&lt;uint64_t&gt;(ihandle, indptrs, primary, secondary, csc);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="comment">// Validating dimnames.</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">if</span> (handle.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        internal_dimnames::validate(handle, dims, version);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">return</span> ArrayDetails(array_type, std::vector&lt;size_t&gt;(dims.begin(), dims.end()));</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacechihaya_1_1sparse__matrix_html_ab441a24a30c36ad60aa6a0af7eda519c"><div class="ttname"><a href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">chihaya::sparse_matrix::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> sparse_matrix.hpp:74</div></div>
+<div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

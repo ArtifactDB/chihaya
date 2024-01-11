@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chihaya: Class Index</title>
+<title>chihaya: chihaya::transpose Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -48,7 +48,6 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -70,21 +69,72 @@ $(function() {
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespacechihaya.html">chihaya</a></li><li class="navelem"><a class="el" href="namespacechihaya_1_1transpose.html">transpose</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">Class Index</div></div>
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">chihaya::transpose Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="qindex"><a class="qindex" href="#letter_A">A</a>&#160;|&#160;<a class="qindex" href="#letter_L">L</a>&#160;|&#160;<a class="qindex" href="#letter_V">V</a></div>
-<div class="classindex">
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_A" name="letter_A">A</a></dt>
-<dd><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> (chihaya)</dd></dl>
-<dl class="classindex odd">
-<dt class="alphachar"><a id="letter_L" name="letter_L">L</a></dt>
-<dd><a class="el" href="structchihaya_1_1ListDetails.html">ListDetails</a> (chihaya)</dd></dl>
-<dl class="classindex even">
-<dt class="alphachar"><a id="letter_V" name="letter_V">V</a></dt>
-<dd><a class="el" href="structchihaya_1_1Version.html">Version</a> (chihaya)</dd></dl>
+
+<p>Namespace for delayed transposition.  
+<a href="namespacechihaya_1_1transpose.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a64c15d35d93e4f134cba6783676a4749"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1transpose.html#a64c15d35d93e4f134cba6783676a4749">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a64c15d35d93e4f134cba6783676a4749"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Namespace for delayed transposition. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a64c15d35d93e4f134cba6783676a4749" name="a64c15d35d93e4f134cba6783676a4749"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64c15d35d93e4f134cba6783676a4749">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ArrayDetails chihaya::transpose::validate </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a transposition. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the transposed object. Otherwise, if the validation failed, an error is raised. </dd></dl>
+
+</div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->

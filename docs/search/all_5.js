@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['length_0',['length',['../structchihaya_1_1ListDetails.html#a4929c96edd7e8087d850088bcba459ab',1,'chihaya::ListDetails']]],
-  ['list_2ehpp_1',['list.hpp',['../list_8hpp.html',1,'']]],
-  ['listdetails_2',['ListDetails',['../structchihaya_1_1ListDetails.html',1,'chihaya']]]
+  ['sparse_5fmatrix_2ehpp_0',['sparse_matrix.hpp',['../sparse__matrix_8hpp.html',1,'']]],
+  ['subset_2ehpp_1',['subset.hpp',['../subset_8hpp.html',1,'']]],
+  ['subset_5fassignment_2ehpp_2',['subset_assignment.hpp',['../subset__assignment_8hpp.html',1,'']]]
 ];

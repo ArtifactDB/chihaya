@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['arraydetails_0',['ArrayDetails',['../structchihaya_1_1ArrayDetails.html',1,'chihaya']]],
-  ['arraytype_1',['ArrayType',['../utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2',1,'chihaya']]]
+  ['binary_5farithmetic_2ehpp_0',['binary_arithmetic.hpp',['../binary__arithmetic_8hpp.html',1,'']]],
+  ['binary_5fcomparison_2ehpp_1',['binary_comparison.hpp',['../binary__comparison_8hpp.html',1,'']]],
+  ['binary_5flogic_2ehpp_2',['binary_logic.hpp',['../binary__logic_8hpp.html',1,'']]]
 ];

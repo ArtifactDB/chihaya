@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chihaya: chihaya::ArrayDetails Struct Reference</title>
+<title>chihaya: chihaya::unary_special_check Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,66 +71,71 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>chihaya</b></li><li class="navelem"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacechihaya.html">chihaya</a></li><li class="navelem"><a class="el" href="namespacechihaya_1_1unary__special__check.html">unary_special_check</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structchihaya_1_1ArrayDetails-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">chihaya::ArrayDetails Struct Reference</div></div>
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">chihaya::unary_special_check Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Details about an array.  
- <a href="structchihaya_1_1ArrayDetails.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="utils_8hpp_source.html">utils.hpp</a>&gt;</code></p>
+<p>Namespace for delayed unary special checks.  
+<a href="namespacechihaya_1_1unary__special__check.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ad73104cbd51217fc0b79efe8a88b349a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a></td></tr>
-<tr class="separator:ad73104cbd51217fc0b79efe8a88b349a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad572a229d1da9b90ee688f9b0572b536"><td class="memItemLeft" align="right" valign="top">std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a></td></tr>
-<tr class="separator:ad572a229d1da9b90ee688f9b0572b536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a690eb3bd4ebfc1043f04f3b928d9e272"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__special__check.html#a690eb3bd4ebfc1043f04f3b928d9e272">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a690eb3bd4ebfc1043f04f3b928d9e272"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Details about an array. </p>
-<p >This contains the type and dimensionality of the array. The exact type representation of the array is left to the implementation; we do not make any guarantees about precision, width or signedness. </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="ad572a229d1da9b90ee688f9b0572b536" name="ad572a229d1da9b90ee688f9b0572b536"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad572a229d1da9b90ee688f9b0572b536">&#9670;&#160;</a></span>dimensions</h2>
+<div class="textblock"><p >Namespace for delayed unary special checks. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a690eb3bd4ebfc1043f04f3b928d9e272" name="a690eb3bd4ebfc1043f04f3b928d9e272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a690eb3bd4ebfc1043f04f3b928d9e272">&#9670;&#160;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;size_t&gt; chihaya::ArrayDetails::dimensions</td>
+          <td class="memname">ArrayDetails chihaya::unary_special_check::validate </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
         </tr>
-      </table>
-</div><div class="memdoc">
-<p >Dimensions of the array. Values should be non-negative. </p>
-
-</div>
-</div>
-<a id="ad73104cbd51217fc0b79efe8a88b349a" name="ad73104cbd51217fc0b79efe8a88b349a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad73104cbd51217fc0b79efe8a88b349a">&#9670;&#160;</a></span>type</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> chihaya::ArrayDetails::type</td>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p >Type of the array. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing an unary special check operation. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the special check. Otherwise, if the validation failed, an error is raised. </dd></dl>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>chihaya/<a class="el" href="utils_8hpp_source.html">utils.hpp</a></li>
-</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

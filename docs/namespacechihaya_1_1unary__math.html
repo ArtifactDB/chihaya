@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>chihaya: chihaya/utils.hpp File Reference</title>
+<title>chihaya: chihaya::unary_math Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,55 +71,68 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_98013a9308bc8a3217b5ee75e096a657.html">chihaya</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacechihaya.html">chihaya</a></li><li class="navelem"><a class="el" href="namespacechihaya_1_1unary__math.html">unary_math</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
-  <div class="headertitle"><div class="title">utils.hpp File Reference</div></div>
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">chihaya::unary_math Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Various utilities.  
-<a href="#details">More...</a></p>
-
-<p><a href="utils_8hpp_source.html">Go to the source code of this file.</a></p>
+<p>Namespace for delayed unary math.  
+<a href="namespacechihaya_1_1unary__math.html#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Details about an array.  <a href="structchihaya_1_1ArrayDetails.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Version.html">chihaya::Version</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structchihaya_1_1Version.html" title="Version of the chihaya specification.">Version</a> of the <b>chihaya</b> specification.  <a href="structchihaya_1_1Version.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:aff4525846a37a56401501e2ffc5a61f2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a> { <b>BOOLEAN</b> = 0
-, <b>INTEGER</b> = 1
-, <b>FLOAT</b> = 2
-, <b>STRING</b> = 3
- }</td></tr>
-<tr class="separator:aff4525846a37a56401501e2ffc5a61f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a7589ab3dcbdf97bed7e6eaad5b1e2796"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1unary__math.html#a7589ab3dcbdf97bed7e6eaad5b1e2796">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a7589ab3dcbdf97bed7e6eaad5b1e2796"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Various utilities. </p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="aff4525846a37a56401501e2ffc5a61f2" name="aff4525846a37a56401501e2ffc5a61f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff4525846a37a56401501e2ffc5a61f2">&#9670;&#160;</a></span>ArrayType</h2>
+<div class="textblock"><p >Namespace for delayed unary math. </p>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a7589ab3dcbdf97bed7e6eaad5b1e2796" name="a7589ab3dcbdf97bed7e6eaad5b1e2796"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7589ab3dcbdf97bed7e6eaad5b1e2796">&#9670;&#160;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="utils_8hpp.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></td>
+          <td class="memname">ArrayDetails chihaya::unary_math::validate </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p >Type of the array. Operations involving mixed types will generally result in promotion to the more advanced types, e.g., an <code>INTEGER</code> and <code>FLOAT</code> addition will result in promotion to <code>FLOAT</code>. Note that operations involving the same types are not guaranteed to preserve type, e.g., <code>INTEGER</code> division is assumed to produce a <code>FLOAT</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing an unary math operation. </td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the mathal operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
 
 </div>
 </div>

@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">matrix_product.hpp File Reference</div></div>
 </div><!--header-->
@@ -86,81 +87,23 @@ $(function() {
 
 <p><a href="matrix__product_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacechihaya"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html">chihaya</a></td></tr>
+<tr class="memdesc:namespacechihaya"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for all <b>chihaya</b> functions. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacechihaya_1_1matrix__product"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1matrix__product.html">chihaya::matrix_product</a></td></tr>
+<tr class="memdesc:namespacechihaya_1_1matrix__product"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for delayed matrix products. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac2993b144e1fc944d41b32395d6da5c5"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix__product_8hpp.html#ac2993b144e1fc944d41b32395d6da5c5">chihaya::validate_matrix_product</a> (const H5::Group &amp;handle, const std::string &amp;name, const Version &amp;version)</td></tr>
-<tr class="separator:ac2993b144e1fc944d41b32395d6da5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc3c62d84792b7410c727dca7750380"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1matrix__product.html#a8cc3c62d84792b7410c727dca7750380">chihaya::matrix_product::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
+<tr class="separator:a8cc3c62d84792b7410c727dca7750380"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validation for delayed matrix products. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="ac2993b144e1fc944d41b32395d6da5c5" name="ac2993b144e1fc944d41b32395d6da5c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2993b144e1fc944d41b32395d6da5c5">&#9670;&#160;</a></span>validate_matrix_product()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">ArrayDetails chihaya::validate_matrix_product </td>
-          <td>(</td>
-          <td class="paramtype">const H5::Group &amp;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structchihaya_1_1Version.html">Version</a> &amp;&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Validate a delayed matrix product in a HDF5 file.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a matrix product. </td></tr>
-    <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the matrix product. Otherwise, if the validation failed, an error is raised.</dd></dl>
-<p>A delayed matrix product is represented as a HDF5 group with the following attributes:</p>
-<ul>
-<li><code>delayed_type</code> should be a scalar string <code>"operation"</code>.</li>
-<li><code>delayed_operation</code> should be a scalar string <code>"matrix product"</code>.</li>
-</ul>
-<p >Inside the group, we expect:</p>
-<ul>
-<li>A <code>left_seed</code> group describing a delayed object, i.e., another delayed operation or array. This is used as the left hand side of the matrix product.</li>
-<li>A <code>left_orientation</code> scalar string dataset, specifying whether the <code>left_seed</code> array should be transposed (<code>"T"</code>) or not (<code>"N"</code>).</li>
-<li>A <code>right_seed</code> group describing a delayed object, i.e., another delayed operation or array. This is used as the right hand side of the matrix product.</li>
-<li>A <code>right_orientation</code> scalar string dataset, specifying whether the <code>right_seed</code> should be transposed (<code>"T"</code>) or not (<code>"N"</code>).</li>
-</ul>
-<p >For example, setting <code>left orientation</code> to <code>"T"</code> and <code>right orientation</code> to <code>"N"</code> would be equivalent to <code>t(left_seed) * right_seed</code>. This enables optimizations during the multiplication by avoiding the need to explicitly realize the transposition.</p>
-<p >If either <code>left_seed</code> or <code>right_seed</code> are floating-point, the output type will also be <code>FLOAT</code>. Otherwise, the output type will be <code>INTEGER</code>. </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5
