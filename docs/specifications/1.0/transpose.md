@@ -1,0 +1,24 @@
+## Overview
+
+A delayed transposition operation involves permuting the dimensions of a delayed object.
+
+## Specification
+
+A delayed transposition is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"transpose"`.
+
+Inside the group, we expect:
+
+- A `seed` group, containing the object on which the transposition is to be applied.
+  This can be of any value type - boolean, integer, float or string.
+- A `permutation` integer 1-dimensional dataset.
+  Assuming that `seed` has dimensionality `d`, this dataset should have length `d` and contain all integers in `[0, d)`.
+  This dataset describes the permutation to be applied to the dimensions to create the transposed array.
+  For example, a `permutation` of `[1, 0]` will transpose a matrix, as the second dimension becomes the first and the first becomes the second.
+  The exact integer representation is left to the implementation.
+
+The value type of the output is the same as that of `seed`; only the dimensions are altered.

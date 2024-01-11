@@ -1,0 +1,32 @@
+
+
+# Subset assignment (1.1)
+
+## Overview
+
+A delayed subset assignment involves replacing a subarray of a delayed object.
+The subarray itself is defined as the outer product of the per-dimension indices.
+
+## Specification
+
+A delayed subset assignment is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"subset assignment"`.
+
+Inside the group, we expect:
+
+- A `seed` group, containing the delayed object to be subsetted. 
+  This can be of any value type - boolean, integer, float or string.
+- A `value` group, containing the object supplying the replacement values for subset assignment.
+  This can be of any type - boolean, integer, float or string.
+- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed`.
+  Each child entry is named after a dimension of `seed` and contains the indices to be replaced along that dimension.
+  Each entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of `seed`;
+  the length of this dataset should be equal to the extent of the corresponding dimension of `value`.
+  The datatype of each dataset should be exactly represented by a 64-bit unsigned integer.
+  The absence of an entry for a dimension indicates that the full extent of that dimension is to be replaced.
+
+The value type of the object is defined as the more advanced type of `seed` and `value`.

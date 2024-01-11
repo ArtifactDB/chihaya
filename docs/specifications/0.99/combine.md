@@ -1,0 +1,32 @@
+
+
+# Combine (0.99)
+
+## Overview
+
+A combine operation involves combining one or more delayed objects along a single dimension.
+
+## Specification
+
+A delayed combining operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"combine"`.
+
+Inside the group, we expect:
+
+- A `seeds` group.
+  This is expected to be a [list](_general.md#lists) of length equal to the number of seeds to be combined.
+  Each seed should be a group describing a delayed object of any value type - boolean, integer, float or string.
+  All seeds should have the same dimensionality and extents, with the exception of the `along` dimension.
+- An `along` scalar dataset 
+  of any integer datatype.
+  This is a 0-based index that specifies the dimensions on which to combine objects in `seeds`.
+  It should be a non-negative value that is less than the dimensionality of each object.
+
+If all `seeds` have the same value type, the output object will also be of that type.
+Otherwise, the type of the output object is set to the most advanced value type among all `seeds` objects.
+For example, a mixture of integer and float objects will result in a float output, where all objects are promoted to float before combining them.
+Note that mixing of string and non-string objects is not allowed.
