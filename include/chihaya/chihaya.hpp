@@ -9,4 +9,10 @@
 
 #include "validate.hpp"
 
+/**
+ * @namespace chihaya
+ * @brief Namespace for all **chihaya** functions.
+ */
+namespace chihaya {}
+
 #endif

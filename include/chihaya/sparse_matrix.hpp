@@ -2,168 +2,201 @@
 #define CHIHAYA_SPARSE_MATRIX_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/hdf5/hdf5.hpp"
+
 #include <vector>
-#include "utils.hpp"
-#include "dimnames.hpp"
+#include <cstdint>
+
+#include "utils_public.hpp"
+#include "utils_misc.hpp"
+#include "utils_type.hpp"
+#include "utils_dimnames.hpp"
 
 /**
  * @file sparse_matrix.hpp
- *
  * @brief Validation for compressed sparse column matrices. 
  */
 
 namespace chihaya {
 
 /**
- * Validate a sparse matrix in a HDF5 file.
- * This is stored in the compressed sparse column layout, using the same notation as the [10X Genomics feature barcode matrices](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices).
- *
- * @param handle An open handle on a HDF5 group representing a sparse matrix.
- * @param name Name of the group inside the file.
- * @param version Version of the **chihaya** specification.
- * 
- * A sparse matrix is represented as a HDF5 group with the following attributes:
- *
- * - `delayed_type` should be a scalar string `"array"`.
- * - `delayed_array` should be a scalar string `"sparse matrix"`.
- *
- * Inside the group, we expect:
- *
- * - A `shape` 1-dimensional integer dataset, containing the dimensions of the matrix.
- *   The first entry represents the number of rows and the second entry represents the number of columns.
- *   The exact integer representation is left to the implementation.
- * - A `data` 1-dimensional dataset, containing the values of the non-zero elements.
- *   This should contain integers or floats, though the exact type representation is left to the implementation.
- * - An `indices` 1-dimensional dataset, containing the row indices for the non-zero elements.
- *   This should have the same length as `data` and should contain integers in `[0, NR)` where `NR` is the number of rows from `shape`.
- *   Entries should be strictly increasing within each column, based on the ranges defined by `indptr`.
- *   The exact integer representation is left to the implementation.
- * - An `indptr` 1-dimensional dataset, containing column pointers into the `indices` vector.
- *   This should have length equal to `NC + 1` where `NC` is the number of columns from `shape`.
- *   The first element should be equal to zero and the last element should be equal to the length of `data`.
- *   The exact integer representation is left to the implementation.
- *
- * The group may also contain:
- *
- * - A `dimnames` group, representing a list (see `ListDetails`) of length equal to the number of dimensions in the `seed`.
- *   Each child entry corresponds to a dimension of `seed` and contains the names along that dimension.
- *   Missing entries indicate that no names are attached to its dimension.
- *   Each (non-missing) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
- *   The exact string representation is left to the implementation.
- *
- * If `data` is an integer dataset, it may contain an `is_boolean` attribute.
- * This should be an integer scalar; if non-zero, it indicates that the contents of `data` should be treated as booleans where zeros are falsey and non-zeros are truthy.
- *
- * `data` may contain a `missing_placeholder` attribute.
- * This should be a scalar dataset of the same type class as `data`, specifying the placeholder value used for all missing elements,
- * i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
- * (Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
+ * @namespace chihaya::sparse_matrix
+ * @brief Namespace for sparse matrices.
  */
-inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const std::string& name, const Version& version) try {
-    std::vector<int> dims(2);
-    {
-        auto shandle = check_vector(handle, "shape", "sparse_matrix");
-        if (shandle.getTypeClass() != H5T_INTEGER) {
-            throw std::runtime_error("'shape' should be integer for a sparse matrix");
-        }
-        if (vector_length(shandle) != 2) {
-            throw std::runtime_error("'shape' should have length 2 for a sparse matrix");
-        }
-        shandle.read(dims.data(), H5::PredType::NATIVE_INT);
+namespace sparse_matrix {
 
-        if (dims[0] < 0 || dims[1] < 0) {
-            throw std::runtime_error("'shape' should contain non-negative values for a sparse matrix");
-        }
-    }
+/**
+ * @cond
+ */
+namespace internal {
 
-    auto dhandle = check_vector(handle, "data", "sparse matrix");
-    size_t ntriplets = vector_length(dhandle);
-    ArrayType type;
-    if (dhandle.getTypeClass() == H5T_INTEGER) {
-        type = INTEGER;
-    } else if (dhandle.getTypeClass() == H5T_FLOAT) {
-        type = FLOAT;
-    } else {
-        throw std::runtime_error("unknown type of 'data' for a sparse matrix");
-    }
-    validate_missing_placeholder(dhandle, version);
+template<typename Index_>
+void validate_indices(const H5::DataSet& ihandle, const std::vector<uint64_t>& indptrs, size_t primary, size_t secondary, bool csc) {
+    ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&ihandle, indptrs.back(), 1000000);
 
-    // Checking the properties of the indices.
-    auto ihandle = check_vector(handle, "indices", "sparse matrix");
-    if (ihandle.getTypeClass() != H5T_INTEGER) {
-        throw std::runtime_error("'indices' should be integer for a sparse matrix");
-    }
-    if (ntriplets != vector_length(ihandle)) {
-        throw std::runtime_error("'indices' and 'data' should have the same length for a sparse matrix");
-    }
-
-    auto iphandle = check_vector(handle, "indptr", "sparse matrix");
-    if (iphandle.getTypeClass() != H5T_INTEGER) {
-        throw std::runtime_error("'indptr' should be integer for a sparse matrix");
-    }
-    if (vector_length(iphandle) != static_cast<size_t>(dims[1] + 1)) {
-        throw std::runtime_error("'indptr' should have length equal to the number of columns plus 1 for a sparse matrix");
-    }
-    std::vector<hsize_t> indptrs(dims[1] + 1);
-    iphandle.read(indptrs.data(), H5::PredType::NATIVE_HSIZE);
-    if (indptrs[0] != 0) {
-        throw std::runtime_error("first entry of 'indptr' should be 0 for a sparse matrix");
-    }
-    if (indptrs.back() != static_cast<hsize_t>(ntriplets)) {
-        throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data' for a sparse matrix");
-    }
-
-    // Validating the indices.
-    int nrows = dims[0];
-    size_t ncols = dims[1];
-    std::vector<int> indices;
-    hsize_t full_len = ntriplets;
-    H5::DataSpace colspace(1, &full_len);
-
-    for (size_t c = 0; c < ncols; ++c) {
-        auto start = indptrs[c];
-        auto end = indptrs[c + 1];
+    for (size_t p = 0; p < primary; ++p) {
+        auto start = indptrs[p];
+        auto end = indptrs[p + 1];
         if (start > end) {
-            throw std::runtime_error("entries of 'indptr' must be sorted for a sparse matrix");
+            throw std::runtime_error("entries of 'indptr' must be sorted");
         }
-
-        hsize_t len = end - start;
-        H5::DataSpace memspace(1, &len);
-        indices.resize(len);
-
-        hsize_t offset = start;
-        colspace.selectHyperslab(H5S_SELECT_SET, &len, &offset);
-        ihandle.read(indices.data(), H5::PredType::NATIVE_INT, memspace, colspace);
 
         // Checking for sortedness and good things.
-        int previous = -1;
-        for (auto i : indices) {
+        Index_ previous;
+        for (auto x = start; x < end; ++x, stream.next()) {
+            auto i = stream.get();
             if (i < 0) {
-                throw std::runtime_error("entries of 'indices' should be non-negative for a sparse matrix");
+                throw std::runtime_error("entries of 'indices' should be non-negative");
             }
-            if (i <= previous) {
-                throw std::runtime_error("'indices' should be strictly increasing within each column for a sparse matrix");
+            if (x > start && i <= previous) {
+                throw std::runtime_error("'indices' should be strictly increasing within each " + (csc ? std::string("column") : std::string("row")));
             }
-            if (i >= nrows) {
-                throw std::runtime_error("entries of 'indices' should be less than the number of rows for a sparse matrix");
+            if (static_cast<size_t>(i) >= secondary) {
+                throw std::runtime_error("entries of 'indices' should be less than the number of " + (csc ? std::string("row") : std::string("column")) + "s");
             }
             previous = i;
+        }
+    }
+}
+
+}
+/**
+ * @endcond
+ */
+
+/**
+ * @param handle An open handle on a HDF5 group representing a sparse matrix.
+ * @param version Version of the **chihaya** specification.
+ * 
+ * @return Details of the sparse matrix.
+ * Otherwise, if the validation failed, an error is raised.
+ */
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
+    std::vector<uint64_t> dims(2);
+    ArrayType array_type;
+
+    {
+        auto shandle = ritsuko::hdf5::open_dataset(handle, "shape");
+        auto len = ritsuko::hdf5::get_1d_length(shandle, false);
+        if (len != 2) {
+            throw std::runtime_error("'shape' should have length 2");
+        }
+
+        if (version.lt(1, 1, 0)) {
+            if (shandle.getTypeClass() != H5T_INTEGER) {
+                throw std::runtime_error("'shape' should be integer");
+            }
+            std::vector<int> dims_tmp(2);
+            shandle.read(dims_tmp.data(), H5::PredType::NATIVE_INT);
+            if (dims_tmp[0] < 0 || dims_tmp[1] < 0) {
+                throw std::runtime_error("'shape' should contain non-negative values");
+            }
+            std::copy(dims_tmp.begin(), dims_tmp.end(), dims.begin());
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, false)) {
+                throw std::runtime_error("'shape' should have a datatype that can fit into a 64-bit unsigned integer");
+            }
+            shandle.read(dims.data(), H5::PredType::NATIVE_UINT64);
+        }
+    }
+
+    size_t nnz;
+    {
+        auto dhandle = ritsuko::hdf5::open_dataset(handle, "data");
+
+        try {
+            nnz = ritsuko::hdf5::get_1d_length(dhandle, false);
+
+            if (version.lt(1, 1, 0)) {
+                array_type = internal_type::translate_type_0_0(dhandle.getTypeClass());
+                if (internal_type::is_boolean(dhandle)) {
+                    array_type = BOOLEAN;
+                }
+            } else {
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(dhandle, "type");
+                array_type = internal_type::translate_type_1_1(type);
+                internal_type::check_type_1_1(dhandle, array_type);
+            }
+
+            if (array_type != INTEGER && array_type != BOOLEAN && array_type != FLOAT) {
+                throw std::runtime_error("dataset should be integer, float or boolean");
+            }
+
+            internal_misc::validate_missing_placeholder(dhandle, version);
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
+        }
+    }
+
+    bool csc = true;
+    if (!version.lt(1, 1, 0)) {
+        auto bhandle = ritsuko::hdf5::open_dataset(handle, "by_column");
+        if (!ritsuko::hdf5::is_scalar(bhandle)) {
+            throw std::runtime_error("'by_column' should be a scalar");
+        }
+        if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
+            throw std::runtime_error("datatype of 'by_column' should fit into an 8-bit signed integer");
+        }
+        csc = (ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(bhandle) != 0);
+    }
+
+    {
+        auto ihandle = ritsuko::hdf5::open_dataset(handle, "indices");
+
+        if (version.lt(1, 1, 0)) {
+            if (ihandle.getTypeClass() != H5T_INTEGER) {
+                throw std::runtime_error("'indices' should be integer");
+            }
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
+                throw std::runtime_error("datatype of 'indices' should fit into a 64-bit unsigned integer");
+            }
+        }
+
+        if (nnz != ritsuko::hdf5::get_1d_length(ihandle, false)) {
+            throw std::runtime_error("'indices' and 'data' should have the same length");
+        }
+
+        auto iphandle = ritsuko::hdf5::open_dataset(handle, "indptr");
+        if (version.lt(1, 1, 0)) {
+            if (iphandle.getTypeClass() != H5T_INTEGER) {
+                throw std::runtime_error("'indptr' should be integer");
+            }
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, false)) {
+                throw std::runtime_error("datatype of 'indptr' should fit into a 64-bit unsigned integer");
+            }
+        }
+
+        auto primary = (csc ? dims[1] : dims[0]);
+        auto secondary = (csc ? dims[0] : dims[1]);
+        if (ritsuko::hdf5::get_1d_length(iphandle, false) != static_cast<size_t>(primary + 1)) {
+            throw std::runtime_error("'indptr' should have length equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
+        }
+        std::vector<uint64_t> indptrs(primary + 1);
+        iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);
+        if (indptrs[0] != 0) {
+            throw std::runtime_error("first entry of 'indptr' should be 0 for a sparse matrix");
+        }
+        if (indptrs.back() != static_cast<uint64_t>(nnz)) {
+            throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data'");
+        }
+
+        if (version.lt(1, 1, 0)) {
+            internal::validate_indices<int>(ihandle, indptrs, primary, secondary, csc);
+        } else {
+            internal::validate_indices<uint64_t>(ihandle, indptrs, primary, secondary, csc);
         }
     }
 
     // Validating dimnames.
     if (handle.exists("dimnames")) {
-        validate_dimnames(handle, dims, "sparse matrix", version);
+        internal_dimnames::validate(handle, dims, version);
     }
 
-    // Check if it's boolean.
-    if (is_boolean(dhandle)) {
-        type = BOOLEAN;
-    }
+    return ArrayDetails(array_type, std::vector<size_t>(dims.begin(), dims.end()));
+}
 
-    return ArrayDetails(type, std::vector<size_t>(dims.begin(), dims.end()));
-} catch (std::exception& e) {
-    throw std::runtime_error("failed to validate sparse matrix at '" + name + "'\n- " + std::string(e.what()));
 }
 
 }

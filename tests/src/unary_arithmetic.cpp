@@ -2,233 +2,343 @@
 #include "chihaya/chihaya.hpp"
 #include "utils.h"
 
-TEST(UnaryArithmetic, PureUnary) {
-    std::string path = "Test_unary_arithmetic.h5";
+class UnaryArithmeticTest : public ::testing::TestWithParam<int> {
+public:
+    UnaryArithmeticTest() : path("Test_unary_arithmetic.h5") {}
+protected:
+    std::string path;
+
+    static H5::Group unary_arithmetic_opener(H5::Group& handle, const std::string& name, const std::string& method, const std::string& side, const std::vector<int>& dimensions, int version, const std::string& type) {
+        auto ghandle = operation_opener(handle, name, "unary arithmetic");
+        add_version_string(ghandle, version);
+        mock_array_opener(ghandle, "seed", dimensions, version, type);
+        add_string_scalar(ghandle, "method", method);
+        add_string_scalar(ghandle, "side", side);
+        return ghandle;
+    }
+};
+
+TEST_P(UnaryArithmeticTest, PureUnary) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("+"));
-        add_scalar(ghandle, "side", std::string("none"));
+        unary_arithmetic_opener(fhandle, "hello", "+", "none", { 17, 21 }, version, "INTEGER");
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], 17);
+    EXPECT_EQ(output.dimensions[1], 21);
 }
 
-TEST(UnaryArithmetic, ScalarUnary) {
-    std::string path = "Test_unary_arithmetic.h5";
+TEST_P(UnaryArithmeticTest, ScalarUnary) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("-"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_scalar<double>(ghandle, "value", 2.5);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "-", "left", { 23, 11 }, version, "INTEGER");
+        auto dhandle = add_numeric_scalar<double>(ghandle, "value", 2.5, H5::PredType::NATIVE_DOUBLE);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "FLOAT");
+        }
+    }
+    {
+        auto output = test_validate(path, "hello"); 
+        EXPECT_EQ(output.type, chihaya::FLOAT);
+        EXPECT_EQ(output.dimensions.size(), 2);
+        EXPECT_EQ(output.dimensions[0], 23);
+        EXPECT_EQ(output.dimensions[1], 11);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    // Boolean promotion works as expected.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "-", "left", { 23, 11 }, version, "BOOLEAN");
+        auto dhandle = add_numeric_scalar<int>(ghandle, "value", 1, H5::PredType::NATIVE_INT8);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "BOOLEAN");
+        }
+    }
+    {
+        auto output = test_validate(path, "hello"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+    }
+
+
+    // Regular division always yields floats.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "/", "left", { 23, 11 }, version, "BOOLEAN");
+        auto dhandle = add_numeric_scalar<int>(ghandle, "value", 2, H5::PredType::NATIVE_INT32);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
+    }
+    {
+        auto output = test_validate(path, "hello"); 
+        EXPECT_EQ(output.type, chihaya::FLOAT);
+    }
+
+    // Integer division always yields integers.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "%/%", "left", { 23, 11 }, version, "FLOAT");
+        auto dhandle = add_numeric_scalar<double>(ghandle, "value", 2.5, H5::PredType::NATIVE_DOUBLE);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "FLOAT");
+        }
+    }
+    {
+        auto output = test_validate(path, "hello"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+    }
+}
+
+TEST_P(UnaryArithmeticTest, VectorUnary) {
+    auto version = GetParam();
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "/", "left", { 5, 19 }, version, "INTEGER");
+        auto dhandle = add_numeric_vector<int>(ghandle, "value", { 1, 2, 3, 4, 5 }, H5::PredType::NATIVE_INT16);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+            add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
+        } else {
+            add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_INT);
+        }
+    }
+
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], 5);
+    EXPECT_EQ(output.dimensions[1], 19);
 }
 
-TEST(UnaryArithmetic, VectorUnary) {
-    std::string path = "Test_unary_arithmetic.h5";
+TEST_P(UnaryArithmeticTest, Missing) {
+    auto version = GetParam();
+    if (version < 1000000) {
+        return;
+    }
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_scalar(ghandle, "along", 0);
-        add_vector<double>(ghandle, "value", { 1, 2, 3, 4, 5 });
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+        auto dhandle = add_numeric_vector<int>(ghandle, "value", { 6, 5, 4, 3, 2, 1, 0 }, H5::PredType::NATIVE_INT16);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+            add_numeric_scalar<int>(ghandle, "along", 1, H5::PredType::NATIVE_UINT8);
+        } else {
+            add_numeric_scalar<int>(ghandle, "along", 1, H5::PredType::NATIVE_INT);
+        }
+        add_numeric_missing_placeholder<int>(dhandle, 2, H5::PredType::NATIVE_INT16);
     }
 
-    auto output = chihaya::validate(path, "hello"); 
+    auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], 10);
+    EXPECT_EQ(output.dimensions[1], 7);
 }
 
-TEST(UnaryArithmetic, Missing) {
-    std::string path = "Test_unary_arithmetic.h5";
+TEST_P(UnaryArithmeticTest, SeedErrors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
-        add_version_string(ghandle, "1.0.0");
-
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_scalar(ghandle, "along", 0);
-
-        add_vector<double>(ghandle, "value", { 1, 2, 3, 4, 5 });
-        auto dhandle = ghandle.openDataSet("value");
-        add_missing_placeholder(dhandle, 1.2);
+        unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "STRING");
     }
+    expect_error(path, "hello", "integer, float or boolean");
 
-    auto output = chihaya::validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::FLOAT);
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("seed");
+    }
+    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
-
-TEST(UnaryArithmetic, CommonErrors) {
-    std::string path = "Test_unary_arithmetic.h5";
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        operation_opener(fhandle, "hello", "unary arithmetic");
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'seed'");
+TEST_P(UnaryArithmeticTest, SideErrors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+        ghandle.unlink("side");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'method'");
+    expect_error(path, "hello", "expected a dataset at 'side'");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar<int>(ghandle, "method", 1);
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        add_numeric_scalar<int>(ghandle, "side", 1, H5::PredType::NATIVE_INT16);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "scalar string");
+    expect_error(path, "hello", "UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("foo"));
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("side");
+        add_string_scalar(ghandle, "side", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized 'method' (foo)");
+    expect_error(path, "hello", "should be 'left' or 'right'");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("+"));
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("side");
+        add_string_scalar(ghandle, "side", "none");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'side'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("+"));
-        add_scalar<int>(ghandle, "side", 1);
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "scalar string");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("+"));
-        add_scalar(ghandle, "side", std::string("foo"));
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "unrecognized 'side' (foo)");
+    expect_error(path, "hello", "cannot be 'none'");
 }
 
-TEST(UnaryArithmetic, MethodErrors) {
-    std::string path = "Test_unary_arithmetic.h5";
+TEST_P(UnaryArithmeticTest, MethodErrors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("none"));
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+        ghandle.unlink("method");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "cannot be 'none'");
+    expect_error(path, "hello", "expected a dataset at 'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+        ghandle.unlink("method");
+        add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT32);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'value'");
+    expect_error(path, "hello", "UTF-8 encoded string");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_scalar(ghandle, "value", std::string("WHEE"));
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+        ghandle.unlink("method");
+        add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'value' dataset should be numeric");
+    expect_error(path, "hello", "unrecognized operation in 'method' (got 'foo')");
+}
+
+TEST_P(UnaryArithmeticTest, ValueErrors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 13, 19 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
+        unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
+    }
+    expect_error(path, "hello", "expected a dataset at 'value'");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        auto dhandle = add_string_scalar(ghandle, "value", "WHEE");
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "hello", "should be integer, float or boolean");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("hello");
+        ghandle.unlink("value");
 
         hsize_t dims[2];
         dims[0] = 5;
         dims[1] = 5;
         H5::DataSpace dspace(2, dims);
-        ghandle.createDataSet("value", H5::PredType::NATIVE_INT, dspace);
+        auto dhandle = ghandle.createDataSet("value", H5::PredType::NATIVE_INT, dspace);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'value' dataset should be scalar or 1-dimensional");
+    expect_error(path, "hello", "dataset should be scalar or 1-dimensional");
 }
 
-TEST(UnaryArithmetic, AlongErrors) {
-    std::string path = "Test_unary_arithmetic.h5";
+TEST_P(UnaryArithmeticTest, AlongErrors) {
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        external_array_opener(ghandle, "seed", { 19, 4 }, "INTEGER"); 
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_vector<int>(ghandle, "value", { 1, 2, 3, 4 });
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "/", "left", { 19, 4 }, version, "INTEGER");
+        auto dhandle = add_numeric_vector<int>(ghandle, "value", { 1, 2, 3, 4 }, H5::PredType::NATIVE_INT);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "expected 'along'");
+    expect_error(path, "hello", "expected a dataset at 'along'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
-        add_scalar(ghandle, "along", std::string("WHEE"));
+        add_string_scalar(ghandle, "along", "WHEE");
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be a scalar");
+    if (version < 1100000) {
+        expect_error(path, "hello", "'along' should be an integer dataset");
+    } else {
+        expect_error(path, "hello", "64-bit unsigned integer");
+    }
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("along");
-        add_scalar<int>(ghandle, "along", -1);
+        add_numeric_scalar<int>(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "'along' should be non-negative");
+    if (version < 1100000) {
+        expect_error(path, "hello", "'along' should be non-negative");
+    } else {
+        expect_error(path, "hello", "64-bit unsigned integer");
+    }
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("hello");
         ghandle.unlink("along");
-        add_scalar<int>(ghandle, "along", 0);
+        add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "length of 'value' dataset");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "hello", "unary arithmetic");
-        add_version_string(ghandle, "1.0.0");
-        external_array_opener(ghandle, "seed", { 5, 19 }, "INTEGER"); 
-
-        add_scalar(ghandle, "method", std::string("/"));
-        add_scalar(ghandle, "side", std::string("left"));
-        add_scalar(ghandle, "along", 0);
-
-        add_vector<double>(ghandle, "value", { 1, 2, 3, 4, 5 });
-        auto dhandle = ghandle.openDataSet("value");
-        hsize_t dim = 5;
-        dhandle.createAttribute("missing_placeholder", H5::PredType::NATIVE_DOUBLE, H5::DataSpace(1, &dim));
-    }
-    expect_error([&]() -> void { chihaya::validate(path, "hello"); }, "should be a scalar");
+    expect_error(path, "hello", "length of 'value' dataset");
 }
+
+TEST_P(UnaryArithmeticTest, MissingErrors) {
+    auto version = GetParam();
+
+    if (version >= 1000000) {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = unary_arithmetic_opener(fhandle, "hello", "^", "left", { 5, 19 }, version, "FLOAT");
+            auto dhandle = add_numeric_vector<int>(ghandle, "value", { -1, -2, -3, -4 }, H5::PredType::NATIVE_INT32);
+            if (version >= 1100000) {
+                add_string_attribute(dhandle, "type", "FLOAT");
+            }
+            add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_FLOAT);
+        }
+        if (version < 1100000) {
+            expect_error(path, "hello", "same type class");
+        } else {
+            expect_error(path, "hello", "same type as ");
+        }
+    }
+
+    if (version >= 1100000) {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = unary_arithmetic_opener(fhandle, "hello", "^", "left", { 5, 19 }, version, "FLOAT");
+            auto dhandle = add_numeric_vector<int>(ghandle, "value", { -1, -2, -3, -4 }, H5::PredType::NATIVE_INT32);
+            if (version >= 1100000) {
+                add_string_attribute(dhandle, "type", "FLOAT");
+            }
+            add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_INT8);
+        }
+        expect_error(path, "hello", "same type as ");
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UnaryArithmetic,
+    UnaryArithmeticTest,
+    ::testing::Values(0, 1000000, 1100000)
+);

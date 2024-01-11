@@ -18,6 +18,15 @@ if(CHIHAYA_FIND_HDF5)
     endif()
 endif()
 
+option(CHIHAYA_FETCH_EXTERN "Automatically fetch takane's external dependencies." ON)
+if(CHIHAYA_FETCH_EXTERN)
+    add_subdirectory(extern)
+else()
+    find_package(artifactdb_ritsuko CONFIG REQUIRED)
+endif()
+
+target_link_libraries(chihaya INTERFACE artifactdb::ritsuko)
+
 # Switch between include directories depending on whether the downstream is
 # using the build directly or is using the installed package.
 include(GNUInstallDirs)

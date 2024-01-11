@@ -1,6 +1,10 @@
 #ifndef CHIHAYA_VALIDATE_HPP
 #define CHIHAYA_VALIDATE_HPP
 
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "ritsuko/hdf5/hdf5.hpp"
+
 #include "subset.hpp"
 #include "combine.hpp"
 #include "transpose.hpp"
@@ -25,105 +29,88 @@
 #include "binary_logic.hpp"
 
 #include "matrix_product.hpp"
-#include "utils.hpp"
+
+#include "utils_public.hpp"
 
 /**
  * @file validate.hpp
- *
  * @brief Main validation function.
  */
 
 namespace chihaya {
 
 /**
- * Validate a delayed operation/array at the specified HDF5 group.
- * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
- * @param name Name of the group inside the file, to be used for meaningful error messages.
  * @param version Version of the **chihaya** specification.
  *
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
- *
- * A "delayed object" is stored in the file as a HDF5 group with the `delayed_type` string attribute.
- * The value of this attribute can either be:
- *
- * - `"operation"`, in which case the object represents a delayed operation that is applied to a simpler (nested) "seed" object.
- *   This requires an additional `delayed_operation` string attribute to specify the type of operation.
- * - `"array"`, in which case the object represents an array prior to any application of operations.
- *   This requires an additional `delayed_array` string attribute to specify the type of array.
- *
- * In all cases, the exact string representation is left to the implementation.
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string& name, const Version& version) {
-    auto dtype = load_string_attribute(handle, "delayed_type", " for a delayed object");
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
+    auto dtype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_type");
     ArrayDetails output;
 
     if (dtype == "array") {
+        auto atype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_array");
+
         try {
-            auto atype = load_string_attribute(handle, "delayed_array", " for an array");
-
-            // Checking external.
             if (atype == "dense array") {
-                output = validate_dense_array(handle, name, version);
+                output = dense_array::validate(handle, version);
             } else if (atype == "sparse matrix") {
-                output = validate_sparse_matrix(handle, name, version);
-            } else if (atype.rfind("custom ", 0) != std::string::npos) {
-                output = validate_custom_array(handle, name, version);
-            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos) {
-                output = validate_external_hdf5(handle, name, version);
+                output = sparse_matrix::validate(handle, version);
             } else if (atype == "constant array") {
-                output = validate_constant_array(handle, name, version);
+                output = constant_array::validate(handle, version);
+            } else if (atype.rfind("custom ", 0) != std::string::npos) {
+                output = custom_array::validate(handle, version);
+            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
+                output = external_hdf5::validate(handle, version);
             } else {
-                throw std::runtime_error(std::string("unknown array type '") + atype + "' at '" + name + "'");
+                throw std::runtime_error("unknown array type");
             }
-
         } catch (std::exception& e) {
-            throw std::runtime_error(std::string("failed to validate delayed array at '") + name + "':\n  " + e.what());
+            throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
         }
 
     } else if (dtype == "operation") {
+        auto otype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_operation");
+
         try {
-            auto otype = load_string_attribute(handle, "delayed_operation", " for an operation");
-
-            // Checking subset.
             if (otype == "subset") {
-                output = validate_subset(handle, name, version);
+                output = subset::validate(handle, version);
             } else if (otype == "combine") {
-                output = validate_combine(handle, name, version);
+                output = combine::validate(handle, version);
             } else if (otype == "transpose") {
-                output = validate_transpose(handle, name, version);
+                output = transpose::validate(handle, version);
             } else if (otype == "dimnames") {
-                output = validate_dimnames(handle, name, version);
+                output = dimnames::validate(handle, version);
             } else if (otype == "subset assignment") {
-                output = validate_subset_assignment(handle, name, version);
+                output = subset_assignment::validate(handle, version);
             } else if (otype == "unary arithmetic") {
-                output = validate_unary_arithmetic(handle, name, version);
+                output = unary_arithmetic::validate(handle, version);
             } else if (otype == "unary comparison") {
-                output = validate_unary_comparison(handle, name, version);
+                output = unary_comparison::validate(handle, version);
             } else if (otype == "unary logic") {
-                output = validate_unary_logic(handle, name, version);
+                output = unary_logic::validate(handle, version);
             } else if (otype == "unary math") {
-                output = validate_unary_math(handle, name, version);
+                output = unary_math::validate(handle, version);
             } else if (otype == "unary special check") {
-                output = validate_unary_special_check(handle, name, version);
+                output = unary_special_check::validate(handle, version);
             } else if (otype == "binary arithmetic") {
-                output = validate_binary_arithmetic(handle, name, version);
+                output = binary_arithmetic::validate(handle, version);
             } else if (otype == "binary comparison") {
-                output = validate_binary_comparison(handle, name, version);
+                output = binary_comparison::validate(handle, version);
             } else if (otype == "binary logic") {
-                output = validate_binary_logic(handle, name, version);
+                output = binary_logic::validate(handle, version);
             } else if (otype == "matrix product") {
-                output = validate_matrix_product(handle, name, version);
+                output = matrix_product::validate(handle, version);
             } else {
-                throw std::runtime_error(std::string("unknown operation type '") + otype + "' at '" + name + "'");
+                throw std::runtime_error("unknown operation type");
             }
-
         } catch (std::exception& e) {
-            throw std::runtime_error(std::string("failed to validate delayed operation at '") + name + "':\n  " + e.what());
+            throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
         }
 
     } else {
-        throw std::runtime_error(std::string("unknown type '") + dtype + "' at '" + name + "'");
+        throw std::runtime_error("unknown delayed type '" + dtype + "'");
     }
 
     return output;
@@ -136,33 +123,36 @@ inline ArrayDetails validate(const H5::Group& handle, const std::string& name, c
  * if missing, this defaults to `0.0.0`.
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
- * @param name Name of the group inside the file, to be used for meaningful error messages.
- *
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
-inline ArrayDetails validate(const H5::Group& handle, const std::string& name) {
-    Version version;
+inline ArrayDetails validate(const H5::Group& handle) {
+    ritsuko::Version version;
+
     if (handle.attrExists("delayed_version")) {
         auto ahandle = handle.openAttribute("delayed_version");
-        auto vstring = load_string_attribute(ahandle, "delayed_version");
-        version = parse_version_string(vstring);
+        if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
+            throw std::runtime_error("expected 'delayed_version' to use a datatype that can be represented by a UTF-8 encoded string");
+        }
+        auto vstring = ritsuko::hdf5::load_scalar_string_attribute(ahandle);
+        version = ritsuko::parse_version_string(vstring.c_str(), vstring.size());
     }
-    return validate(handle, name, version);
+
+    return validate(handle, version);
 }
 
 /**
  * Validate a delayed operation/array at the specified HDF5 group.
- * This simply calls the `validate()` overload for a `H5::Group`; the specification version is taken from the `delayed_version` attribute.
+ * This simply calls the `validate()` overload for a `H5::Group`.
  * 
  * @param path Path to a HDF5 file.
- * @param name Name of the group inside the file, to be used for meaningful error messages.
+ * @param name Name of the group inside the file.
  *
- * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ * @return Details of the array after all delayed operations have been applied.
  */
 inline ArrayDetails validate(const std::string& path, std::string name) {
     H5::H5File handle(path, H5F_ACC_RDONLY);
     auto ghandle = handle.openGroup(name);
-    return validate(ghandle, name);
+    return validate(ghandle);
 }
 
 }

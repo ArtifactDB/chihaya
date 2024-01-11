@@ -1,0 +1,72 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# Unary logic (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+A unary logic operation involves applying an element-wise mathematical operation to a delayed object.
+
+## Specification
+
+A delayed unary math operation is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"operation"`.
+- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"unary math"`.
+
+Inside the group, we expect:
+
+- A `seed` group, containing a delayed object for which the mathematical operation is to be applied.
+  The value type of this object can be boolean (coerced to integer), integer or float.
+- A `method` string scalar dataset, specifying the mathematical operation to perform.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+  The value of the string can be any one of:
+  - `abs`, absolute value.
+  - `log1p`, log-transformation after adding 1.
+  - `sqrt`, square root.
+  - `exp`, exponential.
+  - `expm1`, exponential followed by subtraction of 1.
+  - `sign`, sign of the value (-1, 0, or 1).
+  - `ceiling`, ceiling.
+  - `floor`, floor.
+  - `trunc`, truncate to zero.
+  - `cos`, `sin`, `tan`, `acos`, `asin`, `atan`; the usual trigonometric functions (angles in radians).
+  - `cosh`, `sinh`, `tanh`, `acosh`, `asinh`, `atanh`; the usual hyperbolic functions.
+  - `log`, a log-transformation.
+  - `round`, rounding to a certain number of decimal places.
+  - `signif`, rounding to a certain number of significant digits.
+
+If `method = "log"`, the group may additionally contain:
+
+- `base`, a scalar float dataset containing the base of the log-transformation.
+  If this is absent, it is assumed that the natural base will be used.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+  cat("  The datatype should be exactly represented by a 64-bit float.")
+} else {
+  cat("  The exact float representation is left to the implementation.")
+}
+```
+
+If `method = "round"` or `"signif"`, we expect:
+
+- `digits`, a scalar integer dataset specifying the number of digits to report.
+```{r, results="asis", echo=FALSE}
+if (.version > package_version("1.0")) {
+  cat("  The datatype should be exactly represented by a 32-bit signed integer.")
+} else {
+  cat("  The exact integer representation is left to the implementation.")
+}
+```
+
+The value type of the output object is usually float.
+The only exceptions are for `abs`, where the value type is either integer or float depending on the input (booleans are promoted to integer);
+and `sign`, where the value type is always integer.

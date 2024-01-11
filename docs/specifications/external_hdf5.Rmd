@@ -1,0 +1,45 @@
+```{r, results="asis", echo=FALSE}
+knitr::opts_chunk$set(error=FALSE)
+if (!exists(".version")) {
+    .version <- package_version("1.0")
+}
+```
+
+```{r, results="asis", echo=FALSE}
+cat("# External HDF5 array (", as.character(.version), ")", sep="")
+```
+
+## Overview
+
+An external HDF5 array contains a reference to a HDF5 array in an external file.
+
+## Specification
+
+Each external array is represented as a HDF5 group with the following attributes:
+
+- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  It should contain the value `"array"`.
+- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
+  The value of the string should start with `"external hdf5 "` (note the space).
+  Implementations are expected to add their own descriptors to define specific interprations.
+
+Inside the group, we expect:
+
+- `dimensions`, specifying the dimensions of the external array.
+  This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions.
+  Any integer datatype can be used here.
+  All values should be non-negative.
+- `type`, a scalar string dataset specifying the value type of the array.
+  This should be one of `"BOOLEAN"`, `"INTEGER"`, `"FLOAT"` or `"STRING"`.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+- `file`, a scalar string dataset containing the path to the external HDF5 file.
+  The forward slash `/` is assumed to be a file separator.
+  If the `file` starts with `/`, it is assumed to be an absolute path; otherwise it should be treated as a relative path.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+- `name`, a scalar string dataset containing the name of the dataset or group inside `file` corresponding to the array/matrix. 
+  The forward slash `/` is assumed to be a group separator.
+  The datatype of the dataset should be representable by a UTF-8 encoded string.
+
+This function will not check that `file` actually exists with the specified `name` entry.
+The structure of the array data at `name` in the external file is also left to the implementation.
+Generally, we suggest referring to HDF5 datasets for [dense arrays](../dense_array) and to HDF5 groups for [sparse matrices](../sparse_matrix).
