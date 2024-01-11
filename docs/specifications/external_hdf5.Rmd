@@ -29,7 +29,7 @@ Inside the group, we expect:
   This should be a 1-dimensional dataset of non-zero length equal to the number of dimensions.
   Any integer datatype can be used here.
   All values should be non-negative.
-- `type`, a scalar string dataset specifying the type of the array.
+- `type`, a scalar string dataset specifying the value type of the array.
   This should be one of `"BOOLEAN"`, `"INTEGER"`, `"FLOAT"` or `"STRING"`.
   The datatype of the dataset should be representable by a UTF-8 encoded string.
 - `file`, a scalar string dataset containing the path to the external HDF5 file.

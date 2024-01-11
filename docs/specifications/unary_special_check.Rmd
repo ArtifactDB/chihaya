@@ -25,7 +25,7 @@ A delayed special check is represented as a HDF5 group with the following attrib
 Inside the group, we expect:
 
 - A `seed` group, containing a delayed object on which the special check is to be applied.
-  This is expected to be float but boolean and integers will be implicitly promoted as necessary.
+  The value type of this object is expected to be float but boolean and integers will be implicitly promoted as necessary.
   Note that this check is a no-op for boolean and integer seeds as neither will be promoted to a special value.
 - A `method` string scalar dataset, specifying the mathematical operation to perform.
   The datatype of the dataset should be representable by a UTF-8 encoded string.
@@ -34,4 +34,4 @@ Inside the group, we expect:
   - `is_finite`, is each value of the `seed` object finite?
   - `is_infinite`, is each value of the `seed` object infinite?
 
-The type of the output object is always boolean.
+The value type of the output object is always boolean.

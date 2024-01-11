@@ -39,6 +39,6 @@ if (.version <= package_version("1.0")) {
     cat("  It can be of any datatype that can be represented by a 64-bit unsigned integer.")
 }
 ```
-- `type`, a scalar string dataset specifying the type of the array.
+- `type`, a scalar string dataset specifying the value type of the array.
   This should be one of `"BOOLEAN"`, `"INTEGER"`, `"FLOAT"` or `"STRING"`.
   The datatype of the dataset should be representable by a UTF-8 encoded string.

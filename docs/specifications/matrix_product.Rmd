@@ -26,13 +26,13 @@ Inside the group, we expect:
 
 - A `left_seed` group describing a delayed object, i.e., another delayed operation or array.
   This is used as the left hand side of the matrix product.
-  It should have exactly two dimensions and its type should be integer, boolean or float.
+  It should have exactly two dimensions and its value type should be integer, boolean or float.
   (Booleans are promoted to integer for this operation.)
 - A `left_orientation` scalar string dataset, specifying whether the `left_seed` array should be transposed (`"T"`) or not (`"N"`).
   The datatype of the dataset should be representable by a UTF-8 encoded string.
 - A `right_seed` group describing a delayed object, i.e., another delayed operation or array.
   This is used as the right hand side of the matrix product.
-  It should have exactly two dimensions and its type should be integer, boolean or float.
+  It should have exactly two dimensions and its value type should be integer, boolean or float.
   (Booleans are promoted to integer for this operation.)
 - A `right_orientation` scalar string dataset, specifying whether the `right_seed` should be transposed (`"T"`) or not (`"N"`).
   The datatype of the dataset should be representable by a UTF-8 encoded string.
@@ -44,5 +44,5 @@ The extent of the common dimension should be the same between `left_seed` and `r
 If `left_orientation = "N"`, the common dimension of `left_seed` are the columns, otherwise it is the rows.
 If `right_orientation = "N"`, the common dimension of `left_seed` are the rows, otherwise it is the columns.
 
-If either `left_seed` or `right_seed` are floating-point, the output type will also be float.
+If either `left_seed` or `right_seed` are floating-point, the output value type will also be float.
 Otherwise, the output type will be integer.
