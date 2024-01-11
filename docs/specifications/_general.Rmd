@@ -18,7 +18,41 @@ By recursively inspecting the **chihaya** HDF5 file, readers can reconstitute th
 
 ## Operation types
 
+The following delayed operations are supported:
+
+- [Subsetting](subset.md)
+- [Combining](combine.md)
+- [Transposition](transpose.md)
+- [Dimnames assignment](dimnames.md)
+- [Subset assignment](subset_assignment.md)
+- [Unary arithmetic](unary_arithmetic.md)
+- [Unary comparison](unary_comparison.md)
+- [Unary logic](unary_logic.md)
+- [Unary math](unary_math.md)
+- [Unary special checks](unary_special_check.md)
+- [Binary arithmetic](binary_arithmetic.md)
+- [Binary comparison](binary_comparison.md)
+- [Binary logic](binary_logic.md)
+- [Matrix product](matrix_product.md)
+
+When an operation is applied to a delayed object, we obtain a new delayed object with its own output value type and dimensions.
+
 ## Array types
+
+Each delayed operation ultimately terminates in an array containing or referencing the pre-operation data.
+Several array types are supported:
+
+- [Dense arrays](dense_array.md)
+- [Sparse matrices](sparse_matrix.md)
+- [Constant arrays](constant_array.md)
+- [Custom arrays](custom_array.md)
+```{r}
+if (.version < package_version("1.1")) {
+    cat("- [External HDF5 arrays](external_hdf5.md)")
+}
+```
+
+Each instance of an array type should have dimensions and a well-defined value type.
 
 ## Value types
 
@@ -33,6 +67,21 @@ Thus, any promotion of integers to floats will be lossless.
 
 In some cases, integers or floats must be treated as booleans.
 This is done in the usual way, i.e., non-zero values are truthy and zero values are falsey.
+
+```{r, echo=FALSE, results="asis"}
+if (.version >= package_version("1.3")) {
+    cat("## HDF5 datatypes 
+
+The HDF5 datatype specification used by each operation and array type is based on the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0).
+This aims to provide readers with a guaranteed type for faithfully representing the data in memory.
+
+## Missing placeholders
+
+Some operations and array types allow missing values in their datasets.
+Missingness is represented by a `missing_placeholder` attribute; values in the dataset equal to this placeholder are considered to be missing.
+See the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.")
+}
+```
 
 ## Lists
 

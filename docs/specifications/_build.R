@@ -32,6 +32,7 @@ i.e., any elements in `", data.name, "` with the same value as the placeholder s
     }
 }
 
+
 for (n in listings) {
     versions <- all.versions
     if (n %in% names(endpoint)) {
@@ -43,13 +44,11 @@ for (n in listings) {
         versions <- versions[which(versions == start):length(versions)]
     }
 
-    odir <- file.path(dest, sub("\\.Rmd$", "", n))
-    unlink(odir, recursive=TRUE)
-    dir.create(odir)
+    oname <- sub("\\.Rmd$", "", n)
     for (v in versions) {
+        vdir <- file.path(dest, v)
+        dir.create(vdir, showWarnings=FALSE)
         .version <- package_version(v)
-        knitr::knit(n, file.path(odir, paste0(v, ".md")))
+        knitr::knit(n, file.path(vdir, paste0(oname, ".md")))
     }
 }
-
-file.copy("_general.md", dest)

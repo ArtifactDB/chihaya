@@ -31,9 +31,9 @@ Inside the group, we expect:
 - An `along` scalar dataset 
 ```{r, results="asis", echo=FALSE}
 if (.version <= package_version("1.0")) {
-    cat(" of any integer datatype.")
+    cat("  of any integer datatype.")
 } else {
-    cat(" of any datatype that can be represented by a 64-bit unsigned integer.")
+    cat("  of any datatype that can be represented by a 64-bit unsigned integer.")
 }
 ```
   This is a 0-based index that specifies the dimensions on which to combine objects in `seeds`.
