@@ -16,10 +16,10 @@ deposit_placeholder_spiel <- function(can.be.string, data.name) {
     if (.version != package_version("0.0")) {
         cat("`", data.name, "` may contain a `missing_placeholder` attribute.\n", sep="")
         if (.version == package_version("1.0")) {
-            cat("This should be a scalar dataset of the same type class as `", data.name, "`, specifying the placeholder value used for all missing elements,
+            cat("This should be a scalar dataset of the same datatype class as `", data.name, "`, specifying the placeholder value used for all missing elements,
 i.e., any elements in `", data.name, "` with the same value as the placeholder should be treated as missing.", sep="")
         } else {
-            msg <- paste0("This should be a scalar dataset of the same type as `", data.name, "`")
+            msg <- paste0("This should be a scalar dataset of the exact same datatype as `", data.name, "`")
             if (can.be.string) {
                 msg <- paste(msg, "(except for a string `", data.name, "`, in which case only the same datatype class is required).")
             } else {

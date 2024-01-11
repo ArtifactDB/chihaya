@@ -29,7 +29,7 @@ Inside the group, we expect:
   This can be of any type - boolean, integer, float or string.
 - A `value` group, containing the object supplying the replacement values for subset assignment.
   This can be of any type - boolean, integer, float or string.
-- An `index` group, representing a [list](../_general.md#lists) of length equal to the number of dimensions in the `seed`.
+- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed`.
   Each child entry is named after a dimension of `seed` and contains the indices to be replaced along that dimension.
   Each entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of `seed`;
   the length of this dataset should be equal to the extent of the corresponding dimension of `value`.

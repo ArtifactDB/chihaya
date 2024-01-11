@@ -27,7 +27,7 @@ Inside the group, we expect:
 
 - A `seed` group, containing the delayed object to be subsetted. 
   This can be of any type - boolean, integer, float or string.
-- An `index` group, representing a [list](../_general.md#lists) of length equal to the number of dimensions in the `seed`.
+- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed`.
   Each child entry is named after a dimension of `seed` and contains the indices of interest along that dimension.
   Each entry should be a 1-dimensional integer dataset containing 0-based indices that are less than the extent of its dimension.
 ```{r, echo=FALSE, results="asis"}

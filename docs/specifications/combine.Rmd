@@ -25,7 +25,7 @@ A delayed combining operation is represented as a HDF5 group with the following 
 Inside the group, we expect:
 
 - A `seeds` group.
-  This is expected to be a [list](../_general.md#lists) of length equal to the number of seeds to be combined.
+  This is expected to be a [list](_general.md#lists) of length equal to the number of seeds to be combined.
   Each seed should be a group describing a delayed object.
   All seeds should have the same dimensionality and extents, with the exception of the `along` dimension.
 - An `along` scalar dataset 

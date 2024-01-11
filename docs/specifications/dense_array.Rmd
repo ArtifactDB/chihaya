@@ -68,7 +68,7 @@ deposit_placeholder_spiel(can.be.string=FALSE, data.name="data")
 
 The group may also contain:
 
-- A `dimnames` group, representing a [list](../_general.md#list) of length equal to the number of dimensions in the dense array.
+- A `dimnames` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the dense array.
 ```{r, results="asis", echo=FALSE}
 if (.version <= package_version("1.0")) {
     cat("  Each child entry corresponds to a dimension of the dense array and contains the names along that dimension.
