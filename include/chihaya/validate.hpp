@@ -119,8 +119,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 /**
  * Validate a delayed operation/array at the specified HDF5 group,
  * using a version string in the `delayed_version` attribute of the `handle`.
- * This should be a string of the form `<MAJOR>.<MINOR>.<PATCH>`;
- * if missing, this defaults to `0.0.0`.
+ * This should be a string of the form `<MAJOR>.<MINOR>`.
+ * For back-compatibility purposes, the string `"1.0.0"` is also allowed, corresponding to version 1.1;
+ * and if `delayed_version` is missing, it defaults to `0.99`.
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
@@ -133,8 +134,15 @@ inline ArrayDetails validate(const H5::Group& handle) {
         if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
             throw std::runtime_error("expected 'delayed_version' to use a datatype that can be represented by a UTF-8 encoded string");
         }
+
         auto vstring = ritsuko::hdf5::load_scalar_string_attribute(ahandle);
-        version = ritsuko::parse_version_string(vstring.c_str(), vstring.size());
+        if (vstring == "1.0.0") {
+            version.major = 1;
+        } else {
+            version = ritsuko::parse_version_string(vstring.c_str(), vstring.size(), /* skip_patch = */ true);
+        }
+    } else {
+        version.minor = 99;
     }
 
     return validate(handle, version);

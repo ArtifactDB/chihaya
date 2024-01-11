@@ -108,7 +108,7 @@ inline void add_version_string(const H5::Group& handle, int version) {
     if (version == 1000000) {
         add_string_attribute(handle, "delayed_version", "1.0.0");
     } else if (version >= 1100000) {
-        add_string_attribute(handle, "delayed_version", "1.1.0");
+        add_string_attribute(handle, "delayed_version", "1.1");
     }
 }
 
