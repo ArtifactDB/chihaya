@@ -32,5 +32,6 @@ Inside the group, we expect:
 This should be a scalar dataset of the exact same datatype as `value` (except for a string ` value `, in which case only the same datatype class is required).
 The value of this dataset is the missing placeholder used for all missing elements,
 i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
+Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
 
 The value type of the constant array is set to the `type` attribute of `value`.

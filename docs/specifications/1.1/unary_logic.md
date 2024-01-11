@@ -49,6 +49,7 @@ If `value` is 1-dimensional, we also expect:
 This should be a scalar dataset of the exact same datatype as `value`.
 The value of this dataset is the missing placeholder used for all missing elements,
 i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
+Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
 
 The value type of the output object is always boolean.
 For non-boolean `seed` and `value`, values are converted to booleans with the usual rules (non-zero values are truthy, zero is falsey) before the logical operation.

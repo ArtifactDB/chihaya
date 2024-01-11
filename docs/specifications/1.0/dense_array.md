@@ -42,6 +42,7 @@ however, this means that the dimensions reported by HDF5 need to be reversed to 
 `data` may contain a `missing_placeholder` attribute.
 This should be a scalar dataset of the same datatype class as `data`, specifying the placeholder value used for all missing elements,
 i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
+(Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
 
 The group may also contain:
 

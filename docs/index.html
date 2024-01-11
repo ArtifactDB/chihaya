@@ -83,33 +83,13 @@ $(function() {
 <li>We have a sparse dataset that is subjected to sparsity-breaking operation, e.g., centering. Rather than saving the dense matrix, we keep the efficient sparse representation and save the delayed operation.</li>
 </ul>
 <h1>Specification</h1>
-<p >In the <b>chihaya</b> specification, we store a "delayed object" as a HDF5 group in the file. Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it). The type of delayed operation/array is specified in the group's attributes.</p>
-<p >We have implemented a C++ library for cross-language validation of each delayed operation. The specification for each delayed operation is defined in the documentation for its validator function:</p>
+<p >In the <b>chihaya</b> specification, we store a "delayed object" as a HDF5 group in the file. Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it). The type of delayed operation/array is specified in the group's attributes. By recursively inspecting the contents of each HDF5 group, applications can reconstitute the original delayed object in the framework of choice.</p>
+<p >The <b>chihaya</b> specification currently supports a range of delayed operations including subsetting, combining, transposition, matrix products, and an assortment of unary and binary operations. It also supports dense arrays, sparse matrices, constant arrays and custom arrays. More details about the on-disk representation of each operation can be found in the specifications:</p>
 <ul>
-<li><a href="https://artifactdb.github.io/chihaya/subset_8hpp.html">Subsetting</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/combine_8hpp.html">Combining</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/transpose_8hpp.html">Transposition</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/dimnames_8hpp.html">Dimnames assignment</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/subset__assignment_8hpp.html">Subset assignment</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/unary__arithmetic_8hpp.html">Unary arithmetic</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/unary__comparison_8hpp.html">Unary comparison</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/unary__logic_8hpp.html">Unary logic</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/unary__math_8hpp.html">Unary math</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/unary__special__check_8hpp.html">Unary special checks</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/binary__arithmetic_8hpp.html">Binary arithmetic</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/binary__comparison_8hpp.html">Binary comparison</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/binary__logic_8hpp.html">Binary logic</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/matrix__product_8hpp.html">Matrix product</a></li>
+<li><a href="https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/1.1/_general.md">1.1</a></li>
+<li><a href="https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/1.0/_general.md">1.0</a></li>
+<li><a href="https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/0.99/_general.md">0.99</a></li>
 </ul>
-<p >Similar validators are available for the arrays:</p>
-<ul>
-<li><a href="https://artifactdb.github.io/chihaya/dense__array_8hpp.html">Dense arrays</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/sparse__matrix_8hpp.html">Sparse matrices</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/constant__array_8hpp.html">Constant arrays</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/external__hdf5_8hpp.html">External HDF5 arrays</a></li>
-<li><a href="https://artifactdb.github.io/chihaya/custom__array_8hpp.html">Custom arrays</a></li>
-</ul>
-<p >Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.</p>
 <h1>Using the validation library</h1>
 <p >In C++, a delayed object in a file can be validated by calling the <a href="https://artifactdb.github.io/chihaya/validate_8hpp.html"><code>validate</code></a> function:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="chihaya_8hpp.html">chihaya/chihaya.hpp</a>&quot;</span></div>

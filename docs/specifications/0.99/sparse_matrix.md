@@ -48,6 +48,7 @@ The group may also contain:
 This should be a scalar dataset of the exact same datatype as `data`.
 The value of this dataset is the missing placeholder used for all missing elements,
 i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
+Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
 
 The value type of the sparse matrix is inferred from the datatype of `data`: integer, float or string.
 Boolean matrices are identified as those with integer `data` and a truthy `is_boolean` flag.

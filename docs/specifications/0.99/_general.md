@@ -2,7 +2,7 @@
 
 # General concepts (0.99)
 
-## Overview 
+## File structure
 
 We consider the idea of a "delayed object", which is some N-dimensional array-like object of a certain [value type](#value-type).
 Each delayed object consists of zero, one or more [delayed operations](#operation-types) applied to one or more [arrays](#array-types) containing the original data.
@@ -20,8 +20,9 @@ The same approach is used for arbitrarily complex "trees" of delayed operations,
 
 ```
 /
-└─ hello_world 
+└─ GROUP: hello_world 
    ├─ ATTRIBUTE: delayed_type = "operation"
+   ├─ ATTRIBUTE: delayed_version = "x.x.x"
    ├─ ATTRIBUTE: delayed_operation = "unary arithmetic"
    ├─ DATASET: method = "+"
    ├─ DATASET: side = "right"
@@ -37,6 +38,10 @@ The same approach is used for arbitrarily complex "trees" of delayed operations,
          └─ DATASET: data = [ 10 x 4 ]
             └─ ATTRIBUTE: type = "INTEGER"
 ```
+
+The outermost HDF5 group may have a `delayed_version` attribute to indicate the version of the **chihaya** specification being used.
+This document describes version 0.99 of the specification.
+If missing, the version can be assumed to be 0.99.0.
 
 ## Operation types
 
