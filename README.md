@@ -24,34 +24,16 @@ Several use cases benefit from the serialization of delayed operations:
 In the **chihaya** specification, we store a "delayed object" as a HDF5 group in the file.
 Delayed operations are represented as further nested groups, terminating in an array containing the original data (or a reference to it).
 The type of delayed operation/array is specified in the group's attributes.
+By recursively inspecting the contents of each HDF5 group, applications can reconstitute the original delayed object in the framework of choice.
 
-We have implemented a C++ library for cross-language validation of each delayed operation.
-The specification for each delayed operation is defined in the documentation for its validator function:
+The **chihaya** specification currently supports a range of delayed operations
+including subsetting, combining, transposition, matrix products, and an assortment of unary and binary operations.
+It also supports dense arrays, sparse matrices, constant arrays and custom arrays.
+More details about the on-disk representation of each operation can be found in the specifications:
 
-- [Subsetting](https://artifactdb.github.io/chihaya/subset_8hpp.html)
-- [Combining](https://artifactdb.github.io/chihaya/combine_8hpp.html)
-- [Transposition](https://artifactdb.github.io/chihaya/transpose_8hpp.html)
-- [Dimnames assignment](https://artifactdb.github.io/chihaya/dimnames_8hpp.html)
-- [Subset assignment](https://artifactdb.github.io/chihaya/subset__assignment_8hpp.html)
-- [Unary arithmetic](https://artifactdb.github.io/chihaya/unary__arithmetic_8hpp.html)
-- [Unary comparison](https://artifactdb.github.io/chihaya/unary__comparison_8hpp.html)
-- [Unary logic](https://artifactdb.github.io/chihaya/unary__logic_8hpp.html)
-- [Unary math](https://artifactdb.github.io/chihaya/unary__math_8hpp.html)
-- [Unary special checks](https://artifactdb.github.io/chihaya/unary__special__check_8hpp.html)
-- [Binary arithmetic](https://artifactdb.github.io/chihaya/binary__arithmetic_8hpp.html)
-- [Binary comparison](https://artifactdb.github.io/chihaya/binary__comparison_8hpp.html)
-- [Binary logic](https://artifactdb.github.io/chihaya/binary__logic_8hpp.html)
-- [Matrix product](https://artifactdb.github.io/chihaya/matrix__product_8hpp.html)
-
-Similar validators are available for the arrays:
-
-- [Dense arrays](https://artifactdb.github.io/chihaya/dense__array_8hpp.html)
-- [Sparse matrices](https://artifactdb.github.io/chihaya/sparse__matrix_8hpp.html)
-- [Constant arrays](https://artifactdb.github.io/chihaya/constant__array_8hpp.html)
-- [External HDF5 arrays](https://artifactdb.github.io/chihaya/external__hdf5_8hpp.html)
-- [Custom arrays](https://artifactdb.github.io/chihaya/custom__array_8hpp.html)
-
-Any number of other arbitrary objects may be stored in the same HDF5 file, as long as these are outside of the group corresponding to the delayed object.
+- [1.1](https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/1.1/_general.md)
+- [1.0](https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/1.0/_general.md)
+- [0.99](https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/0.99/_general.md)
 
 ## Using the validation library
 
