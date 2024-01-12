@@ -2,6 +2,7 @@
 #define CHIHAYA_UTILS_PUBLIC_HPP
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 
 #include <string>
 #include <functional>
