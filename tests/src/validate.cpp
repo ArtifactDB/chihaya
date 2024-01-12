@@ -39,4 +39,39 @@ TEST(Validate, CustomRegistry) {
     EXPECT_EQ(known_arrays.front(), "constant array");
     EXPECT_EQ(known_operations.size(), 1);
     EXPECT_EQ(known_operations.front(), "transpose");
+
+    state.array_validate_registry["constant array"] = [&](const H5::Group&, const ritsuko::Version&) -> chihaya::ArrayDetails {
+        throw std::runtime_error("uh no");
+    };
+    expect_error([&]() { chihaya::validate(path, "WHEE", state); }, "uh no");
+
+    state.operation_validate_registry["transpose"] = [&](const H5::Group&, const ritsuko::Version&, chihaya::State&) -> chihaya::ArrayDetails {
+        throw std::runtime_error("no means no!");
+    };
+    expect_error([&]() { chihaya::validate(path, "WHEE", state); }, "no means no!");
+}
+
+TEST(Validate, Errors) {
+    const char* path = "Test_validate.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = operation_opener(fhandle, "WHEE", "FOO");
+        add_version_string(ghandle, 1100000);
+    }
+    expect_error(path, "WHEE", "unknown operation type 'FOO'");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "seed", "BAR");
+        add_version_string(ghandle, 1100000);
+    }
+    expect_error(path, "seed", "unknown array type 'BAR'");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = fhandle.createGroup("FOO");
+        add_string_attribute(ghandle, "delayed_type", "YAY");
+    }
+    expect_error(path, "seed", "unknown object type 'YAY'");
 }
