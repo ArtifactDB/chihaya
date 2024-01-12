@@ -92,32 +92,34 @@ $(function() {
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>unary_special_check {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1unary__special__check.html#a690eb3bd4ebfc1043f04f3b928d9e272">   31</a></span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya_1_1unary__special__check.html#a690eb3bd4ebfc1043f04f3b928d9e272">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">auto</span> seed_details = internal_misc::load_seed_details(handle, <span class="stringliteral">&quot;seed&quot;</span>, version);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (seed_details.type == STRING) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;seed&#39; should contain integer, float or boolean values&quot;</span>);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Checking the method.</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">auto</span> method = internal_unary::load_method(handle);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (method != <span class="stringliteral">&quot;is_nan&quot;</span> &amp;&amp;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        method != <span class="stringliteral">&quot;is_finite&quot;</span> &amp;&amp;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        method != <span class="stringliteral">&quot;is_infinite&quot;</span>)</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span> + method + <span class="stringliteral">&quot;)&quot;</span>);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    seed_details.type = BOOLEAN;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacechihaya_1_1unary__special__check_html_a690eb3bd4ebfc1043f04f3b928d9e272"><div class="ttname"><a href="namespacechihaya_1_1unary__special__check.html#a690eb3bd4ebfc1043f04f3b928d9e272">chihaya::unary_special_check::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> unary_special_check.hpp:31</div></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1unary__special__check.html#a7753c3e52a921749696fa346023c261a">   32</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya_1_1unary__special__check.html#a7753c3e52a921749696fa346023c261a">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version, <a class="code hl_struct" href="structchihaya_1_1State.html">State</a>&amp; state) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span> seed_details = internal_misc::load_seed_details(handle, <span class="stringliteral">&quot;seed&quot;</span>, version, state);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (seed_details.type == STRING) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;seed&#39; should contain integer, float or boolean values&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Checking the method.</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> method = internal_unary::load_method(handle);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (method != <span class="stringliteral">&quot;is_nan&quot;</span> &amp;&amp;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        method != <span class="stringliteral">&quot;is_finite&quot;</span> &amp;&amp;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        method != <span class="stringliteral">&quot;is_infinite&quot;</span>)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span> + method + <span class="stringliteral">&quot;)&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    seed_details.type = BOOLEAN;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacechihaya_1_1unary__special__check_html_a7753c3e52a921749696fa346023c261a"><div class="ttname"><a href="namespacechihaya_1_1unary__special__check.html#a7753c3e52a921749696fa346023c261a">chihaya::unary_special_check::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version, State &amp;state)</div><div class="ttdef"><b>Definition:</b> unary_special_check.hpp:32</div></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:36</div></div>
+<div class="ttc" id="astructchihaya_1_1State_html"><div class="ttname"><a href="structchihaya_1_1State.html">chihaya::State</a></div><div class="ttdoc">Validation state.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:86</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

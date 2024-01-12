@@ -88,7 +88,7 @@ $(function() {
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;utils_public.hpp&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="utils__public_8hpp.html">utils_public.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;utils_type.hpp&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;utils_dimnames.hpp&quot;</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
@@ -96,8 +96,8 @@ $(function() {
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>dense_array {</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1dense__array.html#a6ca577acb888a06d70151c2b5adc6e8f">   35</a></span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya_1_1dense__array.html#a6ca577acb888a06d70151c2b5adc6e8f">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    ArrayDetails output;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1dense__array.html#a6ca577acb888a06d70151c2b5adc6e8f">   35</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya_1_1dense__array.html#a6ca577acb888a06d70151c2b5adc6e8f">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> output;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    {</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">auto</span> dhandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;data&quot;</span>);</div>
@@ -109,18 +109,18 @@ $(function() {
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::vector&lt;hsize_t&gt; dims(ndims);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        dspace.getSimpleExtentDims(dims.data());</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>.insert(output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>.end(), dims.begin(), dims.end());</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">try</span> {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = internal_type::translate_type_0_0(dhandle.getTypeClass());</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keywordflow">if</span> (internal_type::is_boolean(dhandle)) {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    output.type = BOOLEAN;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = BOOLEAN;</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                }</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keyword">auto</span> type = ritsuko::hdf5::open_and_load_scalar_string_attribute(dhandle, <span class="stringliteral">&quot;type&quot;</span>);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                output.type = internal_type::translate_type_1_1(type);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                internal_type::check_type_1_1(dhandle, output.type);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = internal_type::translate_type_1_1(type);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                internal_type::check_type_1_1(dhandle, output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a>);</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            }</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            internal_misc::validate_missing_placeholder(dhandle, version);</div>
@@ -149,12 +149,12 @@ $(function() {
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        }</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">if</span> (!native) {</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            std::reverse(output.dimensions.begin(), output.dimensions.end());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            std::reverse(output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>.begin(), output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>.end());</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (handle.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        internal_dimnames::validate(handle, output.dimensions, version);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        internal_dimnames::validate(handle, output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>, version);</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> output;</div>
@@ -167,6 +167,10 @@ $(function() {
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_1_1dense__array_html_a6ca577acb888a06d70151c2b5adc6e8f"><div class="ttname"><a href="namespacechihaya_1_1dense__array.html#a6ca577acb888a06d70151c2b5adc6e8f">chihaya::dense_array::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> dense_array.hpp:35</div></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:36</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html_ad572a229d1da9b90ee688f9b0572b536"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">chihaya::ArrayDetails::dimensions</a></div><div class="ttdeci">std::vector&lt; size_t &gt; dimensions</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:56</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html_ad73104cbd51217fc0b79efe8a88b349a"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">chihaya::ArrayDetails::type</a></div><div class="ttdeci">ArrayType type</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:50</div></div>
+<div class="ttc" id="autils__public_8hpp_html"><div class="ttname"><a href="utils__public_8hpp.html">utils_public.hpp</a></div><div class="ttdoc">Various public utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

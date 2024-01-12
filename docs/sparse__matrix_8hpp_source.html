@@ -87,7 +87,7 @@ $(function() {
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;utils_public.hpp&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="utils__public_8hpp.html">utils_public.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;utils_misc.hpp&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;utils_type.hpp&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;utils_dimnames.hpp&quot;</span></div>
@@ -128,9 +128,9 @@ $(function() {
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">   74</a></span><span class="keyword">inline</span> ArrayDetails <a class="code hl_function" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">   74</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version) {</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;uint64_t&gt; dims(2);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    ArrayType array_type;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_enumeration" href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> array_type;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    {</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">auto</span> shandle = ritsuko::hdf5::open_dataset(handle, <span class="stringliteral">&quot;shape&quot;</span>);</div>
@@ -251,7 +251,7 @@ $(function() {
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        internal_dimnames::validate(handle, dims, version);</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    }</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">return</span> ArrayDetails(array_type, std::vector&lt;size_t&gt;(dims.begin(), dims.end()));</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">return</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(array_type, std::vector&lt;size_t&gt;(dims.begin(), dims.end()));</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
@@ -261,6 +261,9 @@ $(function() {
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_1_1sparse__matrix_html_ab441a24a30c36ad60aa6a0af7eda519c"><div class="ttname"><a href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">chihaya::sparse_matrix::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version)</div><div class="ttdef"><b>Definition:</b> sparse_matrix.hpp:74</div></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
+<div class="ttc" id="anamespacechihaya_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:27</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:36</div></div>
+<div class="ttc" id="autils__public_8hpp_html"><div class="ttname"><a href="utils__public_8hpp.html">utils_public.hpp</a></div><div class="ttdoc">Various public utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

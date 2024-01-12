@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['validateregistry_0',['ValidateRegistry',['../namespacechihaya.html#a623b0a8b283e18283c3b7b2d7f7ee87a',1,'chihaya']]]
+  ['arrayvalidateregistry_0',['ArrayValidateRegistry',['../namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e',1,'chihaya']]]
 ];

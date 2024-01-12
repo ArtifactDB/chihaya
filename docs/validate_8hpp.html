@@ -77,7 +77,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">validate.hpp File Reference</div></div>
@@ -95,26 +94,23 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacechihaya"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace for all <b>chihaya</b> functions. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a623b0a8b283e18283c3b7b2d7f7ee87a"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::function&lt; ArrayDetails(const H5::Group &amp;, const ritsuko::Version &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a623b0a8b283e18283c3b7b2d7f7ee87a">chihaya::ValidateRegistry</a></td></tr>
-<tr class="separator:a623b0a8b283e18283c3b7b2d7f7ee87a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad6581f0bab127afd92cecfc35b1a0f64"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#ad6581f0bab127afd92cecfc35b1a0f64">chihaya::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
-<tr class="separator:ad6581f0bab127afd92cecfc35b1a0f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbde198be3cbf4a3dd6b3989889ef1ed"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#adbde198be3cbf4a3dd6b3989889ef1ed">chihaya::validate</a> (const H5::Group &amp;handle)</td></tr>
-<tr class="separator:adbde198be3cbf4a3dd6b3989889ef1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb15e89cb867a75cb69ed7b6900495e4"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">chihaya::validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, State &amp;state)</td></tr>
+<tr class="separator:acb15e89cb867a75cb69ed7b6900495e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a274e8bd90984a75ce5ccebf99264ad78"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a274e8bd90984a75ce5ccebf99264ad78">chihaya::validate</a> (const H5::Group &amp;handle, State &amp;state)</td></tr>
+<tr class="separator:a274e8bd90984a75ce5ccebf99264ad78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a778aaedeab961ba66b9dfc690fa49451"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a778aaedeab961ba66b9dfc690fa49451">chihaya::validate</a> (const std::string &amp;path, std::string name, State &amp;state)</td></tr>
+<tr class="separator:a778aaedeab961ba66b9dfc690fa49451"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memItemLeft" align="right" valign="top">ArrayDetails&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a8c3fd26f340d08cba588b0a4baa61ca8">chihaya::validate</a> (const std::string &amp;path, std::string name)</td></tr>
 <tr class="separator:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:abf9941237dd0c5137ed9993ae5e9f708"><td class="memItemLeft" align="right" valign="top">ValidateRegistry&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#abf9941237dd0c5137ed9993ae5e9f708">chihaya::operation_validate_registry</a> = internal::default_operation_registry()</td></tr>
-<tr class="separator:abf9941237dd0c5137ed9993ae5e9f708"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef21e09e8ffa2909e01afbc0be7578b2"><td class="memItemLeft" align="right" valign="top">ValidateRegistry&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#aef21e09e8ffa2909e01afbc0be7578b2">chihaya::array_validate_registry</a> = internal::default_array_registry()</td></tr>
-<tr class="separator:aef21e09e8ffa2909e01afbc0be7578b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a534ed3246ba0d5c414831686dafef45a"><td class="memItemLeft" align="right" valign="top">OperationValidateRegistry&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a534ed3246ba0d5c414831686dafef45a">chihaya::operation_validate_registry</a> = internal::default_operation_registry()</td></tr>
+<tr class="separator:a534ed3246ba0d5c414831686dafef45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98548bc7ad4c957147ea29ded2d63b11"><td class="memItemLeft" align="right" valign="top">ArrayValidateRegistry&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a98548bc7ad4c957147ea29ded2d63b11">chihaya::array_validate_registry</a> = internal::default_array_registry()</td></tr>
+<tr class="separator:a98548bc7ad4c957147ea29ded2d63b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Main validation function. </p>
