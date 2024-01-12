@@ -4,14 +4,23 @@ chihaya::ArrayDetails test_validate(const std::string& path, const std::string& 
     return chihaya::validate(path, name);
 }
 
-TEST(Validate, Callbacks) {
+TEST(Validate, CustomRegistry) {
     const char* path = "Test_validate.h5";
+    chihaya::State state;
 
     std::vector<std::string> known_arrays;
+    state.array_validate_registry["constant array"] = [&](const H5::Group& h, const ritsuko::Version& v) -> chihaya::ArrayDetails {
+        known_arrays.push_back("constant array"); 
+        auto it = chihaya::array_validate_registry.find("constant array");
+        return (it->second)(h, v);
+    }; 
+
     std::vector<std::string> known_operations;
-    chihaya::Callbacks clbk;
-    clbk.array = [&](const std::string& t, const H5::Group&, const ritsuko::Version&) { known_arrays.push_back(t); }; 
-    clbk.operation = [&](const std::string& t, const H5::Group&, const ritsuko::Version&) { known_operations.push_back(t); }; 
+    state.operation_validate_registry["transpose"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::State& s) -> chihaya::ArrayDetails { 
+        known_operations.push_back("transpose"); 
+        auto it = chihaya::operation_validate_registry.find("transpose");
+        return (it->second)(h, v, s);
+    }; 
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -25,9 +34,27 @@ TEST(Validate, Callbacks) {
         add_string_attribute(dhandle, "type", "INTEGER");
     }
 
-    chihaya::validate(path, "WHEE", clbk);
+    chihaya::validate(path, "WHEE", state);
     EXPECT_EQ(known_arrays.size(), 1);
     EXPECT_EQ(known_arrays.front(), "constant array");
     EXPECT_EQ(known_operations.size(), 1);
     EXPECT_EQ(known_operations.front(), "transpose");
+}
+
+TEST(Validate, Errors) {
+    const char* path = "Test_validate.h5";
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = operation_opener(fhandle, "WHEE", "FOO");
+        add_version_string(ghandle, 1100000);
+    }
+    expect_error(path, "WHEE", "unknown operation type 'FOO'");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "seed", "BAR");
+        add_version_string(ghandle, 1100000);
+    }
+    expect_error(path, "seed", "unknown array type 'BAR'");
 }

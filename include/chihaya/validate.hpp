@@ -44,36 +44,26 @@
 namespace chihaya {
 
 /**
- * Class to map operation types to their validation functions.
- */
-typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Callbacks&)> > OperationValidateRegistry;
-
-/**
- * Class to map array types to their validation functions.
- */
-typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&)> > ArrayValidateRegistry;
-
-/**
  * @cond
  */
 namespace internal {
 
 inline OperationValidateRegistry default_operation_registry() {
     OperationValidateRegistry registry;
-    registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return subset::validate(h, v, c); };
-    registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return combine::validate(h, v, c); };
-    registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return transpose::validate(h, v, c); };
-    registry["dimnames"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return dimnames::validate(h, v, c); };
-    registry["subset assignment"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return subset_assignment::validate(h, v, c); };
-    registry["unary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return unary_arithmetic::validate(h, v, c); };
-    registry["unary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return unary_comparison::validate(h, v, c); };
-    registry["unary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return unary_logic::validate(h, v, c); };
-    registry["unary math"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return unary_math::validate(h, v, c); };
-    registry["unary special check"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return unary_special_check::validate(h, v, c); };
-    registry["binary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return binary_arithmetic::validate(h, v, c); };
-    registry["binary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return binary_comparison::validate(h, v, c); };
-    registry["binary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return binary_logic::validate(h, v, c); };
-    registry["matrix product"] = [](const H5::Group& h, const ritsuko::Version& v, Callbacks& c) -> ArrayDetails { return matrix_product::validate(h, v, c); };
+    registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return subset::validate(h, v, c); };
+    registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return combine::validate(h, v, c); };
+    registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return transpose::validate(h, v, c); };
+    registry["dimnames"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return dimnames::validate(h, v, c); };
+    registry["subset assignment"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return subset_assignment::validate(h, v, c); };
+    registry["unary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return unary_arithmetic::validate(h, v, c); };
+    registry["unary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return unary_comparison::validate(h, v, c); };
+    registry["unary logic"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return unary_logic::validate(h, v, c); };
+    registry["unary math"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return unary_math::validate(h, v, c); };
+    registry["unary special check"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return unary_special_check::validate(h, v, c); };
+    registry["binary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return binary_arithmetic::validate(h, v, c); };
+    registry["binary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return binary_comparison::validate(h, v, c); };
+    registry["binary logic"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return binary_logic::validate(h, v, c); };
+    registry["matrix product"] = [](const H5::Group& h, const ritsuko::Version& v, State& c) -> ArrayDetails { return matrix_product::validate(h, v, c); };
     return registry;
 }
 
@@ -103,54 +93,84 @@ inline OperationValidateRegistry operation_validate_registry = internal::default
 inline ArrayValidateRegistry array_validate_registry = internal::default_array_registry();
 
 /**
+ * For operations, this function will first search `state.custom_operation_validate_registry` for an available validation function.
+ * If one is not found, it will then search the global `operation_validate_registry`.
+ *
+ * For arrays, this function will first search `state.custom_array_validate_registry` for an available validation function.
+ * If one is not found, it will then search the global `array_validate_registry`, and then check for custom arrays (and for older **chihaya** specifications, external arrays).
+ *
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param version Version of the **chihaya** specification.
- * @param callbacks Callbacks to be invoked after successful validation.
+ * @param state Validation state, possibly containing custom validation functions.
  *
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Callbacks& callbacks) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
     auto dtype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_type");
     ArrayDetails output;
 
     if (dtype == "array") {
         auto atype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_array");
-        auto it = array_validate_registry.find(atype);
 
-        try {
-            if (it != array_validate_registry.end()) {
-                output = (it->second)(handle, version);
-            } else if (atype.rfind("custom ", 0) != std::string::npos) {
-                output = custom_array::validate(handle, version);
-            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
-                output = external_hdf5::validate(handle, version);
-            } else {
-                throw std::runtime_error("unknown array type");
+        const auto& custom = state.array_validate_registry;
+        auto cit = custom.find(atype);
+        if (cit != custom.end()) {
+            try {
+                output = (cit->second)(handle, version);
+            } catch (std::exception& e) {
+                throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
             }
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
-        }
 
-        if (callbacks.array) {
-            callbacks.array(atype, handle, version);
+        } else {
+            const auto& global = array_validate_registry;
+            auto git = global.find(atype);
+            if (git != global.end()) {
+                try {
+                    output = (git->second)(handle, version);
+                } catch (std::exception& e) {
+                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                }
+            } else if (atype.rfind("custom ", 0) != std::string::npos) {
+                try {
+                    output = custom_array::validate(handle, version);
+                } catch (std::exception& e) {
+                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                }
+            } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
+                try {
+                    output = external_hdf5::validate(handle, version);
+                } catch (std::exception& e) {
+                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                }
+            } else {
+                throw std::runtime_error("unknown array type '" + atype + "'");
+            }
         }
 
     } else if (dtype == "operation") {
         auto otype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_operation");
-        auto it = operation_validate_registry.find(otype);
 
-        try {
-            if (it != operation_validate_registry.end()) {
-                output = (it->second)(handle, version, callbacks);
-            } else {
-                throw std::runtime_error("unknown operation type");
+        const auto& custom = state.operation_validate_registry;
+        auto cit = custom.find(otype);
+        if (cit != custom.end()) {
+            try {
+                output = (cit->second)(handle, version, state);
+            } catch (std::exception& e) {
+                throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
             }
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
-        }
 
-        if (callbacks.operation) {
-            callbacks.operation(otype, handle, version);
+        } else {
+            const auto& global = operation_validate_registry;
+            auto git = global.find(otype);
+            if (git != global.end()) {
+                try {
+                    output = (git->second)(handle, version, state);
+                } catch (std::exception& e) {
+                    throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
+                }
+            } else {
+                throw std::runtime_error("unknown operation type '" + otype + "'");
+            }
         }
 
     } else {
@@ -168,10 +188,10 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
  * and if `delayed_version` is missing, it defaults to `0.99`.
  * 
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
- * @param callbacks Callbacks to be invoked after successful validation.
+ * @param state Validation state, see `validate()` for details.
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
-inline ArrayDetails validate(const H5::Group& handle, Callbacks& callbacks) {
+inline ArrayDetails validate(const H5::Group& handle, State& state) {
     ritsuko::Version version;
 
     if (handle.attrExists("delayed_version")) {
@@ -190,7 +210,7 @@ inline ArrayDetails validate(const H5::Group& handle, Callbacks& callbacks) {
         version.minor = 99;
     }
 
-    return validate(handle, version, callbacks);
+    return validate(handle, version, state);
 }
 
 /**
@@ -199,14 +219,14 @@ inline ArrayDetails validate(const H5::Group& handle, Callbacks& callbacks) {
  * 
  * @param path Path to a HDF5 file.
  * @param name Name of the group inside the file.
- * @param callbacks Callbacks to be invoked after successful validation.
+ * @param state Validation state, see `validate()` for details.
  *
  * @return Details of the array after all delayed operations have been applied.
  */
-inline ArrayDetails validate(const std::string& path, std::string name, Callbacks& callbacks) {
+inline ArrayDetails validate(const std::string& path, std::string name, State& state) {
     H5::H5File handle(path, H5F_ACC_RDONLY);
     auto ghandle = handle.openGroup(name);
-    return validate(ghandle, callbacks);
+    return validate(ghandle, state);
 }
 
 /**
@@ -220,9 +240,9 @@ inline ArrayDetails validate(const std::string& path, std::string name, Callback
  */
 inline ArrayDetails validate(const std::string& path, std::string name) {
     H5::H5File handle(path, H5F_ACC_RDONLY);
-    Callbacks callbacks;
+    State state;
     auto ghandle = handle.openGroup(name);
-    return validate(ghandle, callbacks);
+    return validate(ghandle, state);
 }
 
 }

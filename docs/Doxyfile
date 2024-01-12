@@ -880,7 +880,6 @@ EXCLUDE                = ../include/chihaya/minimal_array.hpp \
                          ../include/chihaya/utils_list.hpp \
                          ../include/chihaya/utils_logic.hpp \
                          ../include/chihaya/utils_misc.hpp \
-                         ../include/chihaya/utils_public.hpp \
                          ../include/chihaya/utils_subset.hpp \
                          ../include/chihaya/utils_type.hpp \
                          ../include/chihaya/utils_unary.hpp

@@ -27,9 +27,9 @@ namespace matrix_product {
  */
 namespace internal {
 
-inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version, Callbacks& callbacks) {
+inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version, State& state) {
     // Checking the seed.
-    auto seed_details = internal_misc::load_seed_details(handle, target, version, callbacks);
+    auto seed_details = internal_misc::load_seed_details(handle, target, version, state);
     if (seed_details.dimensions.size() != 2) {
         throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array for a matrix product");
     }
@@ -54,14 +54,14 @@ inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const s
 /**
  * @param handle An open handle on a HDF5 group representing a matrix product.
  * @param version Version of the **chihaya** specification.
- * @param callbacks Callbacks, passed to `validate()`.
+ * @param state Validation state, passed to `validate()`.
  *
  * @return Details of the matrix product.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Callbacks& callbacks) {
-    auto left_details = internal::fetch_seed(handle, "left_seed", "left_orientation", version, callbacks);
-    auto right_details = internal::fetch_seed(handle, "right_seed", "right_orientation", version, callbacks);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
+    auto left_details = internal::fetch_seed(handle, "left_seed", "left_orientation", version, state);
+    auto right_details = internal::fetch_seed(handle, "right_seed", "right_orientation", version, state);
 
     ArrayDetails output;
     output.dimensions.resize(2);

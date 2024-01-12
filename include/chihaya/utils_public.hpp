@@ -56,26 +56,44 @@ struct ArrayDetails {
 };
 
 /**
- * @brief Callbacks to invoke on each delayed object.
- *
- * Advanced users can specify callbacks that are called on each call to `validate()`.
- * This is typically used to perform extra application-specific validation steps,
- * or to collect statistics like the "depth" of the operation tree.
+ * @cond
  */
-struct Callbacks {
+struct State;
+/**
+ * @endcond
+ */
+
+/**
+ * Class to map operation types to their validation functions.
+ * Each validation function should accept the HDF5 group representing the operation, the version of the **chihaya** specification, and a `State` object.
+ */
+typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, State&)> > OperationValidateRegistry;
+
+/**
+ * Class to map array types to their validation functions.
+ * Each validation function should accept the HDF5 group representing the array and the version of the **chihaya** specification.
+ */
+typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&)> > ArrayValidateRegistry;
+
+/**
+ * @brief Validation state.
+ *
+ * This is used to store data for a single call to `validate()`.
+ * It can be used to override validation functions without modifying the global validation registries, e.g., for parallelized applications.
+ * The state may also mutate throughout the duration of the call, allowing callers to collect statistics across the recursive invocations of `validate()` on the same `State` object.
+ */
+struct State {
     /**
-     * Callback to be applied on each array.
-     * This accepts the name of the array type, a handle to the array's HDF5 group, and the version.
-     * If null, this is not called.
+     * Custom registry of functions to be used by `validate()` on arrays.
+     * If available for an array type, it takes priority over any function found in the global `chihaya::array_validate_registry`.
      */
-    std::function<void(const std::string&, const H5::Group&, const ritsuko::Version&)> array;
+    ArrayValidateRegistry array_validate_registry;
 
     /**
-     * Callback to be applied on each operation.
-     * This accepts the name of the operation type, a handle to the operation's HDF5 group, and the version.
-     * If null, this is not called.
+     * Custom registry of functions to be used by `validate()` on operations.
+     * If available for an operation type, it takes priority over any function found in the global `chihaya::operation_validate_registry`.
      */
-    std::function<void(const std::string&, const H5::Group&, const ritsuko::Version&)> operation;
+    OperationValidateRegistry operation_validate_registry;
 };
 
 }
