@@ -13,12 +13,10 @@
 
 namespace chihaya {
 
-ArrayDetails validate(const H5::Group&, const ritsuko::Version&);
-
 namespace internal_arithmetic {
 
-inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version) {
-    auto output = internal_misc::load_seed_details(handle, target, version);
+inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version, State& state) {
+    auto output = internal_misc::load_seed_details(handle, target, version, state);
     if (output.type == STRING) {
         throw std::runtime_error("type of '" + target + "' should be integer, float or boolean");
     }

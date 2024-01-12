@@ -14,8 +14,6 @@
 
 namespace chihaya {
 
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version&);
-
 namespace internal_unary {
 
 inline std::string load_method(const H5::Group& handle) {

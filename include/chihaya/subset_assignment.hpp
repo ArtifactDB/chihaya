@@ -29,15 +29,16 @@ namespace subset_assignment {
 /**
  * @param handle An open handle on a HDF5 group representing a subset assignment.
  * @param version Version of the **chihaya** specification.
+ * @param state Validation state, passed to `validate()`.
  *
  * @return Details of the object after subset assignment.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
+    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, state);
     auto& seed_dims = seed_details.dimensions;
 
-    auto value_details = internal_misc::load_seed_details(handle, "value", version);
+    auto value_details = internal_misc::load_seed_details(handle, "value", version, state);
     if ((value_details.type == STRING) != (seed_details.type == STRING)) {
         throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
     }

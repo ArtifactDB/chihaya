@@ -90,18 +90,19 @@ TEST(UtilsMisc, LoadAlong) {
 
 TEST(UtilsMisc, LoadSeedDetails) {
     const char * path = "Test_utils_misc.h5";
+    chihaya::State state;
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         fhandle.createGroup("seed");
     }
-    expect_error([&]() { chihaya::internal_misc::load_seed_details(H5::H5File(path, H5F_ACC_RDONLY), "seed", ritsuko::Version(1, 1, 0)); }, "failed to validate");
+    expect_error([&]() { chihaya::internal_misc::load_seed_details(H5::H5File(path, H5F_ACC_RDONLY), "seed", ritsuko::Version(1, 1, 0), state); }, "failed to validate");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         mock_array_opener(fhandle, "seed", { 13, 14 }, 1000000, "INTEGER");
     }
-    auto deets = chihaya::internal_misc::load_seed_details(H5::H5File(path, H5F_ACC_RDONLY), "seed", ritsuko::Version(1, 0, 0)); 
+    auto deets = chihaya::internal_misc::load_seed_details(H5::H5File(path, H5F_ACC_RDONLY), "seed", ritsuko::Version(1, 0, 0), state); 
     EXPECT_EQ(deets.type, chihaya::INTEGER);
     EXPECT_EQ(deets.dimensions[0], 13);
     EXPECT_EQ(deets.dimensions[1], 14);

@@ -20,12 +20,13 @@ namespace dimnames {
 /**
  * @param handle An open handle on a HDF5 group representing a dimnames assignment operation.
  * @param version Version of the **chihaya** specification.
+ * @param state Validation state, passed to `validate()`.
  *
  * @return Details of the object after assigning dimnames.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    ArrayDetails seed_details = internal_misc::load_seed_details(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
+    ArrayDetails seed_details = internal_misc::load_seed_details(handle, "seed", version, state);
     if (!handle.exists("dimnames")) {
         throw std::runtime_error("expected a 'dimnames' group");
     }

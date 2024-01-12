@@ -29,12 +29,13 @@ namespace unary_logic {
 /**
  * @param handle An open handle on a HDF5 group representing an unary logic operation.
  * @param version Version of the **chihaya** specification.
+ * @param state Validation state, passed to `validate()`.
  *
  * @return Details of the object after applying the logical operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = internal_logic::fetch_seed(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
+    auto seed_details = internal_logic::fetch_seed(handle, "seed", version, state);
 
     // Checking the method.
     auto method = internal_unary::load_method(handle);
