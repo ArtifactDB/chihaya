@@ -30,12 +30,13 @@ namespace subset {
 /**
  * @param handle An open handle on a HDF5 group representing a subset operation.
  * @param version Verison of the **chihaya** specification.
+ * @param callbacks Callbacks, passed to `validate()`.
  *
  * @return Details of the subsetted object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Callbacks& callbacks) {
+    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, callbacks);
     auto& seed_dims = seed_details.dimensions;
 
     auto ihandle = ritsuko::hdf5::open_group(handle, "index");

@@ -14,7 +14,7 @@
 
 namespace chihaya {
 
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version&);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version&, Callbacks&);
 
 namespace internal_unary {
 

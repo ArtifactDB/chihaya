@@ -1,6 +1,10 @@
 #ifndef CHIHAYA_UTILS_PUBLIC_HPP
 #define CHIHAYA_UTILS_PUBLIC_HPP
 
+#include "H5Cpp.h"
+
+#include <string>
+#include <functional>
 #include <vector>
 
 /**
@@ -48,6 +52,29 @@ struct ArrayDetails {
      * Values should be non-negative.
      */
     std::vector<size_t> dimensions;
+};
+
+/**
+ * @brief Callbacks to invoke on each delayed object.
+ *
+ * Advanced users can specify callbacks that are called on each call to `validate()`.
+ * This is typically used to perform extra application-specific validation steps,
+ * or to collect statistics like the "depth" of the operation tree.
+ */
+struct Callbacks {
+    /**
+     * Callback to be applied on each array.
+     * This accepts the name of the array type, a handle to the array's HDF5 group, and the version.
+     * If null, this is not called.
+     */
+    std::function<void(const std::string&, const H5::Group&, const ritsuko::Version&)> array;
+
+    /**
+     * Callback to be applied on each operation.
+     * This accepts the name of the operation type, a handle to the operation's HDF5 group, and the version.
+     * If null, this is not called.
+     */
+    std::function<void(const std::string&, const H5::Group&, const ritsuko::Version&)> operation;
 };
 
 }

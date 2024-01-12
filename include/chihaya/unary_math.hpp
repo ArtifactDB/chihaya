@@ -29,13 +29,13 @@ namespace unary_math {
 /**
  * @param handle An open handle on a HDF5 group representing an unary math operation.
  * @param version Version of the **chihaya** specification.
+ * @param callbacks Callbacks, passed to `validate()`.
  *
  * @return Details of the object after applying the mathal operation.
  * Otherwise, if the validation failed, an error is raised.
- * 
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = internal_misc::load_seed_details(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Callbacks& callbacks) {
+    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, callbacks);
     if (seed_details.type == STRING) {
         throw std::runtime_error("type of 'seed' should be integer, float or boolean");
     }

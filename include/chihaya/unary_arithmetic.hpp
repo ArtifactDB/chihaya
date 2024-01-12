@@ -29,12 +29,13 @@ namespace unary_arithmetic {
 /**
  * @param handle An open handle on a HDF5 group representing an unary arithmetic operation.
  * @param version Version of the **chihaya** specification.
+ * @param callbacks Callbacks, passed to `validate()`.
  *
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Callbacks& callbacks) {
+    auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version, callbacks);
 
     auto method = internal_unary::load_method(handle);
     if (!internal_arithmetic::is_valid_operation(method)) {
