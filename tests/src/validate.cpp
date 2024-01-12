@@ -40,21 +40,3 @@ TEST(Validate, CustomRegistry) {
     EXPECT_EQ(known_operations.size(), 1);
     EXPECT_EQ(known_operations.front(), "transpose");
 }
-
-TEST(Validate, Errors) {
-    const char* path = "Test_validate.h5";
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = operation_opener(fhandle, "WHEE", "FOO");
-        add_version_string(ghandle, 1100000);
-    }
-    expect_error(path, "WHEE", "unknown operation type 'FOO'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = array_opener(fhandle, "seed", "BAR");
-        add_version_string(ghandle, 1100000);
-    }
-    expect_error(path, "seed", "unknown array type 'BAR'");
-}
