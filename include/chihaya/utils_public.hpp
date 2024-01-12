@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <unordered_map>
 
 /**
  * @file utils_public.hpp

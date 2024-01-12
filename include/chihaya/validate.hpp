@@ -32,9 +32,8 @@
 
 #include "utils_public.hpp"
 
-#include <unordered_map>
 #include <string>
-#include <functional>
+#include <stdexcept>
 
 /**
  * @file validate.hpp
