@@ -32,12 +32,70 @@
 
 #include "utils_public.hpp"
 
+#include <unordered_map>
+#include <string>
+#include <functional>
+
 /**
  * @file validate.hpp
  * @brief Main validation function.
  */
 
 namespace chihaya {
+
+/**
+ * Class to map array/operation types to their validation functions.
+ */
+typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&)> > ValidateRegistry;
+
+/**
+ * @cond
+ */
+namespace internal {
+
+inline ValidateRegistry default_operation_registry() {
+    ValidateRegistry registry;
+    registry["subset"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return subset::validate(handle, version); };
+    registry["combine"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return combine::validate(handle, version); };
+    registry["transpose"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return transpose::validate(handle, version); };
+    registry["dimnames"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return dimnames::validate(handle, version); };
+    registry["subset assignment"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return subset_assignment::validate(handle, version); };
+    registry["unary arithmetic"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return unary_arithmetic::validate(handle, version); };
+    registry["unary comparison"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return unary_comparison::validate(handle, version); };
+    registry["unary logic"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return unary_logic::validate(handle, version); };
+    registry["unary math"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return unary_math::validate(handle, version); };
+    registry["unary special check"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return unary_special_check::validate(handle, version); };
+    registry["binary arithmetic"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return binary_arithmetic::validate(handle, version); };
+    registry["binary comparison"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return binary_comparison::validate(handle, version); };
+    registry["binary logic"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return binary_logic::validate(handle, version); };
+    registry["matrix product"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return matrix_product::validate(handle, version); };
+    return registry;
+}
+
+inline ValidateRegistry default_array_registry() {
+    ValidateRegistry registry;
+    registry["dense array"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return dense_array::validate(handle, version); };
+    registry["sparse matrix"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return sparse_matrix::validate(handle, version); };
+    registry["constant array"] = [](const H5::Group& handle, const ritsuko::Version& version) -> ArrayDetails { return constant_array::validate(handle, version); };
+    return registry;
+}
+
+}
+/**
+ * @endcond
+ */
+
+/**
+ * Registry of functions to be used by `validate()` on operations.
+ * Applications can extend **chihaya** by adding new validation functions for custom operations.
+ */
+inline ValidateRegistry operation_validate_registry = internal::default_operation_registry();
+
+/**
+ * Registry of functions to be used by `validate()` on arrays.
+ * Applications can extend **chihaya** by adding new validation functions for custom arrays.
+ */
+inline ValidateRegistry array_validate_registry = internal::default_array_registry();
 
 /**
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
@@ -51,14 +109,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     if (dtype == "array") {
         auto atype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_array");
+        auto it = array_validate_registry.find(atype);
 
         try {
-            if (atype == "dense array") {
-                output = dense_array::validate(handle, version);
-            } else if (atype == "sparse matrix") {
-                output = sparse_matrix::validate(handle, version);
-            } else if (atype == "constant array") {
-                output = constant_array::validate(handle, version);
+            if (it != array_validate_registry.end()) {
+                output = (it->second)(handle, version);
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 output = custom_array::validate(handle, version);
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
@@ -72,36 +127,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     } else if (dtype == "operation") {
         auto otype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_operation");
+        auto it = operation_validate_registry.find(otype);
 
         try {
-            if (otype == "subset") {
-                output = subset::validate(handle, version);
-            } else if (otype == "combine") {
-                output = combine::validate(handle, version);
-            } else if (otype == "transpose") {
-                output = transpose::validate(handle, version);
-            } else if (otype == "dimnames") {
-                output = dimnames::validate(handle, version);
-            } else if (otype == "subset assignment") {
-                output = subset_assignment::validate(handle, version);
-            } else if (otype == "unary arithmetic") {
-                output = unary_arithmetic::validate(handle, version);
-            } else if (otype == "unary comparison") {
-                output = unary_comparison::validate(handle, version);
-            } else if (otype == "unary logic") {
-                output = unary_logic::validate(handle, version);
-            } else if (otype == "unary math") {
-                output = unary_math::validate(handle, version);
-            } else if (otype == "unary special check") {
-                output = unary_special_check::validate(handle, version);
-            } else if (otype == "binary arithmetic") {
-                output = binary_arithmetic::validate(handle, version);
-            } else if (otype == "binary comparison") {
-                output = binary_comparison::validate(handle, version);
-            } else if (otype == "binary logic") {
-                output = binary_logic::validate(handle, version);
-            } else if (otype == "matrix product") {
-                output = matrix_product::validate(handle, version);
+            if (it != operation_validate_registry.end()) {
+                output = (it->second)(handle, version);
             } else {
                 throw std::runtime_error("unknown operation type");
             }
