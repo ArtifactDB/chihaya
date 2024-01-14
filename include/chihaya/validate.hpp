@@ -80,23 +80,8 @@ inline ArrayValidateRegistry default_array_registry() {
  */
 
 /**
- * Registry of functions to be used by `validate()` on operations.
- * Applications can extend **chihaya** by adding new validation functions for custom operations.
- */
-inline OperationValidateRegistry operation_validate_registry = internal::default_operation_registry();
-
-/**
- * Registry of functions to be used by `validate()` on arrays.
- * Applications can extend **chihaya** by adding new validation functions for custom arrays.
- */
-inline ArrayValidateRegistry array_validate_registry = internal::default_array_registry();
-
-/**
  * For operations, this function will first search `state.custom_operation_validate_registry` for an available validation function.
- * If one is not found, it will then search the global `operation_validate_registry`.
- *
  * For arrays, this function will first search `state.custom_array_validate_registry` for an available validation function.
- * If one is not found, it will then search the global `array_validate_registry`, and then check for custom arrays (and for older **chihaya** specifications, external arrays).
  *
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
  * @param version Version of the **chihaya** specification.
@@ -121,7 +106,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
 
         } else {
-            const auto& global = array_validate_registry;
+            static const ArrayValidateRegistry global = internal::default_array_registry();
             auto git = global.find(atype);
             if (git != global.end()) {
                 try {
@@ -159,7 +144,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
 
         } else {
-            const auto& global = operation_validate_registry;
+            static const OperationValidateRegistry global = internal::default_operation_registry();
             auto git = global.find(otype);
             if (git != global.end()) {
                 try {
