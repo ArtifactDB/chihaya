@@ -76,8 +76,7 @@ $(function() {
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">chihaya Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -177,13 +176,6 @@ Functions</h2></td></tr>
 <tr class="separator:a778aaedeab961ba66b9dfc690fa49451"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a8c3fd26f340d08cba588b0a4baa61ca8">validate</a> (const std::string &amp;path, std::string name)</td></tr>
 <tr class="separator:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a534ed3246ba0d5c414831686dafef45a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacechihaya.html#af8eb3ec0dd56259e6b935c0be938d650">OperationValidateRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a534ed3246ba0d5c414831686dafef45a">operation_validate_registry</a> = internal::default_operation_registry()</td></tr>
-<tr class="separator:a534ed3246ba0d5c414831686dafef45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98548bc7ad4c957147ea29ded2d63b11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e">ArrayValidateRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a98548bc7ad4c957147ea29ded2d63b11">array_validate_registry</a> = internal::default_array_registry()</td></tr>
-<tr class="separator:a98548bc7ad4c957147ea29ded2d63b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Namespace for all <b>chihaya</b> functions. </p>
@@ -274,8 +266,7 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >For operations, this function will first search <code>state.custom_operation_validate_registry</code> for an available validation function. If one is not found, it will then search the global <code>operation_validate_registry</code>.</p>
-<p >For arrays, this function will first search <code>state.custom_array_validate_registry</code> for an available validation function. If one is not found, it will then search the global <code>array_validate_registry</code>, and then check for custom arrays (and for older <b>chihaya</b> specifications, external arrays).</p>
+<p >For operations, this function will first search <code>state.custom_operation_validate_registry</code> for an available validation function. For arrays, this function will first search <code>state.custom_array_validate_registry</code> for an available validation function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
@@ -427,53 +418,6 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied. </dd></dl>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a98548bc7ad4c957147ea29ded2d63b11" name="a98548bc7ad4c957147ea29ded2d63b11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98548bc7ad4c957147ea29ded2d63b11">&#9670;&#160;</a></span>array_validate_registry</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e">ArrayValidateRegistry</a> chihaya::array_validate_registry = internal::default_array_registry()</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Registry of functions to be used by <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> on arrays. Applications can extend <b>chihaya</b> by adding new validation functions for custom arrays. </p>
-
-</div>
-</div>
-<a id="a534ed3246ba0d5c414831686dafef45a" name="a534ed3246ba0d5c414831686dafef45a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a534ed3246ba0d5c414831686dafef45a">&#9670;&#160;</a></span>operation_validate_registry</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacechihaya.html#af8eb3ec0dd56259e6b935c0be938d650">OperationValidateRegistry</a> chihaya::operation_validate_registry = internal::default_operation_registry()</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Registry of functions to be used by <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> on operations. Applications can extend <b>chihaya</b> by adding new validation functions for custom operations. </p>
 
 </div>
 </div>
