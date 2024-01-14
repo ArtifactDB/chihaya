@@ -165,17 +165,15 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 }
 
 /**
- * Validate a delayed operation/array at the specified HDF5 group,
- * using a version string in the `delayed_version` attribute of the `handle`.
- * This should be a string of the form `<MAJOR>.<MINOR>`.
- * For back-compatibility purposes, the string `"1.0.0"` is also allowed, corresponding to version 1.1;
+ * The version is taken from the `delayed_version` attribute of the `handle`.
+ * This should be a version string of the form `<MAJOR>.<MINOR>`.
+ * For back-compatibility purposes, the string `"1.0.0"` is also allowed, corresponding to version 1.0;
  * and if `delayed_version` is missing, it defaults to `0.99`.
- * 
+ *
  * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
- * @param state Validation state, see `validate()` for details.
- * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ * @return Version of the **chihaya** specification.
  */
-inline ArrayDetails validate(const H5::Group& handle, State& state) {
+inline ritsuko::Version extract_version(const H5::Group& handle) {
     ritsuko::Version version;
 
     if (handle.attrExists("delayed_version")) {
@@ -194,7 +192,18 @@ inline ArrayDetails validate(const H5::Group& handle, State& state) {
         version.minor = 99;
     }
 
-    return validate(handle, version, state);
+    return version;
+}
+
+/**
+ * Validate a delayed operation/array at the specified HDF5 group,
+ * 
+ * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
+ * @param state Validation state, see `validate()` for details.
+ * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ */
+inline ArrayDetails validate(const H5::Group& handle, State& state) {
+    return validate(handle, extract_version(handle), state);
 }
 
 /**
