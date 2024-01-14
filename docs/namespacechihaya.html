@@ -170,6 +170,8 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:acb15e89cb867a75cb69ed7b6900495e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
 <tr class="separator:acb15e89cb867a75cb69ed7b6900495e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638e9ab1195112740d03fd001c4f40e1"><td class="memItemLeft" align="right" valign="top">ritsuko::Version&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a638e9ab1195112740d03fd001c4f40e1">extract_version</a> (const H5::Group &amp;handle)</td></tr>
+<tr class="separator:a638e9ab1195112740d03fd001c4f40e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a274e8bd90984a75ce5ccebf99264ad78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a274e8bd90984a75ce5ccebf99264ad78">validate</a> (const H5::Group &amp;handle, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
 <tr class="separator:a274e8bd90984a75ce5ccebf99264ad78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a778aaedeab961ba66b9dfc690fa49451"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a778aaedeab961ba66b9dfc690fa49451">validate</a> (const std::string &amp;path, std::string name, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
@@ -227,6 +229,40 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a638e9ab1195112740d03fd001c4f40e1" name="a638e9ab1195112740d03fd001c4f40e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638e9ab1195112740d03fd001c4f40e1">&#9670;&#160;</a></span>extract_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ritsuko::Version chihaya::extract_version </td>
+          <td>(</td>
+          <td class="paramtype">const H5::Group &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >The version is taken from the <code>delayed_version</code> attribute of the <code>handle</code>. This should be a version string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;</code>. For back-compatibility purposes, the string <code>"1.0.0"</code> is also allowed, corresponding to version 1.0; and if <code>delayed_version</code> is missing, it defaults to <code>0.99</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Version of the <b>chihaya</b> specification. </dd></dl>
+
+</div>
+</div>
 <a id="acb15e89cb867a75cb69ed7b6900495e4" name="acb15e89cb867a75cb69ed7b6900495e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb15e89cb867a75cb69ed7b6900495e4">&#9670;&#160;</a></span>validate() <span class="overload">[1/4]</span></h2>
 
@@ -312,7 +348,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Validate a delayed operation/array at the specified HDF5 group, using a version string in the <code>delayed_version</code> attribute of the <code>handle</code>. This should be a string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;</code>. For back-compatibility purposes, the string <code>"1.0.0"</code> is also allowed, corresponding to version 1.1; and if <code>delayed_version</code> is missing, it defaults to <code>0.99</code>.</p>
+<p >Validate a delayed operation/array at the specified HDF5 group,</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
