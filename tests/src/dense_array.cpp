@@ -147,6 +147,22 @@ TEST_P(DenseArrayTest, Dimnames) {
     {
         auto output = test_validate(path, "dense"); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions[0], 20);
+        EXPECT_EQ(output.dimensions[1], 17);
+    }
+
+    // Works correctly in native mode with shuffling of dimensions.
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("dense");
+        ghandle.unlink("native");
+        add_numeric_scalar(ghandle, "native", 0, H5::PredType::NATIVE_INT8); 
+    }
+    {
+        auto output = test_validate(path, "dense"); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions[0], 17);
+        EXPECT_EQ(output.dimensions[1], 20);
     }
 }
 
