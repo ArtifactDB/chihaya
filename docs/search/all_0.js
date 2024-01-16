@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['array_5fvalidate_5fregistry_0',['array_validate_registry',['../structchihaya_1_1State.html#aa33bb5a21506a849eafc83c5a1b8040c',1,'chihaya::State']]],
+  ['array_5fvalidate_5fregistry_0',['array_validate_registry',['../structchihaya_1_1Options.html#a6f85a4bdb3dd99d50a2ee2b6da2a5c43',1,'chihaya::Options']]],
   ['arraydetails_1',['ArrayDetails',['../structchihaya_1_1ArrayDetails.html',1,'chihaya']]],
-  ['arraytype_2',['ArrayType',['../namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2',1,'chihaya']]],
-  ['arrayvalidateregistry_3',['ArrayValidateRegistry',['../namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e',1,'chihaya']]]
+  ['arraytype_2',['ArrayType',['../namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2',1,'chihaya']]]
 ];

@@ -86,14 +86,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab441a24a30c36ad60aa6a0af7eda519c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1sparse__matrix.html#ab441a24a30c36ad60aa6a0af7eda519c">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
-<tr class="separator:ab441a24a30c36ad60aa6a0af7eda519c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80646a52afbd7cfe445a6dcb5b83ec8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1sparse__matrix.html#ad80646a52afbd7cfe445a6dcb5b83ec8">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:ad80646a52afbd7cfe445a6dcb5b83ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Namespace for sparse matrices. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ab441a24a30c36ad60aa6a0af7eda519c" name="ab441a24a30c36ad60aa6a0af7eda519c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab441a24a30c36ad60aa6a0af7eda519c">&#9670;&#160;</a></span>validate()</h2>
+<a id="ad80646a52afbd7cfe445a6dcb5b83ec8" name="ad80646a52afbd7cfe445a6dcb5b83ec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad80646a52afbd7cfe445a6dcb5b83ec8">&#9670;&#160;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -111,7 +111,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -128,7 +134,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing a sparse matrix. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification. </td></tr>
+    <tr><td class="paramname">options</td><td>Validation options.</td></tr>
   </table>
   </dd>
 </dl>

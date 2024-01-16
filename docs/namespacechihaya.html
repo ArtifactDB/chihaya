@@ -74,7 +74,6 @@ $(function() {
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">chihaya Namespace Reference</div></div>
@@ -146,16 +145,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Details about an array.  <a href="structchihaya_1_1ArrayDetails.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1State.html">State</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validation state.  <a href="structchihaya_1_1State.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Options.html">Options</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validation options.  <a href="structchihaya_1_1Options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:af8eb3ec0dd56259e6b935c0be938d650"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#af8eb3ec0dd56259e6b935c0be938d650">OperationValidateRegistry</a></td></tr>
-<tr class="separator:af8eb3ec0dd56259e6b935c0be938d650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9ba423efd20aa837adada6efd72ea4e"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e">ArrayValidateRegistry</a></td></tr>
-<tr class="separator:ab9ba423efd20aa837adada6efd72ea4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -168,51 +160,20 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acb15e89cb867a75cb69ed7b6900495e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
-<tr class="separator:acb15e89cb867a75cb69ed7b6900495e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae8f495308b7b74dce0570e73ec70072"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:aae8f495308b7b74dce0570e73ec70072"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a638e9ab1195112740d03fd001c4f40e1"><td class="memItemLeft" align="right" valign="top">ritsuko::Version&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a638e9ab1195112740d03fd001c4f40e1">extract_version</a> (const H5::Group &amp;handle)</td></tr>
 <tr class="separator:a638e9ab1195112740d03fd001c4f40e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a274e8bd90984a75ce5ccebf99264ad78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a274e8bd90984a75ce5ccebf99264ad78">validate</a> (const H5::Group &amp;handle, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
-<tr class="separator:a274e8bd90984a75ce5ccebf99264ad78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a778aaedeab961ba66b9dfc690fa49451"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a778aaedeab961ba66b9dfc690fa49451">validate</a> (const std::string &amp;path, std::string name, <a class="el" href="structchihaya_1_1State.html">State</a> &amp;state)</td></tr>
-<tr class="separator:a778aaedeab961ba66b9dfc690fa49451"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a8c3fd26f340d08cba588b0a4baa61ca8">validate</a> (const std::string &amp;path, std::string name)</td></tr>
-<tr class="separator:a8c3fd26f340d08cba588b0a4baa61ca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a69d15799bc731de2c8327f80a6682c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#a3a69d15799bc731de2c8327f80a6682c">validate</a> (const H5::Group &amp;handle, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:a3a69d15799bc731de2c8327f80a6682c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af15d69857009084bae3e18738630781f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#af15d69857009084bae3e18738630781f">validate</a> (const std::string &amp;path, const std::string &amp;name, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:af15d69857009084bae3e18738630781f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adccb991260ebcaa8fb60555a78a39ddc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya.html#adccb991260ebcaa8fb60555a78a39ddc">validate</a> (const std::string &amp;path, const std::string &amp;name)</td></tr>
+<tr class="separator:adccb991260ebcaa8fb60555a78a39ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Namespace for all <b>chihaya</b> functions. </p>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="ab9ba423efd20aa837adada6efd72ea4e" name="ab9ba423efd20aa837adada6efd72ea4e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9ba423efd20aa837adada6efd72ea4e">&#9670;&#160;</a></span>ArrayValidateRegistry</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::unordered_map&lt;std::string, std::function&lt;<a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group&amp;, const ritsuko::Version&amp;)&gt; &gt; <a class="el" href="namespacechihaya.html#ab9ba423efd20aa837adada6efd72ea4e">chihaya::ArrayValidateRegistry</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Class to map array types to their validation functions. Each validation function should accept the HDF5 group representing the array and the version of the <b>chihaya</b> specification. </p>
-
-</div>
-</div>
-<a id="af8eb3ec0dd56259e6b935c0be938d650" name="af8eb3ec0dd56259e6b935c0be938d650"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8eb3ec0dd56259e6b935c0be938d650">&#9670;&#160;</a></span>OperationValidateRegistry</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::unordered_map&lt;std::string, std::function&lt;<a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group&amp;, const ritsuko::Version&amp;, <a class="el" href="structchihaya_1_1State.html">State</a>&amp;)&gt; &gt; <a class="el" href="namespacechihaya.html#af8eb3ec0dd56259e6b935c0be938d650">chihaya::OperationValidateRegistry</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Class to map operation types to their validation functions. Each validation function should accept the HDF5 group representing the operation, the version of the <b>chihaya</b> specification, and a <code><a class="el" href="structchihaya_1_1State.html" title="Validation state.">State</a></code> object. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="aff4525846a37a56401501e2ffc5a61f2" name="aff4525846a37a56401501e2ffc5a61f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff4525846a37a56401501e2ffc5a61f2">&#9670;&#160;</a></span>ArrayType</h2>
 
@@ -263,8 +224,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="acb15e89cb867a75cb69ed7b6900495e4" name="acb15e89cb867a75cb69ed7b6900495e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb15e89cb867a75cb69ed7b6900495e4">&#9670;&#160;</a></span>validate() <span class="overload">[1/4]</span></h2>
+<a id="aae8f495308b7b74dce0570e73ec70072" name="aae8f495308b7b74dce0570e73ec70072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae8f495308b7b74dce0570e73ec70072">&#9670;&#160;</a></span>validate() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -287,8 +248,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structchihaya_1_1State.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -302,12 +263,12 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >For operations, this function will first search <code>state.custom_operation_validate_registry</code> for an available validation function. For arrays, this function will first search <code>state.custom_array_validate_registry</code> for an available validation function.</p>
+<p >For operations, this function will first search <code>options.custom_operation_validate_registry</code> for an available validation function. For arrays, this function will first search <code>options.custom_array_validate_registry</code> for an available validation function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
     <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification. </td></tr>
-    <tr><td class="paramname">state</td><td>Validation state, possibly containing custom validation functions.</td></tr>
+    <tr><td class="paramname">options</td><td>Validation options, possibly containing custom validation functions.</td></tr>
   </table>
   </dd>
 </dl>
@@ -315,8 +276,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a274e8bd90984a75ce5ccebf99264ad78" name="a274e8bd90984a75ce5ccebf99264ad78"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a274e8bd90984a75ce5ccebf99264ad78">&#9670;&#160;</a></span>validate() <span class="overload">[2/4]</span></h2>
+<a id="a3a69d15799bc731de2c8327f80a6682c" name="a3a69d15799bc731de2c8327f80a6682c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a69d15799bc731de2c8327f80a6682c">&#9670;&#160;</a></span>validate() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -333,8 +294,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structchihaya_1_1State.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -352,7 +313,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>Open handle to a HDF5 group corresponding to a delayed operation or array. </td></tr>
-    <tr><td class="paramname">state</td><td>Validation state, see <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> for details. </td></tr>
+    <tr><td class="paramname">options</td><td>Validation options, see <code><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate()</a></code> for details. </td></tr>
   </table>
   </dd>
 </dl>
@@ -360,8 +321,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8c3fd26f340d08cba588b0a4baa61ca8" name="a8c3fd26f340d08cba588b0a4baa61ca8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c3fd26f340d08cba588b0a4baa61ca8">&#9670;&#160;</a></span>validate() <span class="overload">[3/4]</span></h2>
+<a id="adccb991260ebcaa8fb60555a78a39ddc" name="adccb991260ebcaa8fb60555a78a39ddc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adccb991260ebcaa8fb60555a78a39ddc">&#9670;&#160;</a></span>validate() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -378,7 +339,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>&#160;</td>
         </tr>
         <tr>
@@ -393,7 +354,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Validate a delayed operation/array at the specified HDF5 group. This simply calls the <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> overload for a <code>H5::Group</code>.</p>
+<p >Validate a delayed operation/array at the specified HDF5 group. This simply calls the <code><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate()</a></code> overload for a <code>H5::Group</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">path</td><td>Path to a HDF5 file. </td></tr>
@@ -405,8 +366,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a778aaedeab961ba66b9dfc690fa49451" name="a778aaedeab961ba66b9dfc690fa49451"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a778aaedeab961ba66b9dfc690fa49451">&#9670;&#160;</a></span>validate() <span class="overload">[4/4]</span></h2>
+<a id="af15d69857009084bae3e18738630781f" name="af15d69857009084bae3e18738630781f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af15d69857009084bae3e18738630781f">&#9670;&#160;</a></span>validate() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -423,14 +384,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structchihaya_1_1State.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -444,12 +405,12 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Validate a delayed operation/array at the specified HDF5 group. This simply calls the <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> overload for a <code>H5::Group</code>.</p>
+<p >Validate a delayed operation/array at the specified HDF5 group. This simply calls the <code><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate()</a></code> overload for a <code>H5::Group</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">path</td><td>Path to a HDF5 file. </td></tr>
     <tr><td class="paramname">name</td><td>Name of the group inside the file. </td></tr>
-    <tr><td class="paramname">state</td><td>Validation state, see <code><a class="el" href="namespacechihaya.html#acb15e89cb867a75cb69ed7b6900495e4">validate()</a></code> for details.</td></tr>
+    <tr><td class="paramname">options</td><td>Validation options, see <code><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate()</a></code> for details.</td></tr>
   </table>
   </dd>
 </dl>

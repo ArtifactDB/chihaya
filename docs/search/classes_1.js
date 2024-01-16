@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['state_0',['State',['../structchihaya_1_1State.html',1,'chihaya']]]
+  ['options_0',['Options',['../structchihaya_1_1Options.html',1,'chihaya']]]
 ];

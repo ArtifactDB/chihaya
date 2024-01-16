@@ -86,14 +86,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a96002abaf19a74b741449bb476c5fad9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1custom__array.html#a96002abaf19a74b741449bb476c5fad9">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version)</td></tr>
-<tr class="separator:a96002abaf19a74b741449bb476c5fad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7104a09a2001d6ed989ae48b9cd64b5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacechihaya_1_1custom__array.html#a7104a09a2001d6ed989ae48b9cd64b5f">validate</a> (const H5::Group &amp;handle, const ritsuko::Version &amp;version, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:a7104a09a2001d6ed989ae48b9cd64b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Namespace for custom third-party arrays. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a96002abaf19a74b741449bb476c5fad9" name="a96002abaf19a74b741449bb476c5fad9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96002abaf19a74b741449bb476c5fad9">&#9670;&#160;</a></span>validate()</h2>
+<a id="a7104a09a2001d6ed989ae48b9cd64b5f" name="a7104a09a2001d6ed989ae48b9cd64b5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7104a09a2001d6ed989ae48b9cd64b5f">&#9670;&#160;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -111,7 +111,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const ritsuko::Version &amp;&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -128,7 +134,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open handle on a HDF5 group representing an external array. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification.</td></tr>
+    <tr><td class="paramname">version</td><td>Version of the <b>chihaya</b> specification. </td></tr>
+    <tr><td class="paramname">options</td><td>Validation options.</td></tr>
   </table>
   </dd>
 </dl>
