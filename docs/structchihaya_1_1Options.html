@@ -89,6 +89,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a675ba55ac4e1acfe61d4ab39a6829673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a> = false</td></tr>
+<tr class="separator:a675ba55ac4e1acfe61d4ab39a6829673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f85a4bdb3dd99d50a2ee2b6da2a5c43"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Options.html#a6f85a4bdb3dd99d50a2ee2b6da2a5c43">array_validate_registry</a></td></tr>
 <tr class="separator:a6f85a4bdb3dd99d50a2ee2b6da2a5c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cec3eea92e49613ccefcbfa2c7dc48a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Options.html#a8cec3eea92e49613ccefcbfa2c7dc48a">operation_validate_registry</a></td></tr>
@@ -110,6 +112,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">validate()</a></code> on arrays. If a custom function is provided for an array type, it is used instead of the default function . </p>
+
+</div>
+</div>
+<a id="a675ba55ac4e1acfe61d4ab39a6829673" name="a675ba55ac4e1acfe61d4ab39a6829673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a675ba55ac4e1acfe61d4ab39a6829673">&#9670;&#160;</a></span>details_only</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool chihaya::Options::details_only = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Whether to skip extensive validation and just return the <code><a class="el" href="structchihaya_1_1ArrayDetails.html" title="Details about an array.">ArrayDetails</a></code>. If this is set to true, it is assumed that the array/operation is already valid. </p>
 
 </div>
 </div>

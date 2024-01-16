@@ -100,26 +100,29 @@ $(function() {
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Checking the method.</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> method = internal_unary::load_method(handle);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (method != <span class="stringliteral">&quot;is_nan&quot;</span> &amp;&amp;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        method != <span class="stringliteral">&quot;is_finite&quot;</span> &amp;&amp;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        method != <span class="stringliteral">&quot;is_infinite&quot;</span>)</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span> + method + <span class="stringliteral">&quot;)&quot;</span>);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    seed_details.type = BOOLEAN;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (method != <span class="stringliteral">&quot;is_nan&quot;</span> &amp;&amp;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            method != <span class="stringliteral">&quot;is_finite&quot;</span> &amp;&amp;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            method != <span class="stringliteral">&quot;is_infinite&quot;</span>)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unrecognized &#39;method&#39; (&quot;</span> + method + <span class="stringliteral">&quot;)&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    seed_details.type = BOOLEAN;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> seed_details;</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_1_1unary__special__check_html_ac2002fe4a8bd7246a6478317807039ab"><div class="ttname"><a href="namespacechihaya_1_1unary__special__check.html#ac2002fe4a8bd7246a6478317807039ab">chihaya::unary_special_check::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition:</b> unary_special_check.hpp:32</div></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition:</b> binary_arithmetic.hpp:22</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:36</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:66</div></div>
+<div class="ttc" id="astructchihaya_1_1Options_html_a675ba55ac4e1acfe61d4ab39a6829673"><div class="ttname"><a href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">chihaya::Options::details_only</a></div><div class="ttdeci">bool details_only</div><div class="ttdef"><b>Definition:</b> utils_public.hpp:71</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
