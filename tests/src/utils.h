@@ -131,6 +131,8 @@ void expect_error(Function op, std::string message) {
 
 chihaya::ArrayDetails test_validate(const std::string&, const std::string&);
 
+chihaya::ArrayDetails test_validate_skip(const std::string&, const std::string&);
+
 inline void expect_error(const std::string& path, const std::string& name, std::string message) {
     expect_error([&]() { test_validate(path, name); }, std::move(message));
 }

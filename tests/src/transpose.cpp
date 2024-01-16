@@ -35,6 +35,10 @@ TEST_P(TransposeTest, NoOp) {
     const auto& dims = output.dimensions;
     EXPECT_EQ(dims[0], 13);
     EXPECT_EQ(dims[1], 19);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(TransposeTest, Simple) {

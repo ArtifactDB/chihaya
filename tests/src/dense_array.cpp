@@ -51,6 +51,10 @@ TEST_P(DenseArrayTest, Basic) {
         EXPECT_EQ(dims.size(), 2);
         EXPECT_EQ(dims[0], 20);
         EXPECT_EQ(dims[1], 17);
+
+        auto skipped = test_validate_skip(path, "dense");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 
     {
@@ -178,8 +182,6 @@ TEST_P(DenseArrayTest, Boolean) {
             int val = 1;
             ahandle.write(H5::PredType::NATIVE_INT, &val);
         }
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::BOOLEAN);
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -188,9 +190,14 @@ TEST_P(DenseArrayTest, Boolean) {
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
         }
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::BOOLEAN);
     }
+
+    auto output = test_validate(path, "dense"); 
+    EXPECT_EQ(output.type, chihaya::BOOLEAN);
+
+    auto skipped = test_validate_skip(path, "dense");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(DenseArrayTest, DataErrors) {

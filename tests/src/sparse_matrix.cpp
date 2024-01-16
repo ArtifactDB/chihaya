@@ -52,6 +52,10 @@ TEST_P(SparseMatrixTest, Basic) {
         EXPECT_EQ(dims.size(), 2);
         EXPECT_EQ(dims[0], 10);
         EXPECT_EQ(dims[1], 5);
+
+        auto skipped = test_validate_skip(path, "foobar");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 
     // Works for CSR if we flip the rows and columns.

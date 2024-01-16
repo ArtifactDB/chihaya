@@ -30,6 +30,10 @@ TEST_P(UnarySpecialCheckTest, Basic) {
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 13);
     EXPECT_EQ(output.dimensions[1], 19);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(UnarySpecialCheckTest, SeedErrors) {

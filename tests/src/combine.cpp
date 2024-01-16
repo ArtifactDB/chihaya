@@ -38,6 +38,10 @@ TEST_P(CombineTest, Simple) {
         const auto& dims = output.dimensions;
         EXPECT_EQ(dims[0], 33);
         EXPECT_EQ(dims[1], 19);
+
+        auto skipped = test_validate_skip(path, "hello");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 
     {
