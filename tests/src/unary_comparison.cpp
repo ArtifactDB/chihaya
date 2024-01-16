@@ -181,7 +181,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
     }
-    expect_error(path, "hello", "'value' dataset should be scalar or 1-dimensional");
+    expect_error(path, "hello", "dataset should be scalar or 1-dimensional");
 }
 
 TEST_P(UnaryComparisonTest, AlongErrors) {

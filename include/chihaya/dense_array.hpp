@@ -60,7 +60,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 internal_type::check_type_1_1(dhandle, output.type);
             }
 
-            internal_misc::validate_missing_placeholder(dhandle, version);
+            if (!options.details_only) {
+                internal_misc::validate_missing_placeholder(dhandle, version);
+            }
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
         }
@@ -88,8 +90,10 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     // Do this before the 'native' check.
-    if (handle.exists("dimnames")) {
-        internal_dimnames::validate(handle, output.dimensions, version);
+    if (!options.details_only) {
+        if (handle.exists("dimnames")) {
+            internal_dimnames::validate(handle, output.dimensions, version);
+        }
     }
 
     if (!native) {

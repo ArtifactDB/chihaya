@@ -129,70 +129,72 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
     }
 
-    bool csc = true;
-    if (!version.lt(1, 1, 0)) {
-        auto bhandle = ritsuko::hdf5::open_dataset(handle, "by_column");
-        if (!ritsuko::hdf5::is_scalar(bhandle)) {
-            throw std::runtime_error("'by_column' should be a scalar");
-        }
-        if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
-            throw std::runtime_error("datatype of 'by_column' should fit into an 8-bit signed integer");
-        }
-        csc = (ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(bhandle) != 0);
-    }
-
-    {
-        auto ihandle = ritsuko::hdf5::open_dataset(handle, "indices");
-
-        if (version.lt(1, 1, 0)) {
-            if (ihandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'indices' should be integer");
+    if (!options.details_only) {
+        bool csc = true;
+        if (!version.lt(1, 1, 0)) {
+            auto bhandle = ritsuko::hdf5::open_dataset(handle, "by_column");
+            if (!ritsuko::hdf5::is_scalar(bhandle)) {
+                throw std::runtime_error("'by_column' should be a scalar");
             }
-        } else {
-            if (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
-                throw std::runtime_error("datatype of 'indices' should fit into a 64-bit unsigned integer");
+            if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
+                throw std::runtime_error("datatype of 'by_column' should fit into an 8-bit signed integer");
+            }
+            csc = (ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(bhandle) != 0);
+        }
+
+        {
+            auto ihandle = ritsuko::hdf5::open_dataset(handle, "indices");
+
+            if (version.lt(1, 1, 0)) {
+                if (ihandle.getTypeClass() != H5T_INTEGER) {
+                    throw std::runtime_error("'indices' should be integer");
+                }
+            } else {
+                if (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
+                    throw std::runtime_error("datatype of 'indices' should fit into a 64-bit unsigned integer");
+                }
+            }
+
+            if (nnz != ritsuko::hdf5::get_1d_length(ihandle, false)) {
+                throw std::runtime_error("'indices' and 'data' should have the same length");
+            }
+
+            auto iphandle = ritsuko::hdf5::open_dataset(handle, "indptr");
+            if (version.lt(1, 1, 0)) {
+                if (iphandle.getTypeClass() != H5T_INTEGER) {
+                    throw std::runtime_error("'indptr' should be integer");
+                }
+            } else {
+                if (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, false)) {
+                    throw std::runtime_error("datatype of 'indptr' should fit into a 64-bit unsigned integer");
+                }
+            }
+
+            auto primary = (csc ? dims[1] : dims[0]);
+            auto secondary = (csc ? dims[0] : dims[1]);
+            if (ritsuko::hdf5::get_1d_length(iphandle, false) != static_cast<size_t>(primary + 1)) {
+                throw std::runtime_error("'indptr' should have length equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
+            }
+            std::vector<uint64_t> indptrs(primary + 1);
+            iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);
+            if (indptrs[0] != 0) {
+                throw std::runtime_error("first entry of 'indptr' should be 0 for a sparse matrix");
+            }
+            if (indptrs.back() != static_cast<uint64_t>(nnz)) {
+                throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data'");
+            }
+
+            if (version.lt(1, 1, 0)) {
+                internal::validate_indices<int>(ihandle, indptrs, primary, secondary, csc);
+            } else {
+                internal::validate_indices<uint64_t>(ihandle, indptrs, primary, secondary, csc);
             }
         }
 
-        if (nnz != ritsuko::hdf5::get_1d_length(ihandle, false)) {
-            throw std::runtime_error("'indices' and 'data' should have the same length");
+        // Validating dimnames.
+        if (handle.exists("dimnames")) {
+            internal_dimnames::validate(handle, dims, version);
         }
-
-        auto iphandle = ritsuko::hdf5::open_dataset(handle, "indptr");
-        if (version.lt(1, 1, 0)) {
-            if (iphandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'indptr' should be integer");
-            }
-        } else {
-            if (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, false)) {
-                throw std::runtime_error("datatype of 'indptr' should fit into a 64-bit unsigned integer");
-            }
-        }
-
-        auto primary = (csc ? dims[1] : dims[0]);
-        auto secondary = (csc ? dims[0] : dims[1]);
-        if (ritsuko::hdf5::get_1d_length(iphandle, false) != static_cast<size_t>(primary + 1)) {
-            throw std::runtime_error("'indptr' should have length equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
-        }
-        std::vector<uint64_t> indptrs(primary + 1);
-        iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);
-        if (indptrs[0] != 0) {
-            throw std::runtime_error("first entry of 'indptr' should be 0 for a sparse matrix");
-        }
-        if (indptrs.back() != static_cast<uint64_t>(nnz)) {
-            throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data'");
-        }
-
-        if (version.lt(1, 1, 0)) {
-            internal::validate_indices<int>(ihandle, indptrs, primary, secondary, csc);
-        } else {
-            internal::validate_indices<uint64_t>(ihandle, indptrs, primary, secondary, csc);
-        }
-    }
-
-    // Validating dimnames.
-    if (handle.exists("dimnames")) {
-        internal_dimnames::validate(handle, dims, version);
     }
 
     return ArrayDetails(array_type, std::vector<size_t>(dims.begin(), dims.end()));

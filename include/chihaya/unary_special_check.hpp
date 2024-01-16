@@ -37,11 +37,13 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     // Checking the method.
     auto method = internal_unary::load_method(handle);
-    if (method != "is_nan" &&
-        method != "is_finite" &&
-        method != "is_infinite")
-    {
-        throw std::runtime_error("unrecognized 'method' (" + method + ")");
+    if (!options.details_only) {
+        if (method != "is_nan" &&
+            method != "is_finite" &&
+            method != "is_infinite")
+        {
+            throw std::runtime_error("unrecognized 'method' (" + method + ")");
+        }
     }
 
     seed_details.type = BOOLEAN;

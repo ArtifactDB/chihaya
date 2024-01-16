@@ -36,25 +36,27 @@ namespace subset_assignment {
  */
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version, options);
-    auto& seed_dims = seed_details.dimensions;
+    const auto& seed_dims = seed_details.dimensions;
 
     auto value_details = internal_misc::load_seed_details(handle, "value", version, options);
-    if ((value_details.type == STRING) != (seed_details.type == STRING)) {
-        throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
-    }
-    if (seed_dims.size() != value_details.dimensions.size()) {
-        throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionalities");
-    }
+    if (!options.details_only) {
+        if ((value_details.type == STRING) != (seed_details.type == STRING)) {
+            throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
+        }
+        if (seed_dims.size() != value_details.dimensions.size()) {
+            throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionalities");
+        }
 
-    auto ihandle = ritsuko::hdf5::open_group(handle, "index");
-    auto collected = internal_subset::validate_index_list(ihandle, seed_dims, version);
-    auto expected_dims = seed_dims;
-    for (auto p : collected) {
-        expected_dims[p.first] = p.second;
-    }
+        auto ihandle = ritsuko::hdf5::open_group(handle, "index");
+        auto collected = internal_subset::validate_index_list(ihandle, seed_dims, version);
+        auto expected_dims = seed_dims;
+        for (auto p : collected) {
+            expected_dims[p.first] = p.second;
+        }
 
-    if (!internal_misc::are_dimensions_equal(expected_dims, value_details.dimensions)) {
-        throw std::runtime_error("'value' dimension extents are not consistent with lengths of indices in 'index'");
+        if (!internal_misc::are_dimensions_equal(expected_dims, value_details.dimensions)) {
+            throw std::runtime_error("'value' dimension extents are not consistent with lengths of indices in 'index'");
+        }
     }
 
     // Promotion.

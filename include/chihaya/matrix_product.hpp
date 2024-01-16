@@ -85,8 +85,10 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         common2 = right_details.first.dimensions[0];
     }
 
-    if (common != common2) {
-        throw std::runtime_error("inconsistent common dimensions (" + std::to_string(common) + " vs " + std::to_string(common2) + ")");
+    if (!options.details_only) {
+        if (common != common2) {
+            throw std::runtime_error("inconsistent common dimensions (" + std::to_string(common) + " vs " + std::to_string(common2) + ")");
+        }
     }
 
     if (left_details.first.type == FLOAT || right_details.first.type == FLOAT) {

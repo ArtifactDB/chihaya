@@ -38,18 +38,21 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     auto left_details = internal_misc::load_seed_details(handle, "left", version, options);
     auto right_details = internal_misc::load_seed_details(handle, "right", version, options);
 
-    bool okay = internal_misc::are_dimensions_equal(left_details.dimensions, right_details.dimensions);
-    if (!okay) {
-        throw std::runtime_error("'left' and 'right' should have the same dimensions");
-    }
+    if (!options.details_only) {
+        if (!internal_misc::are_dimensions_equal(left_details.dimensions, right_details.dimensions)) {
+            throw std::runtime_error("'left' and 'right' should have the same dimensions");
+        }
 
-    if ((left_details.type == STRING) != (right_details.type == STRING)) {
-        throw std::runtime_error("both or neither of 'left' and 'right' should contain strings");
+        if ((left_details.type == STRING) != (right_details.type == STRING)) {
+            throw std::runtime_error("both or neither of 'left' and 'right' should contain strings");
+        }
     }
 
     auto method = internal_unary::load_method(handle);
-    if (!internal_comparison::is_valid_operation(method)) {
-        throw std::runtime_error("unrecognized 'method' (" + method + ")");
+    if (!options.details_only) {
+        if (!internal_comparison::is_valid_operation(method)) {
+            throw std::runtime_error("unrecognized 'method' (" + method + ")");
+        }
     }
 
     left_details.type = BOOLEAN;
