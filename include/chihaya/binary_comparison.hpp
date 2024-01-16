@@ -29,14 +29,14 @@ namespace binary_comparison {
 /**
  * @param handle An open handle on a HDF5 group representing a binary comparison.
  * @param version Version of the **chihaya** specification.
- * @param state Validation state, passed to `validate()`.
+ * @param options Validation options.
  *
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
-    auto left_details = internal_misc::load_seed_details(handle, "left", version, state);
-    auto right_details = internal_misc::load_seed_details(handle, "right", version, state);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto left_details = internal_misc::load_seed_details(handle, "left", version, options);
+    auto right_details = internal_misc::load_seed_details(handle, "right", version, options);
 
     bool okay = internal_misc::are_dimensions_equal(left_details.dimensions, right_details.dimensions);
     if (!okay) {

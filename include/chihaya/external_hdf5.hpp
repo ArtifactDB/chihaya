@@ -23,12 +23,13 @@ namespace external_hdf5 {
 /**
  * @param handle An open handle on a HDF5 group representing an external HDF5 array.
  * @param version Version of the **chihaya** specification.
+ * @param options Validation options.
  *
  * @return Details of the external HDF5 array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
-    auto deets = minimal_array::validate(handle, version);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto deets = minimal_array::validate(handle, version, options);
 
     {
         auto thandle = ritsuko::hdf5::open_dataset(handle, "file");

@@ -67,11 +67,12 @@ void validate_indices(const H5::DataSet& ihandle, const std::vector<uint64_t>& i
 /**
  * @param handle An open handle on a HDF5 group representing a sparse matrix.
  * @param version Version of the **chihaya** specification.
+ * @param options Validation options.
  * 
  * @return Details of the sparse matrix.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version) {
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
     std::vector<uint64_t> dims(2);
     ArrayType array_type;
 

@@ -69,13 +69,13 @@ std::vector<size_t> check_permutation(const H5::DataSet& phandle, size_t ndims, 
 /**
  * @param handle An open handle on a HDF5 group representing a transposition.
  * @param version Version of the **chihaya** specification.
- * @param state Validation state, passed to `validate()`.
+ * @param options Validation options.
  *
  * @return Details of the transposed object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, State& state) {
-    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, state);
+inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, options);
 
     auto phandle = ritsuko::hdf5::open_dataset(handle, "permutation");
     auto ndims = ritsuko::hdf5::get_1d_length(phandle, false);
