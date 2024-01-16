@@ -4,6 +4,12 @@ chihaya::ArrayDetails test_validate(const std::string& path, const std::string& 
     return chihaya::validate(path, name);
 }
 
+chihaya::ArrayDetails test_validate_skip(const std::string& path, const std::string& name) {
+    chihaya::Options opts;
+    opts.details_only = true;
+    return chihaya::validate(path, name, opts);
+}
+
 TEST(Validate, CustomRegistry) {
     const char* path = "Test_validate.h5";
     chihaya::Options options;

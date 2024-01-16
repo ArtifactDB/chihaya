@@ -47,6 +47,10 @@ TEST_P(ExternalHdf5Test, Basic) {
         EXPECT_EQ(dims[0], 50);
         EXPECT_EQ(dims[1], 5);
         EXPECT_EQ(dims[2], 10);
+
+        auto skipped = test_validate_skip(path, "ext");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 }
 

@@ -30,7 +30,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     if (!handle.exists("dimnames")) {
         throw std::runtime_error("expected a 'dimnames' group");
     }
-    internal_dimnames::validate(handle, seed_details.dimensions, version);
+
+    if (!options.details_only) {
+        internal_dimnames::validate(handle, seed_details.dimensions, version);
+    }
+
     return seed_details;
 }
 

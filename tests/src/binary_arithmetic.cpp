@@ -28,6 +28,10 @@ TEST_P(BinaryArithmeticTest, Simple) {
 
     auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(BinaryArithmeticTest, Promotion) {

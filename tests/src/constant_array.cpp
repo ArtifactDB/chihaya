@@ -38,6 +38,10 @@ TEST_P(ConstantArrayTest, Basic) {
         EXPECT_EQ(dims.size(), 2);
         EXPECT_EQ(dims[0], 20);
         EXPECT_EQ(dims[1], 17);
+
+        auto skipped = test_validate_skip(path, "constant");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 
     {
@@ -55,6 +59,10 @@ TEST_P(ConstantArrayTest, Basic) {
         EXPECT_EQ(dims.size(), 2);
         EXPECT_EQ(dims[0], 5);
         EXPECT_EQ(dims[1], 17);
+
+        auto skipped = test_validate_skip(path, "constant");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 }
 

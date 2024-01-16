@@ -37,6 +37,10 @@ TEST_P(MatrixProductTest, Simple) {
         EXPECT_EQ(output.type, chihaya::FLOAT);
         EXPECT_EQ(output.dimensions[0], 10);
         EXPECT_EQ(output.dimensions[1], 15);
+
+        auto skipped = test_validate_skip(path, "foos");
+        EXPECT_EQ(skipped.type, output.type);
+        EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
 
     // One or the other transposed.

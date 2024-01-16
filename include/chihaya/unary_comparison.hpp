@@ -37,46 +37,49 @@ namespace unary_comparison {
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
     auto seed_details = internal_misc::load_seed_details(handle, "seed", version, options);
 
-    auto method = internal_unary::load_method(handle);
-    if (!internal_comparison::is_valid_operation(method)) {
-        throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
-    }
-
-    auto side = internal_unary::load_side(handle);
-    if (side != "left" && side != "right") {
-        throw std::runtime_error("'side' should be either 'left' or 'right' (got '" + side + "')");
-    }
-
-    // Checking the value.
-    auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
-    try {
-        if (version.lt(1, 1, 0)) {
-            if ((seed_details.type == STRING) != (vhandle.getTypeClass() == H5T_STRING)) {
-                throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
-            }
-        } else {
-            auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
-            auto tt = internal_type::translate_type_1_1(type);
-            if ((tt == STRING) != (seed_details.type == STRING)) {
-                throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
-            }
-            internal_type::check_type_1_1(vhandle, tt);
+    if (!options.details_only) {
+        auto method = internal_unary::load_method(handle);
+        if (!internal_comparison::is_valid_operation(method)) {
+            throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
         }
 
-        internal_misc::validate_missing_placeholder(vhandle, version);
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
-    }
+        auto side = internal_unary::load_side(handle);
+        if (side != "left" && side != "right") {
+            throw std::runtime_error("'side' should be either 'left' or 'right' (got '" + side + "')");
+        }
 
-    size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
-    if (ndims == 0) {
-        // scalar operation.
-    } else if (ndims == 1) {
-        hsize_t extent;
-        vhandle.getSpace().getSimpleExtentDims(&extent);
-        internal_unary::check_along(handle, version, seed_details.dimensions, extent);
-    } else { 
-        throw std::runtime_error("'value' dataset should be scalar or 1-dimensional for an unary comparison operation");
+        // Checking the value.
+        auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
+        try {
+            if (version.lt(1, 1, 0)) {
+                if ((seed_details.type == STRING) != (vhandle.getTypeClass() == H5T_STRING)) {
+                    throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
+                }
+            } else {
+                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
+                auto tt = internal_type::translate_type_1_1(type);
+                if ((tt == STRING) != (seed_details.type == STRING)) {
+                    throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
+                }
+                internal_type::check_type_1_1(vhandle, tt);
+            }
+
+            internal_misc::validate_missing_placeholder(vhandle, version);
+
+            size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
+            if (ndims == 0) {
+                // scalar operation.
+            } else if (ndims == 1) {
+                hsize_t extent;
+                vhandle.getSpace().getSimpleExtentDims(&extent);
+                internal_unary::check_along(handle, version, seed_details.dimensions, extent);
+            } else { 
+                throw std::runtime_error("dataset should be scalar or 1-dimensional");
+            }
+
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
+        }
     }
 
     seed_details.type = BOOLEAN;

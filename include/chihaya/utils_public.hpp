@@ -65,6 +65,12 @@ struct ArrayDetails {
  */
 struct Options {
     /**
+     * Whether to skip extensive validation and just return the `ArrayDetails`.
+     * If this is set to true, it is assumed that the array/operation is already valid.
+     */
+    bool details_only = false;
+
+    /**
      * Custom registry of functions to be used by `validate()` on arrays.
      * If a custom function is provided for an array type, it is used instead of the default function .
      */

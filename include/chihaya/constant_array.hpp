@@ -78,7 +78,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 internal_type::check_type_1_1(vhandle, output.type);
             }
 
-            internal_misc::validate_missing_placeholder(vhandle, version);
+            if (!options.details_only) {
+                internal_misc::validate_missing_placeholder(vhandle, version);
+            }
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
         }

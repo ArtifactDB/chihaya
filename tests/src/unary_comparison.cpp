@@ -36,6 +36,10 @@ TEST_P(UnaryComparisonTest, ScalarUnary) {
     EXPECT_EQ(output.dimensions[0], 17);
     EXPECT_EQ(output.dimensions[1], 21);
 
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
+
     // Works with strings.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -181,7 +185,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
     }
-    expect_error(path, "hello", "'value' dataset should be scalar or 1-dimensional");
+    expect_error(path, "hello", "dataset should be scalar or 1-dimensional");
 }
 
 TEST_P(UnaryComparisonTest, AlongErrors) {

@@ -28,6 +28,10 @@ TEST_P(BinaryLogicTest, Simple) {
 
     auto output = test_validate(path, "hello"); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(BinaryLogicTest, Mixed) {

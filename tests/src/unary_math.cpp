@@ -30,6 +30,11 @@ TEST_P(UnaryMathTest, PureUnary) {
     EXPECT_EQ(output.dimensions[0], 13);
     EXPECT_EQ(output.dimensions[1], 19);
 
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
+
+    // Different type for sign.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "sign", { 13, 19 }, version, "FLOAT");
@@ -37,12 +42,21 @@ TEST_P(UnaryMathTest, PureUnary) {
     output = test_validate(path, "hello");
     EXPECT_EQ(output.type, chihaya::INTEGER);
 
+    skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
+
+    // Different type for log1p and related operations.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         unary_math_opener(fhandle, "hello", "log1p", { 13, 19 }, version, "BOOLEAN");
     }
     output = test_validate(path, "hello");
     EXPECT_EQ(output.type, chihaya::FLOAT);
+
+    skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(UnaryMathTest, LogBase) {
@@ -59,6 +73,10 @@ TEST_P(UnaryMathTest, LogBase) {
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 14);
     EXPECT_EQ(output.dimensions[1], 23);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(UnaryMathTest, RoundDigits) {
@@ -75,6 +93,10 @@ TEST_P(UnaryMathTest, RoundDigits) {
     EXPECT_EQ(output.dimensions.size(), 2);
     EXPECT_EQ(output.dimensions[0], 5);
     EXPECT_EQ(output.dimensions[1], 12);
+
+    auto skipped = test_validate_skip(path, "hello");
+    EXPECT_EQ(skipped.type, output.type);
+    EXPECT_EQ(skipped.dimensions, output.dimensions);
 }
 
 TEST_P(UnaryMathTest, SeedErrors) {
