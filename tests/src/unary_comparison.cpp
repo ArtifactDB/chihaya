@@ -188,6 +188,33 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
     expect_error(path, "hello", "dataset should be scalar or 1-dimensional");
 }
 
+TEST_P(UnaryComparisonTest, StringErrors) {
+    auto version = GetParam();
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "STRING");
+        auto dhandle = ghandle.createDataSet("value", H5::StrType(0, H5T_VARIABLE), H5S_SCALAR);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "hello", "NULL pointer");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "STRING");
+        add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
+        hsize_t len = 15;
+        H5::DataSpace dspace(1, &len);
+        auto dhandle = ghandle.createDataSet("value", H5::StrType(0, H5T_VARIABLE), dspace);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "hello", "NULL pointer");
+}
+
 TEST_P(UnaryComparisonTest, AlongErrors) {
     auto version = GetParam();
 

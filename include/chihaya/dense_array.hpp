@@ -63,6 +63,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             if (!options.details_only) {
                 internal_misc::validate_missing_placeholder(dhandle, version);
             }
+
+            if (dhandle.getTypeClass() == H5T_STRING) {
+                ritsuko::hdf5::validate_nd_string_dataset(dhandle, dims, 1000000);
+            }
+
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
         }
@@ -86,7 +91,6 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
             native = ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(nhandle);
         }
-
     }
 
     // Do this before the 'native' check.

@@ -216,6 +216,20 @@ TEST_P(DenseArrayTest, DataErrors) {
         add_numeric_scalar<int>(ghandle, "data", 50, H5::PredType::NATIVE_INT32);
     }
     expect_error(path, "dense", "'data' should have non-zero");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("dense");
+        ghandle.unlink("data");
+        H5::StrType stype(0, H5T_VARIABLE);
+        hsize_t dim[2] = { 10, 20 };
+        H5::DataSpace dspace(1, dim);
+        auto dhandle = ghandle.createDataSet("data", stype, dspace);
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "dense", "NULL");
 }
 
 TEST_P(DenseArrayTest, NativeErrors) {

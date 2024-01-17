@@ -81,6 +81,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             if (!options.details_only) {
                 internal_misc::validate_missing_placeholder(vhandle, version);
             }
+
+            if (vhandle.getTypeClass() == H5T_STRING) {
+                ritsuko::hdf5::validate_scalar_string_dataset(vhandle);
+            }
+
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
         }

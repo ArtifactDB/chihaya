@@ -67,12 +67,19 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             internal_misc::validate_missing_placeholder(vhandle, version);
 
             size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
-            if (ndims == 0) {
-                // scalar operation.
+            if (ndims == 0) { // scalar operation.
+                if (vhandle.getTypeClass() == H5T_STRING) {
+                    ritsuko::hdf5::validate_scalar_string_dataset(vhandle);
+                }
+
             } else if (ndims == 1) {
                 hsize_t extent;
                 vhandle.getSpace().getSimpleExtentDims(&extent);
                 internal_unary::check_along(handle, version, seed_details.dimensions, extent);
+                if (vhandle.getTypeClass() == H5T_STRING) {
+                    ritsuko::hdf5::validate_1d_string_dataset(vhandle, extent, 1000000);
+                }
+
             } else { 
                 throw std::runtime_error("dataset should be scalar or 1-dimensional");
             }

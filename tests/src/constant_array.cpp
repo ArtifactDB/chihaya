@@ -64,6 +64,20 @@ TEST_P(ConstantArrayTest, Basic) {
         EXPECT_EQ(skipped.type, output.type);
         EXPECT_EQ(skipped.dimensions, output.dimensions);
     }
+
+    // Throwing in some strings.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = constant_array_opener(fhandle, "constant", { 50, 10 }, 1);
+        auto dhandle = add_string_scalar(ghandle, "value", "FOOBAR");
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    {
+        auto output = test_validate(path, "constant"); 
+        EXPECT_EQ(output.type, chihaya::STRING);
+    }
 }
 
 TEST_P(ConstantArrayTest, Missing) {
@@ -150,6 +164,17 @@ TEST_P(ConstantArrayTest, Errors) {
         add_numeric_vector<int>(ghandle, "value", { 20, 20 }, H5::PredType::NATIVE_INT);
     }
     expect_error(path, "constant", "should be a scalar");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = constant_array_opener(fhandle, "constant", { 50, 10 }, 1);
+        H5::StrType stype(0, H5T_VARIABLE);
+        auto dhandle = ghandle.createDataSet("value", stype, H5S_SCALAR); 
+        if (version >= 1100000) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "constant", "NULL pointer");
 }
 
 TEST_P(ConstantArrayTest, MissingErrors) {
