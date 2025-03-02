@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(chihaya
-    VERSION 1.1.0
+    VERSION 1.1.1
     DESCRIPTION "A C++ validator for delayed array operations"
     LANGUAGES CXX)
 
