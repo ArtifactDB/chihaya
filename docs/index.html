@@ -140,7 +140,8 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE chihaya)</div>
-</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch external dependencies. Applications are advised to pin the versions of all dependencies themselves - see <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> for suggested versions. If you want to install them manually, use <code>-DCHIHAYA_FETCH_EXTERN=OFF</code>.</p>
+<h2>CMake with <code>find_package()</code></h2>
 <p>You can install the library by cloning a suitable version of this repository and running the following commands:</p>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake .. -DTATAMI_TESTS=OFF</div>
@@ -148,8 +149,9 @@ $(function(){ initResizable(false); });
 </div><!-- fragment --><p>Then you can use <code>find_package()</code> as usual:</p>
 <div class="fragment"><div class="line">find_package(artifactdb_chihaya CONFIG REQUIRED)</div>
 <div class="line">target_link_libraries(mylib INTERFACE artifactdb::chihaya)</div>
-</div><!-- fragment --><h2>Manual</h2>
-<p>If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).</p>
+</div><!-- fragment --><p>Again, this will use <code>FetchContent</code> to fetch dependencies, see comments above.</p>
+<h2>Manual</h2>
+<p>If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the dependencies listed in the <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> directory. You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).</p>
 <h1>Further comments</h1>
 <p>Web applications can read delayed matrices into memory using the <a href="https://npmjs.com/package/chihaya"><b>chihaya</b></a> Javascript package.</p>
 <p>At some point, we may also add <a href="https://github.com/tatami-inc/tatami"><b>tatami</b></a> bindings to load the delayed operations into memory. This would enable C++ applications to natively read from the HDF5 files that comply with <b>chihaya</b>'s specification.</p>
