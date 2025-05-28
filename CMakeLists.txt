@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(chihaya
-    VERSION 1.1.1
+    VERSION 1.1.2
     DESCRIPTION "A C++ validator for delayed array operations"
     LANGUAGES CXX)
 
@@ -22,7 +22,7 @@ option(CHIHAYA_FETCH_EXTERN "Automatically fetch takane's external dependencies.
 if(CHIHAYA_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
-    find_package(artifactdb_ritsuko CONFIG REQUIRED)
+    find_package(artifactdb_ritsuko 0.6.0 CONFIG REQUIRED)
 endif()
 
 target_link_libraries(chihaya INTERFACE artifactdb::ritsuko)
@@ -68,5 +68,10 @@ configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
     "${CMAKE_CURRENT_BINARY_DIR}/artifactdb_chihayaConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/artifactdb_chihaya)
 
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/artifactdb_chihayaConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion)
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/artifactdb_chihayaConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/artifactdb_chihayaConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/artifactdb_chihaya)

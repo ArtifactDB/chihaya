@@ -88,6 +88,10 @@ target_link_libraries(myexe chihaya)
 target_link_libraries(mylib INTERFACE chihaya)
 ```
 
+By default, this will use `FetchContent` to fetch external dependencies.
+Applications are advised to pin the versions of all dependencies themselves - see [`extern/CMakeLists.txt`](extern/CMakeLists.txt) for suggested versions.
+If you want to install them manually, use `-DCHIHAYA_FETCH_EXTERN=OFF`.
+
 ### CMake with `find_package()`
 
 You can install the library by cloning a suitable version of this repository and running the following commands:
@@ -105,10 +109,13 @@ find_package(artifactdb_chihaya CONFIG REQUIRED)
 target_link_libraries(mylib INTERFACE artifactdb::chihaya)
 ```
 
+Again, this will use `FetchContent` to fetch dependencies, see comments above.
+
 ### Manual
 
 If you're not using CMake, the simple approach is to just copy the files the `include/` subdirectory -
 either directly or with Git submodules - and include their path during compilation with, e.g., GCC's `-I`.
+This requires the dependencies listed in the [`extern/CMakeLists.txt`](extern/CMakeLists.txt) directory.
 You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).
 
 ## Further comments
