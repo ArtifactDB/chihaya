@@ -28,7 +28,7 @@ Inside the group, we expect:
   - `"FLOAT"`, in which case `data` should have a datatype that fits into a 64-bit float.
   - `"BOOLEAN"`, in which case `data` should have a datatype that fits into a 8-bit signed integer.
 - An `indices` 1-dimensional dataset, 
-  containing the row indices (CSC) or column indiecs (CSR) for the non-zero elements.
+  containing the row indices (CSC) or column indices (CSR) for the non-zero elements.
   This should have the same length as `data` and should contain integers in `[0, X)` where `X` is the number of rows (CSC) or columns (CSR) from `shape`.
   Entries should be strictly increasing within each column, based on the ranges defined by `indptr`.
   The datatype should be exactly represented by a 64-bit unsigned integer.
