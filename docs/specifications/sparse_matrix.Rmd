@@ -61,7 +61,7 @@ if (.version > package_version("1.0")) {
 - An `indices` 1-dimensional dataset, 
 ```{r, results="asis", echo=FALSE}
 if (.version > package_version("1.0")) {
-    cat("  containing the row indices (CSC) or column indiecs (CSR) for the non-zero elements.
+    cat("  containing the row indices (CSC) or column indices (CSR) for the non-zero elements.
   This should have the same length as `data` and should contain integers in `[0, X)` where `X` is the number of rows (CSC) or columns (CSR) from `shape`.")
 } else {
     cat("  containing the row indices for the non-zero elements.
