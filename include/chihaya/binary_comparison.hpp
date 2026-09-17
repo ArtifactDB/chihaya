@@ -51,6 +51,4 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const ri
 
 }
 
-}
-
 #endif

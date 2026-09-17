@@ -3,9 +3,9 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
+#include <string>
 
 #include "utils_public.hpp"
 #include "utils_misc.hpp"
@@ -54,7 +54,7 @@ inline ArrayDetails validate_unary_logic(const H5::Group& handle, const ritsuko:
                 } else {
                     auto type = load_scalar_string_attribute(vhandle, "type");
                     val_type = translate_type_1_1(type);
-                    check_type_1_1(vhandle, min_type);
+                    check_type_1_1(vhandle, val_type);
                 }
                 if (val_type == STRING) {
                     throw std::runtime_error("dataset should be integer, float or boolean");

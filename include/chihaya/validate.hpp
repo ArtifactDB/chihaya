@@ -3,7 +3,6 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include "subset.hpp"
 #include "combine.hpp"
@@ -47,8 +46,6 @@ namespace chihaya {
 /**
  * @cond
  */
-namespace internal {
-
 inline auto default_operation_registry() {
     std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Options&)> > registry;
     registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_subset(h, v, o); };
@@ -75,8 +72,6 @@ inline auto default_array_registry() {
     registry["constant array"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_constant_array(h, v, o); };
     return registry;
 }
-
-}
 /**
  * @endcond
  */
@@ -92,11 +87,11 @@ inline auto default_array_registry() {
  * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
  */
 inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto dtype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_type");
+    auto dtype = load_scalar_string_attribute(handle, "delayed_type");
     ArrayDetails output;
 
     if (dtype == "array") {
-        auto atype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_array");
+        auto atype = load_scalar_string_attribute(handle, "delayed_array");
 
         const auto& custom = options.array_validate_registry;
         auto cit = custom.find(atype);
@@ -108,7 +103,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
 
         } else {
-            static const auto global = internal::default_array_registry();
+            static const auto global = default_array_registry();
             auto git = global.find(atype);
             if (git != global.end()) {
                 try {
@@ -118,13 +113,13 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 }
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 try {
-                    output = custom_array::validate(handle, version, options);
+                    output = validate_custom_array(handle, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
                 }
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
                 try {
-                    output = external_hdf5::validate(handle, version, options);
+                    output = validate_external_hdf5(handle, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
                 }
@@ -134,7 +129,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
     } else if (dtype == "operation") {
-        auto otype = ritsuko::hdf5::open_and_load_scalar_string_attribute(handle, "delayed_operation");
+        auto otype = load_scalar_string_attribute(handle, "delayed_operation");
 
         const auto& custom = options.operation_validate_registry;
         auto cit = custom.find(otype);
@@ -146,7 +141,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             }
 
         } else {
-            static const auto global = internal::default_operation_registry();
+            static const auto global = default_operation_registry();
             auto git = global.find(otype);
             if (git != global.end()) {
                 try {

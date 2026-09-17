@@ -60,7 +60,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const rit
             } else {
                 auto type = load_scalar_string_attribute(vhandle, "type");
                 val_type = translate_type_1_1(type);
-                check_type_1_1(vhandle, min_type);
+                check_type_1_1(vhandle, val_type);
             }
 
             if (val_type != INTEGER && val_type != BOOLEAN && val_type != FLOAT) {

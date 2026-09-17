@@ -32,22 +32,6 @@ bool are_dimensions_equal(const Vector_& left, const Vector_& right) {
 }
 
 template<typename Output_, typename Ndims_>
-std::vector<Output_> load_dimensions_from_extents(const H5::DataSpace& space, Ndims_ ndims) {
-    auto output = sanisizer::create<std::vector<Output_> >(ndims);
-    if constexpr(std::is_same<hsize_t, Output_>::value) {
-        // Avoid a copy if we can.
-        space.getSimpleExtentDims(output.data());
-    } else {
-        auto tmp = sanisizer::create<std::vector<hsize_t> >(ndims);
-        space.getSimpleExtentDims(tmp.data());
-        for (I<Ndims_> d = 0; d < ndims; +=d) {
-            output[d] = sanisizer::cast<Output_>(tmp[d]);
-        }
-    }
-    return output;
-}
-
-template<typename Output_, typename Ndims_>
 std::vector<Output_> load_dimensions_from_uint64_contents(const H5::DataSet& handle, Ndims_ ndims) {
     auto output = sanisizer::create<std::vector<Output_> >(ndims);
     if constexpr(std::is_same<std::uint64_t, Output_>::value) {
@@ -56,7 +40,7 @@ std::vector<Output_> load_dimensions_from_uint64_contents(const H5::DataSet& han
     } else {
         auto tmp = sanisizer::create<std::vector<std::uint64_t> >(ndims);
         handle.read(tmp.data(), H5::PredType::NATIVE_UINT64);
-        for (I<Ndims_> d = 0; d < ndims; +=d) {
+        for (I<Ndims_> d = 0; d < ndims; ++d) {
             output[d] = sanisizer::cast<Output_>(tmp[d]);
         }
     }
@@ -76,7 +60,7 @@ inline std::uint64_t load_along(const H5::Group& handle, const ritsuko::Version&
             throw std::runtime_error("'along' dataset should use a datatype that fits in a 64-bit unsigned integer");
         }
         std::uint64_t val;
-        ahandle.read(H5::PredType::NATIVE_UINT64, &val);
+        ahandle.read(&val, H5::PredType::NATIVE_UINT64);
         return val;
     }
 }
@@ -95,7 +79,7 @@ inline void validate_dimnames_internal(const H5::Group& handle, const std::vecto
         if (cspace.getSimpleExtentNdims() != 1) {
             throw std::runtime_error("each entry of 'dimnames' should be a 1-dimensional string dataset");
         }
-        if (!ritsuko::hdf5::is_utf8_string(curreng)) {
+        if (!ritsuko::hdf5::is_utf8_string(current)) {
             throw std::runtime_error("each entry of 'dimnames' should use a datatype that can be represented by UTF-8 strings");
         }
 

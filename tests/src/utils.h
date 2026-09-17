@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "H5Cpp.h"
-#include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
 #include "chihaya/chihaya.hpp"
 
 #include <iostream>

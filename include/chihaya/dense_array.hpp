@@ -3,6 +3,7 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 #include <vector>
 #include <cstdint>
@@ -22,6 +23,26 @@
 namespace chihaya {
 
 /**
+ * @cond
+ */
+template<typename Output_>
+void transplant_dimensions(std::vector<hsize_t>& src, std::vector<Output_>& output) {
+    if constexpr(std::is_same<hsize_t, Output_>::value) {
+        // Avoid a copy if we can.
+        output = std::move(src);
+    } else {
+        const auto ndims = src.size();
+        sanisizer::resize(output, ndims);
+        for (I<decltype(ndims)> d = 0; d < ndims; ++d) {
+            output[d] = sanisizer::cast<Output_>(src[d]);
+        }
+    }
+}
+/**
+ * @endcond
+ */
+
+/**
  * @param handle An open handle on a HDF5 group representing a dense array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -39,7 +60,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
         if (ndims == 0) {
             throw std::runtime_error("'data' should have non-zero dimensions for a dense array");
         }
-        output.dimensions = load_dimensions_from_extents<std::size_t>(dspace, ndims);
+        auto dims = sanisizer::create<std::vector<hsize_t> >(ndims);
+        dspace.getSimpleExtentDims(dims.data());
 
         try {
             if (version.lt(1, 1, 0)) {
@@ -48,9 +70,9 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
                     output.type = BOOLEAN;
                 }
             } else {
-                auto type = load_scalar_string_dataset(dhandle, "type");
-                output.type = internal_type::translate_type_1_1(type);
-                internal_type::check_type_1_1(dhandle, output.type);
+                auto type = load_scalar_string_dataset(handle, "type");
+                output.type = translate_type_1_1(type);
+                check_type_1_1(dhandle, output.type);
             }
 
             if (!options.details_only) {
@@ -63,6 +85,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
         }
+
+        transplant_dimensions(dims, output.dimensions);
     }
 
     bool native;

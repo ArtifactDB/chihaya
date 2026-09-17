@@ -2,7 +2,7 @@
 #define CHIHAYA_UTILS_TYPE_HPP
 
 #include "H5Cpp.h"
-#include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -14,11 +14,11 @@
 
 namespace chihaya {
 
-void emit_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
+auto create_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
     if (type_class == H5T_INTEGER) {
-        throw std::runtime_error("integer type for '" + name + "' is too large to read");
+        return std::runtime_error("integer type for '" + name + "' is too large to read");
     } else {
-        throw std::runtime_error("expected an integer type for '" + name + "'");
+        return std::runtime_error("expected an integer type for '" + name + "'");
     }
 }
 
@@ -26,6 +26,8 @@ void emit_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
 
 template<typename Output_>
 Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
+    static_assert(std::is_integral<Output_>::value);
+
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
         handle.read(&val, H5::PredType::NATIVE_INT64);
@@ -40,16 +42,18 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
         return sanisizer::cast<Output_>(val);
 
     } else {
-        emit_integer_error_0_99(ritsuko:hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
         return 0;
     }
 }
 
 template<typename Output_>
 Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
+    static_assert(std::is_integral<Output_>::value);
+
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
-        handle.read(&val, H5::PredType::NATIVE_INT64);
+        handle.read(H5::PredType::NATIVE_INT64, &val);
         if (val < 0) {
             throw std::runtime_error("expected a non-negative integer in '" + ritsuko::hdf5::get_name(handle) + "'");
         }
@@ -57,11 +61,11 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
 
     } else if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false)) {
         std::uint64_t val;
-        handle.read(&val, H5::PredType::NATIVE_UINT64);
+        handle.read(H5::PredType::NATIVE_UINT64, &val);
         return sanisizer::cast<Output_>(val);
 
     } else {
-        emit_integer_error_0_99(ritsuko:hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
         return 0;
     }
 }
@@ -89,7 +93,7 @@ std::vector<Output_> load_non_negative_integer_vector_0_99(const H5::DataSet& ha
         }
 
     } else {
-        emit_integer_error_0_99(ritsuko:hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
     }
 
     return output;
@@ -97,8 +101,7 @@ std::vector<Output_> load_non_negative_integer_vector_0_99(const H5::DataSet& ha
 
 // For booleans, the legacy value can be negative and is treated as truthy.
 
-template<typename Output_>
-Output_ load_boolean_scalar_0_99(const H5::DataSet& handle) {
+inline bool load_boolean_scalar_0_99(const H5::DataSet& handle) {
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
         handle.read(&val, H5::PredType::NATIVE_INT64);
@@ -108,23 +111,22 @@ Output_ load_boolean_scalar_0_99(const H5::DataSet& handle) {
         handle.read(&val, H5::PredType::NATIVE_UINT64);
         return val != 0;
     } else {
-        emit_integer_error_0_99(ritsuko:hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
         return false;
     }
 }
 
-template<typename Output_>
-Output_ load_boolean_scalar_0_99(const H5::Attribute& handle) {
+inline bool load_boolean_scalar_0_99(const H5::Attribute& handle) {
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
-        handle.read(&val, H5::PredType::NATIVE_INT64);
+        handle.read(H5::PredType::NATIVE_INT64, &val);
         return val != 0;
     } else if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false)) {
         std::uint64_t val;
-        handle.read(&val, H5::PredType::NATIVE_UINT64);
+        handle.read(H5::PredType::NATIVE_UINT64, &val);
         return val != 0;
     } else {
-        emit_integer_error_0_99(ritsuko:hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
         return false;
     }
 }

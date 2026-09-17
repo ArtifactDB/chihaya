@@ -27,7 +27,7 @@ inline ArrayDetails validate_subset(const H5::Group& handle, const ritsuko::Vers
     auto seed_details = fetch_seed(handle, "seed", version, options);
     auto& seed_dims = seed_details.dimensions;
  
-    auto ihandle = handle.openDataSet("index");
+    auto ihandle = handle.openGroup("index");
     auto collected = validate_subset_index_list(ihandle, seed_dims, version);
     for (auto p : collected) {
         seed_dims[p.first] = p.second;

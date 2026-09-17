@@ -48,6 +48,4 @@ inline ArrayDetails validate_binary_logic(const H5::Group& handle, const ritsuko
 
 }
 
-}
-
 #endif

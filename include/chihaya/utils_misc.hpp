@@ -55,7 +55,7 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
 
 inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name, const ritsuko::Version& version, Options& options) {
     ArrayDetails output;
-    auto shandle = ritsuko::hdf5::open_group(handle, name.c_str());
+    auto shandle = handle.openGroup(name);
     try {
         output = validate(shandle, version, options);
     } catch (std::exception& e) {

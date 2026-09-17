@@ -2,7 +2,7 @@
 #define CHIHAYA_UTILS_SUBSET_HPP
 
 #include "H5Cpp.h"
-#include "ritsuko/hdf5/hdf5.hpp"
+#include "ritsuko/ritsuko.hpp"
 
 #include <vector>
 #include <stdexcept>
@@ -47,7 +47,7 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
         throw std::runtime_error("length of 'index' should be equal to number of dimensions in 'seed'");
     }
 
-    std::vector<std::pair<std;:size_t, std::size_t> > collected;
+    std::vector<std::pair<std::size_t, std::size_t> > collected;
 
     for (const auto& p : list_params.present) {
         try {
@@ -61,18 +61,18 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
 
             if (version.lt(1, 1, 0)) {
                 // Older versions didn't actually specify the integer type, so we just check we can load it into an 'int' of any type.
-                if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
-                    validate_indices<std::int64_t>(dhandle, len, seed_dims[p.first]);
-                } else if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false)) {
-                    validate_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
+                if (!ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, true)) {
+                    validate_subset_indices<std::int64_t>(dhandle, len, seed_dims[p.first]);
+                } else if (!ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
+                    validate_subset_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
                 } else {
-                    throw emit_integer_error_0_99(ritsuko::hdf5::get_name(handle), dhandle.getTypeClass());
+                    throw create_integer_error_0_99(ritsuko::hdf5::get_name(dhandle), dhandle.getTypeClass());
                 }
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
                     throw std::runtime_error("datatype should be exactly represented by a 64-bit unsigned integer");
                 }
-                validate_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
+                validate_subset_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
             }
 
             collected.emplace_back(p.first, len);

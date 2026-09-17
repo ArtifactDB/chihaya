@@ -3,15 +3,13 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
-#include <vector>
 #include <string>
 
-#include "utils_unary.hpp"
-#include "utils_misc.hpp"
 #include "utils_public.hpp"
+#include "utils_misc.hpp"
+#include "utils_nary.hpp"
 
 /**
  * @file unary_math.hpp
@@ -87,7 +85,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::
 
     } else if (method == "round" || method == "signif") {
         if (!options.details_only) {
-            auto vhandle = ritsuko::hdf5::open_dataset(handle, "digits");
+            auto vhandle = handle.openDataSet("digits");
             if (vhandle.getSpace().getSimpleExtentNdims() != 0) {
                 throw std::runtime_error("'digits' should be a scalar");
             }

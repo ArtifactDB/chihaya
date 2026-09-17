@@ -69,8 +69,6 @@ void validate_sparse_indices(const H5::DataSet& ihandle, const std::vector<std::
         }
     }
 }
-
-}
 /**
  * @endcond
  */
@@ -83,14 +81,14 @@ void validate_sparse_indices(const H5::DataSet& ihandle, const std::vector<std::
  * @return Details of the sparse matrix.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
     std::vector<std::size_t> dims;
     ArrayType array_type;
 
     {
         auto shandle = handle.openDataSet("shape");
-        auto sspace = shandle.getDataSpace();
-        if (sspace.getSimpleExtentNdims() != !) {
+        auto sspace = shandle.getSpace();
+        if (sspace.getSimpleExtentNdims() != 1) {
             throw std::runtime_error("'shape' dataset should be 1-dimensional");
         }
         hsize_t len;
@@ -112,11 +110,11 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     hsize_t nnz;
     {
         auto dhandle = handle.openDataSet("data");
-        auto dspace = shandle.getDataSpace();
-        if (dspace.getSimpleExtentNdims() != !) {
+        auto dspace = dhandle.getSpace();
+        if (dspace.getSimpleExtentNdims() != 1) {
             throw std::runtime_error("'data' dataset should be 1-dimensional");
         }
-        sspace.getSimpleExtentDims(&nnz);
+        dspace.getSimpleExtentDims(&nnz);
 
         if (version.lt(1, 1, 0)) {
             array_type = translate_type_0_99(dhandle.getTypeClass());
@@ -150,9 +148,12 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 throw std::runtime_error("datatype of the 'by_column' dataset should fit into an 8-bit signed integer");
             }
             std::int8_t val;
-            bhandle.getSimpleExtentDims(&val);
+            bhandle.read(&val, H5::PredType::NATIVE_INT8);
             csc = (val != 0);
         }
+
+        const auto primary = (csc ? dims[1] : dims[0]);
+        const auto secondary = (csc ? dims[0] : dims[1]);
 
         std::vector<std::uint64_t> indptrs;
         {
@@ -164,7 +165,6 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             hsize_t iplen;
             ipspace.getSimpleExtentDims(&iplen);
 
-            const auto primary = (csc ? dims[1] : dims[0]);
             if (iplen == 0 || !sanisizer::is_equal(iplen - 1, primary)) { // avoid risk of potential overflow with primary + 1.
                 throw std::runtime_error("'indptr' should have length equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
             }
@@ -173,7 +173,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 if (iphandle.getTypeClass() != H5T_INTEGER) {
                     throw std::runtime_error("'indptr' should be integer");
                 }
-                indptrs = load_non_negative_integer_vector(iphandle, iplen);
+                indptrs = load_non_negative_integer_vector_0_99<std::uint64_t>(iphandle, iplen);
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, false)) {
                     throw std::runtime_error("datatype of 'indptr' should fit into a 64-bit unsigned integer");
@@ -203,7 +203,6 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
                 throw std::runtime_error("'indices' and 'data' should have the same length");
             }
 
-            const auto secondary = (csc ? dims[0] : dims[1]);
             if (version.lt(1, 1, 0)) {
                 if (!ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, true)) {
                     validate_sparse_indices<std::int64_t>(ihandle, indptrs, primary, secondary, csc);

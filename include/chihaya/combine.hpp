@@ -13,6 +13,7 @@
 #include "utils_public.hpp"
 #include "utils_misc.hpp"
 #include "utils_list.hpp"
+#include "utils_dimensions.hpp"
 
 /**
  * @file combine.hpp
@@ -40,7 +41,7 @@ inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&, Options&
 inline ArrayDetails validate_combine(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
     const auto along = load_along(handle, version);
 
-    const auto shandle = handle.openGroup("seeds"):
+    const auto shandle = handle.openGroup("seeds");
     ListDetails list_params;
     try {
         list_params = validate_list(shandle, version);

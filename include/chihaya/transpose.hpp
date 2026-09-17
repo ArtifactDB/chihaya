@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstddef>
 
+#include "utils_public.hpp"
 #include "utils_misc.hpp"
 #include "utils_type.hpp"
 
@@ -30,7 +31,7 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, Ndim_ ple
     }
 
     auto permutation = sanisizer::create<std::vector<Perm_> >(plen);
-    phandle.read(permutation.data(), ritsuko::hdf5::as_numeric_type<Perm_>());
+    phandle.read(permutation.data(), ritsuko::hdf5::as_numeric_datatype<Perm_>());
 
     auto new_dimensions = sanisizer::create<std::vector<std::size_t> >(plen);
     for (I<decltype(plen)> p = 0; p < plen; ++p) {
@@ -80,12 +81,12 @@ inline ArrayDetails validate_transpose(const H5::Group& handle, const ritsuko::V
 
     if (version.lt(1, 1, 0)) {
         // Older versions didn't actually specify the integer type, so we just check we can load it into an 'int' of any type.
-        if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
+        if (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, true)) {
             seed_details.dimensions = check_permutation<std::int64_t>(phandle, plen, seed_details.dimensions, options.details_only);
-        } else if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false)) {
+        } else if (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, false)) {
             seed_details.dimensions = check_permutation<std::uint64_t>(phandle, plen, seed_details.dimensions, options.details_only);
         } else {
-            throw emit_integer_error_0_99(ritsuko::hdf5::get_name(handle), dhandle.getTypeClass());
+            throw create_integer_error_0_99(ritsuko::hdf5::get_name(phandle), phandle.getTypeClass());
         }
     } else {
         if (ritsuko::hdf5::exceeds_integer_limit(phandle, 64, false)) {

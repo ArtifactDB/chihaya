@@ -41,13 +41,13 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     const char* new_name = "length";
     const char* actual_name = (version.lt(1, 1, 0) ? old_name : new_name);
     {
-        auto lhandle = ritsuko::hdf5::open_attribute(handle, actual_name);
+        auto lhandle = handle.openAttribute(actual_name);
         if (lhandle.getSpace().getSimpleExtentNdims() != 0) {
             throw std::runtime_error("expected the '" + std::string(actual_name) + "' attribute to be a scalar");
         } 
 
         if (version.lt(1, 1, 0)) {
-            output.length = load_non_negative_integer_scalar<std::size_t>(lhandle);
+            output.length = load_non_negative_integer_scalar_0_99<std::size_t>(lhandle);
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(lhandle, 64, false)) {
                 throw std::runtime_error("datatype of the '" + std::string(actual_name) + "' attribute should fit inside a 64-bit unsigned integer");
@@ -82,8 +82,6 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     }
 
     return output;
-}
-
 }
 
 }

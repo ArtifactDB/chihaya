@@ -38,13 +38,13 @@ inline ArrayDetails validate_minimal_array(const H5::Group& handle, const ritsuk
 
     auto type = load_scalar_string_dataset(handle, "type");
     if (type == "BOOLEAN") {
-        output.atype = BOOLEAN;
+        output.type = BOOLEAN;
     } else if (type == "INTEGER") {
-        output.atype = INTEGER;
+        output.type = INTEGER;
     } else if (type == "FLOAT") {
-        output.atype = FLOAT;
+        output.type = FLOAT;
     } else if (type == "STRING") {
-        output.atype = STRING;
+        output.type = STRING;
     } else {
         throw std::runtime_error("unknown 'type' (" + type + ")");
     }

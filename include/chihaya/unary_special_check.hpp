@@ -6,7 +6,9 @@
 
 #include <stdexcept>
 
-#include "utils_unary.hpp"
+#include "utils_public.hpp"
+#include "utils_misc.hpp"
+#include "utils_nary.hpp"
 
 /**
  * @file unary_special_check.hpp

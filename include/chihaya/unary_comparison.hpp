@@ -3,7 +3,6 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
 #include <string>
@@ -51,7 +50,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const rit
             } else {
                 auto type = load_scalar_string_attribute(vhandle, "type");
                 val_type = translate_type_1_1(type);
-                check_type_1_1(vhandle, min_type);
+                check_type_1_1(vhandle, val_type);
             }
             if ((val_type == STRING) != (seed_details.type == STRING)) {
                 throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
