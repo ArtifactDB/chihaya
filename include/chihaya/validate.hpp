@@ -174,15 +174,7 @@ inline ritsuko::Version extract_version(const H5::Group& handle) {
     ritsuko::Version version;
 
     if (handle.attrExists("delayed_version")) {
-        auto ahandle = handle.openAttribute("delayed_version");
-        if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("expected 'delayed_version' to be scalar");
-        }
-        if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
-            throw std::runtime_error("expected 'delayed_version' to use a datatype that can be represented by a UTF-8 encoded string");
-        }
-
-        auto vstring = ritsuko::hdf5::read_scalar_string(ahandle);
+        auto vstring = load_scalar_string_attribute(handle, "delayed_version");
         if (vstring == "1.0.0") {
             version.major = 1;
         } else {

@@ -24,14 +24,7 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     ListDetails output;
 
     if (version.lt(1, 1, 0)) {
-        auto ahandle = handle.openAttribute("delayed_type");
-        if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
-            throw std::runtime_error("expected 'delayed_type' attribute to use a string datatype");
-        }
-        if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("expected 'delayed_type' attribute to be scalar");
-        }
-        auto dtype = ritsuko::hdf5::read_scalar_string(ahandle);
+        auto dtype = load_scalar_string_attribute(handle, "delayed_type");
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
         }

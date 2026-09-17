@@ -64,7 +64,7 @@ inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name,
     return output;
 }
 
-inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
+inline H5::DataSet safe_open_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
     auto dhandle = handle.openDataSet(name);
     if (dhandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'" + name + "' dataset should be scalar");
@@ -72,11 +72,16 @@ inline std::string load_scalar_string_dataset(const H5::Group& handle, const std
     if (!ritsuko::hdf5::is_utf8_string(dhandle)) {
         throw std::runtime_error("'" + name + "' dataset should use a datatype that can be represented by a UTF-8 encoded string");
     }
+    return dhandle;
+}
+
+inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
+    auto dhandle = safe_open_scalar_string_dataset(handle, name);
     return ritsuko::hdf5::read_scalar_string(dhandle);
 }
 
 template<typename Handle_>
-std::string load_scalar_string_attribute(const Handle_& handle, const std::string& name) {
+H5::Attribute safe_open_scalar_string_attribute(const Handle_& handle, const std::string& name) {
     auto ahandle = handle.openAttribute(name);
     if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'" + name + "' attribute should be scalar");
@@ -84,6 +89,12 @@ std::string load_scalar_string_attribute(const Handle_& handle, const std::strin
     if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
         throw std::runtime_error("'" + name + "' attribute should use a datatype that can be represented by a UTF-8 encoded string");
     }
+    return ahandle;
+}
+
+template<typename Handle_>
+std::string load_scalar_string_attribute(const Handle_& handle, const std::string& name) {
+    auto ahandle = safe_open_scalar_string_attribute(handle, name);
     return ritsuko::hdf5::read_scalar_string(ahandle);
 }
 
