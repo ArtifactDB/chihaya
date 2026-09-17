@@ -14,7 +14,7 @@
 
 namespace chihaya {
 
-auto create_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
+inline auto create_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
     if (type_class == H5T_INTEGER) {
         return std::runtime_error("integer type for '" + name + "' is too large to read");
     } else {

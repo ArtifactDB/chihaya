@@ -17,13 +17,13 @@ TEST(Validate, CustomRegistry) {
     std::vector<std::string> known_arrays;
     options.array_validate_registry["constant array"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails {
         known_arrays.push_back("constant array"); 
-        return chihaya::constant_array::validate(h, v, o);
+        return chihaya::validate_constant_array(h, v, o);
     }; 
 
     std::vector<std::string> known_operations;
     options.operation_validate_registry["transpose"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails { 
         known_operations.push_back("transpose"); 
-        return chihaya::transpose::validate(h, v, o);
+        return chihaya::validate_transpose(h, v, o);
     }; 
 
     {

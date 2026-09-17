@@ -8,7 +8,7 @@ TEST(UtilsType, IsBoolean) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         auto dhandle = handle.createDataSet("foobar", H5::PredType::NATIVE_INT, H5S_SCALAR);
-        EXPECT_FALSE(chihaya::internal_type::is_boolean(dhandle));
+        EXPECT_FALSE(chihaya::is_boolean_0_99(dhandle));
     }
 
     {
@@ -19,7 +19,7 @@ TEST(UtilsType, IsBoolean) {
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         auto dhandle = handle.openDataSet("foobar");
-        expect_error([&]() { chihaya::internal_type::is_boolean(dhandle); }, "should be integer");
+        expect_error([&]() { chihaya::is_boolean_0_99(dhandle); }, "should be integer");
     }
 
     {
@@ -34,7 +34,7 @@ TEST(UtilsType, IsBoolean) {
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         auto dhandle = handle.openDataSet("foobar");
-        expect_error([&]() { chihaya::internal_type::is_boolean(dhandle); }, "should be a scalar");
+        expect_error([&]() { chihaya::is_boolean_0_99(dhandle); }, "should be a scalar");
     }
 
     {
@@ -45,23 +45,23 @@ TEST(UtilsType, IsBoolean) {
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         auto dhandle = handle.openDataSet("foobar");
-        expect_error([&]() { chihaya::internal_type::is_boolean(dhandle); }, "should only exist for integer datasets");
+        expect_error([&]() { chihaya::is_boolean_0_99(dhandle); }, "should only exist for integer datasets");
     }
 }
 
 TEST(UtilsType, TranslateType) {
     // New.
-    EXPECT_EQ(chihaya::internal_type::translate_type_1_1("INTEGER"), chihaya::INTEGER);
-    EXPECT_EQ(chihaya::internal_type::translate_type_1_1("FLOAT"), chihaya::FLOAT);
-    EXPECT_EQ(chihaya::internal_type::translate_type_1_1("BOOLEAN"), chihaya::BOOLEAN);
-    EXPECT_EQ(chihaya::internal_type::translate_type_1_1("STRING"), chihaya::STRING);
-    expect_error([&]() { chihaya::internal_type::translate_type_1_1("FOO"); }, "unknown type");
+    EXPECT_EQ(chihaya::translate_type_1_1("INTEGER"), chihaya::INTEGER);
+    EXPECT_EQ(chihaya::translate_type_1_1("FLOAT"), chihaya::FLOAT);
+    EXPECT_EQ(chihaya::translate_type_1_1("BOOLEAN"), chihaya::BOOLEAN);
+    EXPECT_EQ(chihaya::translate_type_1_1("STRING"), chihaya::STRING);
+    expect_error([&]() { chihaya::translate_type_1_1("FOO"); }, "unknown type");
 
     // Old.
-    EXPECT_EQ(chihaya::internal_type::translate_type_0_0(H5T_INTEGER), chihaya::INTEGER);
-    EXPECT_EQ(chihaya::internal_type::translate_type_0_0(H5T_FLOAT), chihaya::FLOAT);
-    EXPECT_EQ(chihaya::internal_type::translate_type_0_0(H5T_STRING), chihaya::STRING);
-    expect_error([&]() { chihaya::internal_type::translate_type_0_0(H5T_TIME); }, "unsupported");
+    EXPECT_EQ(chihaya::translate_type_0_99(H5T_INTEGER), chihaya::INTEGER);
+    EXPECT_EQ(chihaya::translate_type_0_99(H5T_FLOAT), chihaya::FLOAT);
+    EXPECT_EQ(chihaya::translate_type_0_99(H5T_STRING), chihaya::STRING);
+    expect_error([&]() { chihaya::translate_type_0_99(H5T_TIME); }, "unsupported");
 }
 
 TEST(UtilsType, CheckType) {
@@ -79,34 +79,34 @@ TEST(UtilsType, CheckType) {
     }
 
     H5::H5File handle(path, H5F_ACC_RDONLY);
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("stringy"), chihaya::INTEGER); }, "32-bit signed integer");
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("i8"), chihaya::INTEGER); 
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("u16"), chihaya::INTEGER); 
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("i32"), chihaya::INTEGER); 
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("u32"), chihaya::INTEGER); }, "32-bit signed integer");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("flt"), chihaya::INTEGER); }, "32-bit signed integer");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("dbl"), chihaya::INTEGER); }, "32-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("stringy"), chihaya::INTEGER); }, "32-bit signed integer");
+    chihaya::check_type_1_1(handle.openDataSet("i8"), chihaya::INTEGER); 
+    chihaya::check_type_1_1(handle.openDataSet("u16"), chihaya::INTEGER); 
+    chihaya::check_type_1_1(handle.openDataSet("i32"), chihaya::INTEGER); 
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("u32"), chihaya::INTEGER); }, "32-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("flt"), chihaya::INTEGER); }, "32-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("dbl"), chihaya::INTEGER); }, "32-bit signed integer");
 
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("stringy"), chihaya::BOOLEAN); }, "8-bit signed integer");
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("i8"), chihaya::BOOLEAN); 
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("u16"), chihaya::BOOLEAN); }, "8-bit signed integer");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("i32"), chihaya::BOOLEAN); }, "8-bit signed integer");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("flt"), chihaya::BOOLEAN); }, "8-bit signed integer");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("dbl"), chihaya::BOOLEAN); }, "8-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("stringy"), chihaya::BOOLEAN); }, "8-bit signed integer");
+    chihaya::check_type_1_1(handle.openDataSet("i8"), chihaya::BOOLEAN); 
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("u16"), chihaya::BOOLEAN); }, "8-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("i32"), chihaya::BOOLEAN); }, "8-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("flt"), chihaya::BOOLEAN); }, "8-bit signed integer");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("dbl"), chihaya::BOOLEAN); }, "8-bit signed integer");
 
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("stringy"), chihaya::FLOAT); }, "64-bit float");
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("i8"), chihaya::FLOAT); 
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("u16"), chihaya::FLOAT);
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("i32"), chihaya::FLOAT);
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("u32"), chihaya::FLOAT);
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("flt"), chihaya::FLOAT);
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("dbl"), chihaya::FLOAT);
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("stringy"), chihaya::FLOAT); }, "64-bit float");
+    chihaya::check_type_1_1(handle.openDataSet("i8"), chihaya::FLOAT); 
+    chihaya::check_type_1_1(handle.openDataSet("u16"), chihaya::FLOAT);
+    chihaya::check_type_1_1(handle.openDataSet("i32"), chihaya::FLOAT);
+    chihaya::check_type_1_1(handle.openDataSet("u32"), chihaya::FLOAT);
+    chihaya::check_type_1_1(handle.openDataSet("flt"), chihaya::FLOAT);
+    chihaya::check_type_1_1(handle.openDataSet("dbl"), chihaya::FLOAT);
 
-    chihaya::internal_type::check_type_1_1(handle.openDataSet("stringy"), chihaya::STRING); 
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("i8"), chihaya::STRING); }, "UTF-8 encoded string");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("u16"), chihaya::STRING); }, "UTF-8 encoded string");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("i32"), chihaya::STRING); }, "UTF-8 encoded string");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("u32"), chihaya::STRING); }, "UTF-8 encoded string");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("flt"), chihaya::STRING); }, "UTF-8 encoded string");
-    expect_error([&]() { chihaya::internal_type::check_type_1_1(handle.openDataSet("dbl"), chihaya::STRING); }, "UTF-8 encoded string");
+    chihaya::check_type_1_1(handle.openDataSet("stringy"), chihaya::STRING); 
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("i8"), chihaya::STRING); }, "UTF-8 encoded string");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("u16"), chihaya::STRING); }, "UTF-8 encoded string");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("i32"), chihaya::STRING); }, "UTF-8 encoded string");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("u32"), chihaya::STRING); }, "UTF-8 encoded string");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("flt"), chihaya::STRING); }, "UTF-8 encoded string");
+    expect_error([&]() { chihaya::check_type_1_1(handle.openDataSet("dbl"), chihaya::STRING); }, "UTF-8 encoded string");
 }

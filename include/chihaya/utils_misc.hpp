@@ -66,7 +66,7 @@ inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name,
 
 inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
     auto dhandle = handle.openDataSet(name);
-    if (dhandle.getSpace().getSimpleExtentNdims() == 0) {
+    if (dhandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'" + name + "' dataset should be scalar");
     }
     if (!ritsuko::hdf5::is_utf8_string(dhandle)) {
@@ -78,7 +78,7 @@ inline std::string load_scalar_string_dataset(const H5::Group& handle, const std
 template<typename Handle_>
 std::string load_scalar_string_attribute(const Handle_& handle, const std::string& name) {
     auto ahandle = handle.openAttribute(name);
-    if (ahandle.getSpace().getSimpleExtentNdims() == 0) {
+    if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'" + name + "' attribute should be scalar");
     }
     if (!ritsuko::hdf5::is_utf8_string(ahandle)) {

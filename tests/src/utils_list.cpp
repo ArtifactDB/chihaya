@@ -31,7 +31,7 @@ TEST_P(UtilsListTest, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::internal_list::validate(ghandle, version);
+        auto deets = chihaya::validate_list(ghandle, version);
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 0);
     }
@@ -46,7 +46,7 @@ TEST_P(UtilsListTest, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::internal_list::validate(ghandle, version);
+        auto deets = chihaya::validate_list(ghandle, version);
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 2);
 
@@ -66,7 +66,7 @@ TEST_P(UtilsListTest, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::internal_list::validate(ghandle, version);
+        auto deets = chihaya::validate_list(ghandle, version);
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 4);
 
@@ -87,7 +87,7 @@ TEST_P(UtilsListTest, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::internal_list::validate(ghandle, version);
+        auto deets = chihaya::validate_list(ghandle, version);
         EXPECT_EQ(deets.length, 20);
         EXPECT_EQ(deets.present.size(), 3);
     }
@@ -104,7 +104,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "delayed_type = \"list\"");
 
         {
@@ -114,7 +114,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "delayed_length");
 
         {
@@ -126,7 +126,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "scalar");
 
         {
@@ -137,7 +137,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "integer");
 
         {
@@ -150,7 +150,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "non-negative");
 
     } else {
@@ -161,7 +161,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "length");
 
         {
@@ -172,7 +172,7 @@ TEST_P(UtilsListTest, Errors) {
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+            chihaya::validate_list(fhandle.openGroup("foo"), version);
         }, "length");
     }
 }
@@ -189,7 +189,7 @@ TEST_P(UtilsListTest, ElementErrors) {
     }
     expect_error([&]() -> void { 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
     }, "more objects");
 
     {
@@ -199,7 +199,7 @@ TEST_P(UtilsListTest, ElementErrors) {
     }
     expect_error([&]() -> void { 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
     }, "not a valid");
 
     {
@@ -209,7 +209,7 @@ TEST_P(UtilsListTest, ElementErrors) {
     }
     expect_error([&]() -> void { 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::internal_list::validate(fhandle.openGroup("foo"), version);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
     }, "out of range");
 }
 
