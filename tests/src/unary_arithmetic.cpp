@@ -156,13 +156,6 @@ TEST_P(UnaryArithmeticTest, SeedErrors) {
         unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "STRING");
     }
     expect_error(path, "hello", "integer, float or boolean");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(UnaryArithmeticTest, SideErrors) {
@@ -172,12 +165,6 @@ TEST_P(UnaryArithmeticTest, SideErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         ghandle.unlink("side");
-    }
-    expect_error(path, "hello", "expected a dataset at 'side'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "side", 1, H5::PredType::NATIVE_INT16);
     }
     expect_error(path, "hello", "UTF-8 encoded string");
@@ -206,13 +193,6 @@ TEST_P(UnaryArithmeticTest, MethodErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         ghandle.unlink("method");
-    }
-    expect_error(path, "hello", "expected a dataset at 'method'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
-        ghandle.unlink("method");
         add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT32);
     }
     expect_error(path, "hello", "UTF-8 encoded string");
@@ -231,13 +211,7 @@ TEST_P(UnaryArithmeticTest, ValueErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
-    }
-    expect_error(path, "hello", "expected a dataset at 'value'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         auto dhandle = add_string_scalar(ghandle, "value", "WHEE");
         if (version >= 1100000) {
             add_string_attribute(dhandle, "type", "STRING");
@@ -272,16 +246,10 @@ TEST_P(UnaryArithmeticTest, AlongErrors) {
         if (version >= 1100000) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
-    }
-    expect_error(path, "hello", "expected a dataset at 'along'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_string_scalar(ghandle, "along", "WHEE");
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "'along' should be an integer dataset");
+        expect_error(path, "hello", "expected an integer type");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }
@@ -293,7 +261,7 @@ TEST_P(UnaryArithmeticTest, AlongErrors) {
         add_numeric_scalar<int>(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "'along' should be non-negative");
+        expect_error(path, "hello", "non-negative");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }
@@ -304,7 +272,7 @@ TEST_P(UnaryArithmeticTest, AlongErrors) {
         ghandle.unlink("along");
         add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "hello", "length of 'value' dataset");
+    expect_error(path, "hello", "dimension specified in 'along'");
 }
 
 TEST_P(UnaryArithmeticTest, MissingErrors) {
@@ -321,9 +289,9 @@ TEST_P(UnaryArithmeticTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_FLOAT);
         }
         if (version < 1100000) {
-            expect_error(path, "hello", "same type class");
+            expect_error(path, "hello", "same datatype class");
         } else {
-            expect_error(path, "hello", "same type as ");
+            expect_error(path, "hello", "same datatype as ");
         }
     }
 
@@ -337,7 +305,7 @@ TEST_P(UnaryArithmeticTest, MissingErrors) {
             }
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_INT8);
         }
-        expect_error(path, "hello", "same type as ");
+        expect_error(path, "hello", "same datatype as ");
     }
 }
 

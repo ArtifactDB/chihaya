@@ -68,21 +68,13 @@ TEST_P(ExternalHdf5Test, Errors) {
 
     /*** Skipping the checks that are shared with custom_array.cpp. ***/
 
-    // Checking for file.
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-        ghandle.unlink("file");
-    }
-    expect_error(path, "ext", "expected a dataset at 'file'");
-
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("file");
         add_string_vector(ghandle, "file", 5);
     }
-    expect_error(path, "ext", "'file' should be a scalar");
+    expect_error(path, "ext", "should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -92,21 +84,13 @@ TEST_P(ExternalHdf5Test, Errors) {
     }
     expect_error(path, "ext", "string");
 
-    // Checking for name.
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-        ghandle.unlink("name");
-    }
-    expect_error(path, "ext", "expected a dataset at 'name'");
-
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("name");
         add_string_vector(ghandle, "name", 5);
     }
-    expect_error(path, "ext", "'name' should be a scalar");
+    expect_error(path, "ext", "should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

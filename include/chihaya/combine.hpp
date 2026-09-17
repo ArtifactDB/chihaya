@@ -23,14 +23,6 @@
 namespace chihaya {
 
 /**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&, Options&);
-/**
- * @endcond
- */
-
-/**
  * @param handle An open handle on a HDF5 group representing a combining operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -58,11 +50,9 @@ inline ArrayDetails validate_combine(const H5::Group& handle, const ritsuko::Ver
     I<decltype(list_params.length)> num_strings = 0;
 
     for (auto& p : list_params.present) {
-        auto current = shandle.openGroup(p.second);
-
         ArrayDetails cur_seed;
         try {
-            cur_seed = validate(current, version, options);
+            cur_seed = fetch_seed(shandle, p.second, version, options);
         } catch (std::exception& e) {
             throw std::runtime_error("failed to validate 'seeds/" + p.second + "'; " + std::string(e.what()));
         }

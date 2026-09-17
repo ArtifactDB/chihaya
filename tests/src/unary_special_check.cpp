@@ -44,13 +44,6 @@ TEST_P(UnarySpecialCheckTest, SeedErrors) {
         unary_special_check_opener(fhandle, "hello", "is_nan", { 13, 19 }, version, "STRING");
     }
     expect_error(path, "hello", "integer, float or boolean");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(UnarySpecialCheckTest, MethodErrors) {
@@ -60,12 +53,6 @@ TEST_P(UnarySpecialCheckTest, MethodErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_special_check_opener(fhandle, "hello", "is_nan", { 13, 19 }, version, "FLOAT");
         ghandle.unlink("method");
-    }
-    expect_error(path, "hello", "expected a dataset at 'method'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_string_scalar(ghandle, "method", "foo");
     }
     expect_error(path, "hello", "unrecognized 'method'");

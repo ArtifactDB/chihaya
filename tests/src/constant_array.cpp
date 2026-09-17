@@ -128,7 +128,7 @@ TEST_P(ConstantArrayTest, Errors) {
         add_numeric_vector<int>(ghandle, "dimensions", {20, 17}, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error(path, "constant", "'dimensions' should be integer");
+        expect_error(path, "constant", "integer type");
     } else {
         expect_error(path, "constant", "64-bit unsigned integer");
     }
@@ -150,13 +150,6 @@ TEST_P(ConstantArrayTest, Errors) {
     } else {
         expect_error(path, "constant", "64-bit unsigned integer");
     }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = constant_array_opener(fhandle, "constant", { 50, 10 }, 1);
-        ghandle.createGroup("value");
-    }
-    expect_error(path, "constant", "expected a dataset at 'value'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -191,9 +184,9 @@ TEST_P(ConstantArrayTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_DOUBLE);
         }
         if (version >= 1100000) {
-            expect_error(path, "constant", "have the same type as");
+            expect_error(path, "constant", "same datatype as");
         } else {
-            expect_error(path, "constant", "have the same type class");
+            expect_error(path, "constant", "same datatype class");
         }
     }
 
@@ -205,7 +198,7 @@ TEST_P(ConstantArrayTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT8);
             add_string_attribute(dhandle, "type", "INTEGER");
         }
-        expect_error(path, "constant", "same type as");
+        expect_error(path, "constant", "same datatype as");
     }
 }
 

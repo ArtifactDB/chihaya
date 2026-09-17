@@ -19,7 +19,7 @@ TEST(UtilsType, IsBoolean) {
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         auto dhandle = handle.openDataSet("foobar");
-        expect_error([&]() { chihaya::is_boolean_0_99(dhandle); }, "should be integer");
+        expect_error([&]() { chihaya::is_boolean_0_99(dhandle); }, "expected an integer");
     }
 
     {

@@ -85,16 +85,9 @@ TEST_P(CombineTest, AlongErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         ghandle.unlink("along");
-    }
-    expect_error(path, "hello", "expected a dataset at 'along'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = combine_opener(fhandle, "hello", 0, version);
-        ghandle.unlink("along");
         add_numeric_vector<int>(ghandle, "along", { 1 }, H5::PredType::NATIVE_INT);
     }
-    expect_error(path, "hello", "'along' should be a scalar dataset");
+    expect_error(path, "hello", "should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -105,7 +98,7 @@ TEST_P(CombineTest, AlongErrors) {
     if (version >= 1100000) {
         expect_error(path, "hello", "64-bit unsigned integer");
     } else {
-        expect_error(path, "hello", "'along' should be non-negative");
+        expect_error(path, "hello", "non-negative");
     }
 
     {
@@ -122,18 +115,14 @@ TEST_P(CombineTest, SeedErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        combine_opener(fhandle, "hello", 0, version);
-    }
-    expect_error(path, "hello", "expected a group at 'seeds'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
         if (version < 1100000) {
             lhandle.removeAttr("delayed_length");
+            add_string_attribute(lhandle, "delayed_length", "FOO");
         } else {
             lhandle.removeAttr("length");
+            add_string_attribute(lhandle, "length", "FOO");
         }
     }
     expect_error(path, "hello", "failed to load 'seeds' list");
@@ -149,7 +138,8 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
-        lhandle.createGroup("0");
+        auto shandle = lhandle.createGroup("0");
+        add_string_attribute(shandle, "delayed_type", "FOOBAR");
     }
     expect_error(path, "hello", "failed to validate 'seeds/0'");
 

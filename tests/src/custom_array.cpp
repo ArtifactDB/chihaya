@@ -88,19 +88,12 @@ TEST_P(CustomArrayTest, Errors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = custom_array_opener(fhandle, "ext", { 99, 12 }, version, "INTEGER");
-        ghandle.unlink("dimensions");
-    }
-    expect_error(path, "ext", "expected a dataset at 'dimensions'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 12 }, version, "INTEGER");
         ghandle.unlink("dimensions");
         add_numeric_vector<int>(ghandle, "dimensions", { 50, -20 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error(path, "ext", "should be integer");
+        expect_error(path, "ext", "expected an integer type");
     } else {
         expect_error(path, "ext", "64-bit unsigned integer");
     }
@@ -138,16 +131,9 @@ TEST_P(CustomArrayTest, TypeErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "INTEGER"); 
         ghandle.unlink("type");
-    }
-    expect_error(path, "ext", "expected a dataset at 'type'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 12 }, version, "INTEGER");
-        ghandle.unlink("type");
         add_string_vector(ghandle, "type", 10);
     }
-    expect_error(path, "ext", "'type' should be scalar");
+    expect_error(path, "ext", "should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

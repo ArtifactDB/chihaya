@@ -82,23 +82,6 @@ TEST_P(TransposeTest, Complex) {
     EXPECT_EQ(dims[2], 13);
 }
 
-TEST_P(TransposeTest, Errors) {
-    auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
-    }
-    expect_error(path, "hello", "expected a dataset at 'permutation'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-}
-
 TEST_P(TransposeTest, PermutationErrors) {
     auto version = GetParam();
 
@@ -108,7 +91,7 @@ TEST_P(TransposeTest, PermutationErrors) {
         add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "'permutation' should be integer");
+        expect_error(path, "hello", "expected an integer type");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }

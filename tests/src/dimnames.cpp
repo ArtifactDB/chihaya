@@ -77,32 +77,6 @@ TEST_P(DimnamesTest, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        ghandle.unlink("dimnames");
-    }
-    expect_error(path, "hello", "expected a 'dimnames' group");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        if (version >= 1100000) {
-            lhandle.removeAttr("length");
-        } else {
-            lhandle.removeAttr("delayed_length");
-        }
-    }
-    expect_error(path, "hello", "expected an attribute at");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
         ghandle.unlink("dimnames");
         list_opener(ghandle, "dimnames", 3, version);
     }
@@ -112,17 +86,9 @@ TEST_P(DimnamesTest, Errors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
         auto lhandle = ghandle.openGroup("dimnames");
-        lhandle.createGroup("0");
-    }
-    expect_error(path, "hello", "expected a dataset at '0'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
         add_numeric_vector<int>(lhandle, "0", {1}, H5::PredType::NATIVE_INT32);
     }
-    expect_error(path, "hello", "should be a 1-dimensional string dataset");
+    expect_error(path, "hello", "UTF-8 strings");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

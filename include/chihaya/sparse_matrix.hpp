@@ -122,7 +122,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
                 array_type = BOOLEAN;
             }
         } else {
-            auto type = load_scalar_string_attribute(handle, "type");
+            auto type = load_scalar_string_attribute(dhandle, "type");
             array_type = translate_type_1_1(type);
             if (!options.details_only) {
                 check_type_1_1(dhandle, array_type);

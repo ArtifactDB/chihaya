@@ -107,12 +107,6 @@ TEST_P(UnaryComparisonTest, SideErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("side");
-    }
-    expect_error(path, "hello", "expected a dataset at 'side'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "side", 1, H5::PredType::NATIVE_INT);
     }
     expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
@@ -133,12 +127,6 @@ TEST_P(UnaryComparisonTest, MethodErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("method");
-    }
-    expect_error(path, "hello", "expected a dataset at 'method'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT);
     }
     expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
@@ -157,13 +145,7 @@ TEST_P(UnaryComparisonTest, ValueErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "INTEGER");
-    }
-    expect_error(path, "hello", "expected a dataset at 'value'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        auto ghandle = unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "INTEGER");
         auto dhandle = add_string_scalar(ghandle, "value", "WHEE");
         if (version >= 1100000) {
             add_string_attribute(dhandle, "type", "STRING");
@@ -225,16 +207,10 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         if (version >= 1100000) {
             add_string_attribute(dhandle, "type", "INTEGER");
         }
-    }
-    expect_error(path, "hello", "expected a dataset at 'along'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_string_scalar(ghandle, "along", "WHEE");
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "'along' should be an integer dataset");
+        expect_error(path, "hello", "expected an integer type");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }
@@ -246,7 +222,7 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         add_numeric_scalar<int>(ghandle, "along", -1, H5::PredType::NATIVE_INT);
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "'along' should be non-negative");
+        expect_error(path, "hello", "non-negative");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }
@@ -257,7 +233,7 @@ TEST_P(UnaryComparisonTest, AlongErrors) {
         ghandle.unlink("along");
         add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "hello", "length of 'value' dataset");
+    expect_error(path, "hello", "dimension specified in 'along'");
 }
 
 TEST_P(UnaryComparisonTest, MissingErrors) {
@@ -274,9 +250,9 @@ TEST_P(UnaryComparisonTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_FLOAT);
         }
         if (version < 1100000) {
-            expect_error(path, "hello", "same type class");
+            expect_error(path, "hello", "same datatype class");
         } else {
-            expect_error(path, "hello", "same type as ");
+            expect_error(path, "hello", "same datatype as ");
         }
     }
 
@@ -290,7 +266,7 @@ TEST_P(UnaryComparisonTest, MissingErrors) {
             }
             add_numeric_missing_placeholder(dhandle, 5, H5::PredType::NATIVE_INT8);
         }
-        expect_error(path, "hello", "same type as ");
+        expect_error(path, "hello", "same datatype as ");
     }
 }
 

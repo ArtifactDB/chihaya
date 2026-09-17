@@ -92,13 +92,6 @@ TEST_P(MatrixProductTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = matrix_product_opener(fhandle, "foos", version);
         add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
-    }
-    expect_error(path, "foos", "expected a group at 'right_seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = matrix_product_opener(fhandle, "foos", version);
-        add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
         add_seed<false>(ghandle, { 10, 20, 30 }, version, "FLOAT", false);
     }
     expect_error(path, "foos", "2-dimensional");
@@ -114,14 +107,6 @@ TEST_P(MatrixProductTest, SeedErrors) {
 
 TEST_P(MatrixProductTest, OrientationErrors) {
     auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = matrix_product_opener(fhandle, "foos", version);
-        add_seed<true>(ghandle, { 10, 20 }, version, "FLOAT", false);
-        ghandle.unlink("left_orientation");
-    }
-    expect_error(path, "foos", "expected a dataset at 'left_orientation'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

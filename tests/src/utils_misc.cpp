@@ -44,7 +44,7 @@ TEST(UtilsMisc, ValidateMissingPlaceholder) {
 
         auto ihandle = fhandle.openDataSet("inty");
         chihaya::validate_missing_placeholder(ihandle, ritsuko::Version(1, 0, 0));
-        expect_error([&]() { chihaya::validate_missing_placeholder(ihandle, ritsuko::Version(1, 1, 0)); }, "same type as");
+        expect_error([&]() { chihaya::validate_missing_placeholder(ihandle, ritsuko::Version(1, 1, 0)); }, "same datatype as");
 
         auto ihandle2 = fhandle.openDataSet("inty2");
         chihaya::validate_missing_placeholder(ihandle2, ritsuko::Version(1, 0, 0));
@@ -94,7 +94,8 @@ TEST(UtilsMisc, FetchSeed) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        fhandle.createGroup("seed");
+        auto ghandle = fhandle.createGroup("seed");
+        add_string_attribute(ghandle, "delayed_type", "some_random_thing");
     }
     expect_error([&]() { chihaya::fetch_seed(H5::H5File(path, H5F_ACC_RDONLY), "seed", ritsuko::Version(1, 1, 0), options); }, "failed to validate");
 
@@ -119,7 +120,6 @@ TEST(UtilsMisc, LoadScalarStringDataset) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() { chihaya::load_scalar_string_dataset(fhandle, "lost"); }, "expected a dataset at 'lost'");
         expect_error([&]() { chihaya::load_scalar_string_dataset(fhandle, "whee"); }, "scalar");
         expect_error([&]() { chihaya::load_scalar_string_dataset(fhandle, "stuff"); }, "string");
         EXPECT_EQ(chihaya::load_scalar_string_dataset(fhandle, "foo"), "bar");

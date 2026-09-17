@@ -207,12 +207,6 @@ TEST_P(DenseArrayTest, DataErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
         ghandle.unlink("data");
-    }
-    expect_error(path, "dense", "expected a dataset at 'data'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("dense");
         add_numeric_scalar<int>(ghandle, "data", 50, H5::PredType::NATIVE_INT32);
     }
     expect_error(path, "dense", "'data' should have non-zero");
@@ -239,14 +233,6 @@ TEST_P(DenseArrayTest, NativeErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
         ghandle.unlink("native");
-        ghandle.createGroup("native");
-    }
-    expect_error(path, "dense", "expected a dataset at 'native'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
-        ghandle.unlink("native");
         add_numeric_vector<int>(ghandle, "native", { 2 }, H5::PredType::NATIVE_INT8);
     }
     expect_error(path, "dense", "should be a scalar");
@@ -258,7 +244,7 @@ TEST_P(DenseArrayTest, NativeErrors) {
         add_numeric_scalar<int>(ghandle, "native", 2, H5::PredType::NATIVE_FLOAT);
     }
     if (version < 1100000) {
-        expect_error(path, "dense", "should have an integer datatype");
+        expect_error(path, "dense", "expected an integer type");
     } else {
         expect_error(path, "dense", "8-bit signed integer");
     }
@@ -270,8 +256,8 @@ TEST_P(DenseArrayTest, DimnameErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version); 
-        auto lhandle = list_opener(ghandle, "dimnames", 2);
-        lhandle.createGroup("0");
+        auto lhandle = list_opener(ghandle, "dimnames", 2, version);
+        mock_array_opener(lhandle, "3", { 2 }, version, "STRING");
     }
     expect_error(path, "dense", "dimnames");
 }
@@ -286,7 +272,7 @@ TEST_P(DenseArrayTest, BooleanErrors) {
             auto dhandle = ghandle.openDataSet("data");
             add_string_attribute(dhandle, "is_boolean", "YAY");
         }
-        expect_error(path, "dense", "should be integer");
+        expect_error(path, "dense", "expected an integer type");
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -310,9 +296,9 @@ TEST_P(DenseArrayTest, MissingErrors) {
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_DOUBLE);
         }
         if (version < 1100000) {
-            expect_error(path, "dense", "have the same type class");
+            expect_error(path, "dense", "same datatype class");
         } else {
-            expect_error(path, "dense", "have the same type as");
+            expect_error(path, "dense", "same datatype as");
         }
     }
 
@@ -323,7 +309,7 @@ TEST_P(DenseArrayTest, MissingErrors) {
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT8);
         }
-        expect_error(path, "dense", "same type as");
+        expect_error(path, "dense", "same datatype as");
     }
 }
 

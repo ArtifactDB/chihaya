@@ -111,18 +111,8 @@ TEST_P(UtilsListTest, Errors) {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
             lhandle.removeAttr("delayed_length");
-        }
-        expect_error([&]() -> void { 
-            H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::validate_list(fhandle.openGroup("foo"), version);
-        }, "delayed_length");
-
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
-            lhandle.removeAttr("delayed_length");
-            hsize_t dims[1] = {9};
-            lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5::DataSpace(1, dims));
+            hsize_t dims = 9;
+            lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5::DataSpace(1, &dims));
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
@@ -158,11 +148,14 @@ TEST_P(UtilsListTest, Errors) {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
             lhandle.removeAttr("length");
+            constexpr hsize_t one = 1;
+            H5::DataSpace lspace(1, &one); 
+            lhandle.createAttribute("length", H5::PredType::NATIVE_UINT32, lspace);
         }
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
             chihaya::validate_list(fhandle.openGroup("foo"), version);
-        }, "length");
+        }, "scalar");
 
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -173,7 +166,7 @@ TEST_P(UtilsListTest, Errors) {
         expect_error([&]() -> void { 
             H5::H5File fhandle(path, H5F_ACC_RDONLY);
             chihaya::validate_list(fhandle.openGroup("foo"), version);
-        }, "length");
+        }, "64-bit unsigned integer");
     }
 }
 

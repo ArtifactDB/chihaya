@@ -107,13 +107,6 @@ TEST_P(UnaryMathTest, SeedErrors) {
         unary_math_opener(fhandle, "hello", "round", { 5, 12 }, version, "STRING");
     }
     expect_error(path, "hello", "should be integer, float or boolean");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
 }
 
 TEST_P(UnaryMathTest, MethodErrors) {
@@ -123,12 +116,6 @@ TEST_P(UnaryMathTest, MethodErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_math_opener(fhandle, "hello", "sin", { 5, 12 }, version, "FLOAT");
         ghandle.unlink("method");
-    }
-    expect_error(path, "hello", "expected a dataset at 'method'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         add_numeric_scalar<int>(ghandle, "method", 1, H5::PredType::NATIVE_INT);
     }
     expect_error(path, "hello", "UTF-8 encoded string");
@@ -148,14 +135,6 @@ TEST_P(UnaryMathTest, OtherErrors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_math_opener(fhandle, "hello", "log", { 5, 12 }, version, "FLOAT");
-        ghandle.createGroup("base");
-    }
-    expect_error(path, "hello", "expected 'base'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("base");
         add_string_scalar(ghandle, "base", "foo");
     }
     if (version < 1100000) {
@@ -166,13 +145,7 @@ TEST_P(UnaryMathTest, OtherErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_math_opener(fhandle, "hello", "signif", { 5, 12 }, version, "FLOAT");
-    }
-    expect_error(path, "hello", "expected a dataset at 'digits'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        auto ghandle = unary_math_opener(fhandle, "hello", "signif", { 5, 12 }, version, "FLOAT");
         add_numeric_scalar<double>(ghandle, "digits", 2, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {

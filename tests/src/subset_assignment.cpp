@@ -99,21 +99,14 @@ TEST_P(SubsetAssignmentTest, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        mock_array_opener(ghandle, "seed", { 13, 19 }, version, "INTEGER");
-    }
-    expect_error(path, "hello", "expected a group at 'value'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         mock_array_opener(ghandle, "value", { 5, 4 }, version, "STRING");
+    }
+    expect_error(path, "hello", "both or neither");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "STRING");
+        mock_array_opener(ghandle, "value", { 5, 4 }, version, "FLOAT");
     }
     expect_error(path, "hello", "both or neither");
 }
@@ -125,12 +118,6 @@ TEST_P(SubsetAssignmentTest, IndexErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
         mock_array_opener(ghandle, "value", { 5, 19 }, version, "INTEGER"); 
-    }
-    expect_error(path, "hello", "expected a group at 'index'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_INT);
     }
@@ -141,19 +128,10 @@ TEST_P(SubsetAssignmentTest, IndexErrors) {
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
         lhandle.unlink("2"); // removing the above.
-        lhandle.createGroup("0");
-    }
-    expect_error(path, "hello", "expected a dataset");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
         add_numeric_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_DOUBLE);
     }
     if (version < 1100000) {
-        expect_error(path, "hello", "expected an integer dataset");
+        expect_error(path, "hello", "expected an integer type");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }

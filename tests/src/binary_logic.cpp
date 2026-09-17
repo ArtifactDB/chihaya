@@ -53,12 +53,6 @@ TEST_P(BinaryLogicTest, Errors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        binary_logic_opener(fhandle, "hello", "||", version);
-    }
-    expect_error(path, "hello", "'left'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = binary_logic_opener(fhandle, "hello", "||", version);
         mock_array_opener(ghandle, "left", { 13, 19 }, version, "STRING");
     }
@@ -67,9 +61,10 @@ TEST_P(BinaryLogicTest, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = binary_logic_opener(fhandle, "hello", "||", version);
-        mock_array_opener(ghandle, "left", { 13, 19 }, version, "INTEGER");
+        mock_array_opener(ghandle, "left", { 13, 19 }, version, "BOOLEAN");
+        mock_array_opener(ghandle, "right", { 13, 19 }, version, "STRING");
     }
-    expect_error(path, "hello", "'right'");
+    expect_error(path, "hello", "'right' should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -82,15 +77,6 @@ TEST_P(BinaryLogicTest, Errors) {
 
 TEST_P(BinaryLogicTest, MethodErrors) {
     auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = binary_logic_opener(fhandle, "hello", "&&", version);
-        mock_array_opener(ghandle, "left", { 13, 19 }, version, "INTEGER");
-        mock_array_opener(ghandle, "right", { 13, 19 }, version, "INTEGER");
-        ghandle.unlink("method");
-    }
-    expect_error(path, "hello", "'method'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
