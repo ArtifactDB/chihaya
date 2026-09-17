@@ -4,10 +4,12 @@
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
 
+#include <stdexcept>
 #include <string>
 
 #include "utils_public.hpp"
 #include "utils_misc.hpp"
+#include "utils_nary.hpp"
 
 /**
  * @file matrix_product.hpp
@@ -17,35 +19,20 @@
 namespace chihaya {
 
 /**
- * @namespace chihaya::matrix_product
- * @brief Namespace for delayed matrix products.
- */
-namespace matrix_product {
-
-/**
  * @cond
  */
-namespace internal {
-
-inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version, Options& options) {
-    // Checking the seed.
-    auto seed_details = internal_misc::load_seed_details(handle, target, version, options);
+inline std::pair<ArrayDetails, bool> fetch_matrix_product_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_numeric_seed(handle, target, version, options);
     if (seed_details.dimensions.size() != 2) {
         throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array for a matrix product");
     }
-    if (seed_details.type == STRING) {
-        throw std::runtime_error(std::string("type of '") + target + "' should be integer, float or boolean for a matrix product");
-    }
     
-    // Checking the orientation.
-    auto oristr = internal_misc::load_scalar_string_dataset(handle, orientation);
+    auto oristr = read_scalar_string_dataset(handle, orientation);
     if (oristr != "N" && oristr != "T") {
         throw std::runtime_error("'" + orientation + "' should be either 'N' or 'T' for a matrix product");
     }
 
     return std::pair<ArrayDetails, bool>(seed_details, oristr == "T");
-}
-
 }
 /**
  * @endcond
@@ -59,15 +46,15 @@ inline std::pair<ArrayDetails, bool> fetch_seed(const H5::Group& handle, const s
  * @return Details of the matrix product.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto left_details = internal::fetch_seed(handle, "left_seed", "left_orientation", version, options);
-    auto right_details = internal::fetch_seed(handle, "right_seed", "right_orientation", version, options);
+inline ArrayDetails validate_matrix_product(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto left_details = fetch_matrix_seed(handle, "left_seed", "left_orientation", version, options);
+    auto right_details = fetch_matrix_seed(handle, "right_seed", "right_orientation", version, options);
 
     ArrayDetails output;
     output.dimensions.resize(2);
     auto& nrow = output.dimensions[0];
     auto& ncol = output.dimensions[1];
-    size_t common, common2;
+    I<decltype(nrow)> common, common2;
 
     if (left_details.second) {
         nrow = left_details.first.dimensions[1];
@@ -98,8 +85,6 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     return output;
-}
-
 }
 
 }

@@ -3,14 +3,16 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <vector>
 #include <cstdint>
+#include <stdexcept>
+#include <cstddef>
 
 #include "utils_public.hpp"
+#include "utils_misc.hpp"
 #include "utils_type.hpp"
-#include "utils_dimnames.hpp"
+#include "utils_dimensions.hpp"
 
 /**
  * @file dense_array.hpp
@@ -20,12 +22,6 @@
 namespace chihaya {
 
 /**
- * @namespace chihaya::dense_array
- * @brief Namespace for dense arrays.
- */
-namespace dense_array {
-
-/**
  * @param handle An open handle on a HDF5 group representing a dense array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -33,39 +29,35 @@ namespace dense_array {
  * @return Details of the dense array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
     ArrayDetails output;
 
     {
-        auto dhandle = ritsuko::hdf5::open_dataset(handle, "data");
+        auto dhandle = handle.openDataSet("data");
         auto dspace = dhandle.getSpace();
-        auto ndims = dspace.getSimpleExtentNdims();
+        const auto ndims = dspace.getSimpleExtentNdims();
         if (ndims == 0) {
             throw std::runtime_error("'data' should have non-zero dimensions for a dense array");
         }
-
-        std::vector<hsize_t> dims(ndims);
-        dspace.getSimpleExtentDims(dims.data());
-        output.dimensions.insert(output.dimensions.end(), dims.begin(), dims.end());
+        output.dimensions = load_dimensions_from_extents<std::size_t>(dspace, ndims);
 
         try {
             if (version.lt(1, 1, 0)) {
-                output.type = internal_type::translate_type_0_0(dhandle.getTypeClass());
-                if (internal_type::is_boolean(dhandle)) {
+                output.type = translate_type_0_99(dhandle.getTypeClass());
+                if (is_boolean_0_99(dhandle)) {
                     output.type = BOOLEAN;
                 }
             } else {
-                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(dhandle, "type");
+                auto type = load_scalar_string_dataset(dhandle, "type");
                 output.type = internal_type::translate_type_1_1(type);
                 internal_type::check_type_1_1(dhandle, output.type);
             }
 
             if (!options.details_only) {
-                internal_misc::validate_missing_placeholder(dhandle, version);
-            }
-
-            if (dhandle.getTypeClass() == H5T_STRING) {
-                ritsuko::hdf5::validate_nd_string_dataset(dhandle, dims, 1000000);
+                validate_missing_placeholder(dhandle, version);
+                if (dhandle.getTypeClass() == H5T_STRING) {
+                    ritsuko::hdf5::validate_nd_strings(dhandle, dims);
+                }
             }
 
         } catch (std::exception& e) {
@@ -75,28 +67,27 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 
     bool native;
     {
-        auto nhandle = ritsuko::hdf5::open_dataset(handle, "native");
-        if (!ritsuko::hdf5::is_scalar(nhandle)) {
-            throw std::runtime_error("'native' should be a scalar");
+        auto nhandle = handle.openDataSet("native");
+        if (nhandle.getSpace().getSimpleExtentNdims() != 0) {
+            throw std::runtime_error("'native' attribute should be a scalar");
         }
 
         if (version.lt(1, 1, 0)) {
-            if (nhandle.getTypeClass() != H5T_INTEGER) {
-                throw std::runtime_error("'native' should have an integer datatype");
-            }
-            native = ritsuko::hdf5::load_scalar_numeric_dataset<int>(nhandle);
+            native = load_boolean_scalar_0_99(nhandle);
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(nhandle, 8, true)) {
-                throw std::runtime_error("'native' should have a datatype that fits into an 8-bit signed integer");
+                throw std::runtime_error("'native' attribute should use a datatype that fits into an 8-bit signed integer");
             }
-            native = ritsuko::hdf5::load_scalar_numeric_dataset<int8_t>(nhandle);
+            std::int8_t tmp_native;
+            nhandle.read(&tmp_native, H5::PredType::NATIVE_INT);
+            native = tmp_native;
         }
     }
 
-    // Do this before the 'native' check.
+    // Do this before applying the 'native' reversal.
     if (!options.details_only) {
         if (handle.exists("dimnames")) {
-            internal_dimnames::validate(handle, output.dimensions, version);
+            validate_dimnames_internal(handle, output.dimensions, version);
         }
     }
 
@@ -105,8 +96,6 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     return output;
-}
-
 }
 
 }

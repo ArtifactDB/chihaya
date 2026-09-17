@@ -34,6 +34,8 @@
 
 #include <string>
 #include <stdexcept>
+#include <unordered_map>
+#include <functional>
 
 /**
  * @file validate.hpp
@@ -49,28 +51,28 @@ namespace internal {
 
 inline auto default_operation_registry() {
     std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Options&)> > registry;
-    registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return subset::validate(h, v, o); };
-    registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return combine::validate(h, v, o); };
-    registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return transpose::validate(h, v, o); };
-    registry["dimnames"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return dimnames::validate(h, v, o); };
-    registry["subset assignment"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return subset_assignment::validate(h, v, o); };
-    registry["unary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return unary_arithmetic::validate(h, v, o); };
-    registry["unary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return unary_comparison::validate(h, v, o); };
-    registry["unary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return unary_logic::validate(h, v, o); };
-    registry["unary math"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return unary_math::validate(h, v, o); };
-    registry["unary special check"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return unary_special_check::validate(h, v, o); };
-    registry["binary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return binary_arithmetic::validate(h, v, o); };
-    registry["binary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return binary_comparison::validate(h, v, o); };
-    registry["binary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return binary_logic::validate(h, v, o); };
-    registry["matrix product"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return matrix_product::validate(h, v, o); };
+    registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_subset(h, v, o); };
+    registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_combine(h, v, o); };
+    registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_transpose(h, v, o); };
+    registry["dimnames"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_dimnames(h, v, o); };
+    registry["subset assignment"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_subset_assignment(h, v, o); };
+    registry["unary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_unary_arithmetic(h, v, o); };
+    registry["unary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_unary_comparison(h, v, o); };
+    registry["unary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_unary_logic(h, v, o); };
+    registry["unary math"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_unary_math(h, v, o); };
+    registry["unary special check"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_unary_special_check(h, v, o); };
+    registry["binary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_binary_arithmetic(h, v, o); };
+    registry["binary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_binary_comparison(h, v, o); };
+    registry["binary logic"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_binary_logic(h, v, o); };
+    registry["matrix product"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_matrix_product(h, v, o); };
     return registry;
 }
 
 inline auto default_array_registry() {
     std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Options&)> > registry;
-    registry["dense array"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return dense_array::validate(h, v, o); };
-    registry["sparse matrix"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return sparse_matrix::validate(h, v, o); };
-    registry["constant array"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return constant_array::validate(h, v, o); };
+    registry["dense array"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_dense_array(h, v, o); };
+    registry["sparse matrix"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_sparse_matrix(h, v, o); };
+    registry["constant array"] = [](const H5::Group& h, const ritsuko::Version& v, Options& o) -> ArrayDetails { return validate_constant_array(h, v, o); };
     return registry;
 }
 
@@ -178,11 +180,14 @@ inline ritsuko::Version extract_version(const H5::Group& handle) {
 
     if (handle.attrExists("delayed_version")) {
         auto ahandle = handle.openAttribute("delayed_version");
+        if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
+            throw std::runtime_error("expected 'delayed_version' to be scalar");
+        }
         if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
             throw std::runtime_error("expected 'delayed_version' to use a datatype that can be represented by a UTF-8 encoded string");
         }
 
-        auto vstring = ritsuko::hdf5::load_scalar_string_attribute(ahandle);
+        auto vstring = ritsuko::hdf5::read_scalar_string(ahandle);
         if (vstring == "1.0.0") {
             version.major = 1;
         } else {

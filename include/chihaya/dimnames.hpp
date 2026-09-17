@@ -3,10 +3,11 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
+
 #include <stdexcept>
-#include "utils_list.hpp"
+
 #include "utils_public.hpp"
+#include "utils_dimensions.hpp"
 
 /**
  * @file dimnames.hpp
@@ -14,8 +15,6 @@
  */
 
 namespace chihaya {
-
-namespace dimnames {
 
 /**
  * @param handle An open handle on a HDF5 group representing a dimnames assignment operation.
@@ -25,19 +24,12 @@ namespace dimnames {
  * @return Details of the object after assigning dimnames.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    ArrayDetails seed_details = internal_misc::load_seed_details(handle, "seed", version, options);
-    if (!handle.exists("dimnames")) {
-        throw std::runtime_error("expected a 'dimnames' group");
-    }
-
+inline ArrayDetails validate_dimnames(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    ArrayDetails seed_details = fetch_seed(handle, "seed", version, options);
     if (!options.details_only) {
-        internal_dimnames::validate(handle, seed_details.dimensions, version);
+        validate_dimnames_internal(handle, seed_details.dimensions, version);
     }
-
     return seed_details;
-}
-
 }
 
 }

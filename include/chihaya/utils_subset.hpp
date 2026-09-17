@@ -6,32 +6,39 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstdint>
+#include <cstddef>
 
 #include "utils_list.hpp"
 #include "utils_misc.hpp"
 
 namespace chihaya {
 
-namespace internal_subset {
-
 template<typename Index_>
-void validate_indices(const H5::DataSet& dhandle, size_t len, size_t extent) {
-    ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&dhandle, len, 1000000);
-    for (size_t i = 0; i < len; ++i, stream.next()) {
-        auto b = stream.get();
-        if (b < 0) {
-            throw std::runtime_error("indices should be non-negative");
+void validate_subset_indices(const H5::DataSet& dhandle, hsize_t len, std::size_t extent) {
+    ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&dhandle, len);
+    auto buffer = sanisizer::create<std::vector<Index_> >(stream.chunk_size());
+    while (true) {
+        const auto available = stream.load(buffer.data());
+        if (available == 0) {
+            break;
         }
-        if (static_cast<size_t>(b) >= extent) {
-            throw std::runtime_error("indices out of range");
+        for (I<decltype(available)> i = 0; i < available; ++i) {
+            const auto idx = buffer[i];
+            if (idx < 0) {
+                throw std::runtime_error("indices should be non-negative in '" + ritsuko::hdf5::get_name(dhandle) + "'");
+            }
+            if (sanisizer::is_greater_than_or_equal(idx, extent)) {
+                throw std::runtime_error("indices out of range in '" + ritsuko::hdf5::get_name(dhandle) + "'");
+            }
         }
     }
 }
 
-inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Group& ihandle, const std::vector<size_t>& seed_dims, const ritsuko::Version& version) {
-    internal_list::ListDetails list_params;
+inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_list(const H5::Group& ihandle, const std::vector<size_t>& seed_dims, const ritsuko::Version& version) {
+    ListDetails list_params;
     try {
-        list_params = internal_list::validate(ihandle, version);
+        list_params = validate_list(ihandle, version);
     } catch (std::exception& e) {
         throw std::runtime_error("failed to load 'index' list; " + std::string(e.what()));
     }
@@ -40,23 +47,32 @@ inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Gro
         throw std::runtime_error("length of 'index' should be equal to number of dimensions in 'seed'");
     }
 
-    std::vector<std::pair<size_t, size_t> > collected;
+    std::vector<std::pair<std;:size_t, std::size_t> > collected;
 
     for (const auto& p : list_params.present) {
         try {
-            auto dhandle = ritsuko::hdf5::open_dataset(ihandle, p.second.c_str());
-            auto len = ritsuko::hdf5::get_1d_length(dhandle, false);
+            auto dhandle = ihandle.openDataSet(p.second);
+            auto dspace = dhandle.getSpace();
+            if (dspace.getSimpleExtentNdims() != 1) {
+                throw std::runtime_error("expected a 1-dimensional dataset");
+            }
+            hsize_t len;
+            dspace.getSimpleExtentDims(&len);
 
             if (version.lt(1, 1, 0)) {
-                if (dhandle.getTypeClass() != H5T_INTEGER) {
-                    throw std::runtime_error("expected an integer dataset");
+                // Older versions didn't actually specify the integer type, so we just check we can load it into an 'int' of any type.
+                if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
+                    validate_indices<std::int64_t>(dhandle, len, seed_dims[p.first]);
+                } else if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false)) {
+                    validate_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
+                } else {
+                    throw emit_integer_error_0_99(ritsuko::hdf5::get_name(handle), dhandle.getTypeClass());
                 }
-                validate_indices<int>(dhandle, len, seed_dims[p.first]);
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
                     throw std::runtime_error("datatype should be exactly represented by a 64-bit unsigned integer");
                 }
-                validate_indices<uint64_t>(dhandle, len, seed_dims[p.first]);
+                validate_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
             }
 
             collected.emplace_back(p.first, len);
@@ -66,8 +82,6 @@ inline std::vector<std::pair<size_t, size_t> > validate_index_list(const H5::Gro
     }
 
     return collected;
-}
-
 }
 
 }
