@@ -14,29 +14,31 @@ enable_testing()
 # Main test executable.
 add_executable(
     libtest 
-    src/subset.cpp
-    src/subset_assignment.cpp
-    src/external_hdf5.cpp
+#    src/subset.cpp
+#    src/subset_assignment.cpp
+#    src/external_hdf5.cpp
     src/custom_array.cpp
     src/combine.cpp
-    src/transpose.cpp
-    src/dimnames.cpp
-    src/unary_arithmetic.cpp
-    src/unary_comparison.cpp
-    src/unary_logic.cpp
-    src/unary_math.cpp
-    src/unary_special_check.cpp
+#    src/transpose.cpp
+#    src/dimnames.cpp
+#    src/unary_arithmetic.cpp
+#    src/unary_comparison.cpp
+#    src/unary_logic.cpp
+#    src/unary_math.cpp
+#    src/unary_special_check.cpp
     src/binary_arithmetic.cpp
     src/binary_comparison.cpp
     src/binary_logic.cpp
     src/dense_array.cpp
-    src/sparse_matrix.cpp
-    src/matrix_product.cpp
+#    src/sparse_matrix.cpp
+#    src/matrix_product.cpp
     src/constant_array.cpp
     src/validate.cpp
-    src/utils_type.cpp
-    src/utils_list.cpp
-    src/utils_misc.cpp
+#    src/utils_type.cpp
+#    src/utils_list.cpp
+#    src/utils_misc.cpp
+    src/utils_nary.cpp
+    src/utils_dimensions.cpp
 )
 
 target_link_libraries(

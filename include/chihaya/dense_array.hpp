@@ -58,7 +58,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
         auto dspace = dhandle.getSpace();
         const auto ndims = dspace.getSimpleExtentNdims();
         if (ndims == 0) {
-            throw std::runtime_error("'data' should have non-zero dimensions for a dense array");
+            throw std::runtime_error("'data' should have non-zero dimensions");
         }
         auto dims = sanisizer::create<std::vector<hsize_t> >(ndims);
         dspace.getSimpleExtentDims(dims.data());

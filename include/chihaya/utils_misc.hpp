@@ -39,6 +39,7 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
         if (ahandle.getTypeClass() != H5T_STRING) {
             throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to use a string datatype class");
         }
+        ritsuko::hdf5::validate_scalar_string(ahandle);
     } else {
         if (version.lt(1, 1, 0)) {
             // Older versions only required the same type class.

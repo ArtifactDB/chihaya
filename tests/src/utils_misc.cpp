@@ -52,6 +52,36 @@ TEST(UtilsMisc, ValidateMissingPlaceholder) {
     }
 }
 
+TEST_P(DenseArrayPassTest, MissingString) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    if (version >= 1000000) {
+        // Here we only require the same type class.
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::StrType(0, 2), version, /* native = */ false); 
+            auto dhandle = ghandle.openDataSet("data");
+            add_string_missing_placeholder(dhandle, "foo", H5T_VARIABLE);
+        }
+        auto output = test_validate(path, "dense", deets); 
+        EXPECT_EQ(output.type, chihaya::STRING);
+    }
+}
+
+    if (version >= 1100000) {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = constant_array_opener(fhandle, "constant", { 20, 17 }, version);
+            auto dhandle = add_numeric_scalar(ghandle, "value", 1, H5::PredType::NATIVE_INT32);
+            add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT8);
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
+        expect_error(path, "constant", "same datatype as");
+    }
+
 TEST(UtilsMisc, LoadAlong) {
     const char * path = "Test_utils_misc.h5";
 

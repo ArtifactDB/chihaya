@@ -1,12 +1,15 @@
+#include <gtest/gtest.h>
+
+#include <vector>
+#include <string>
+
+#include "chihaya/chihaya.hpp"
+
 #include "utils.h"
 
-chihaya::ArrayDetails test_validate(const std::string& path, const std::string& name) {
-    return chihaya::validate(path, name);
-}
-
-chihaya::ArrayDetails test_validate_skip(const std::string& path, const std::string& name) {
+chihaya::ArrayDetails test_validate(const std::string& path, const std::string& name, bool details_only) {
     chihaya::Options opts;
-    opts.details_only = true;
+    opts.details_only = details_only;
     return chihaya::validate(path, name, opts);
 }
 
@@ -29,7 +32,7 @@ TEST(Validate, CustomRegistry) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "WHEE", "transpose");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
         add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_UINT32);
 
         auto shandle = array_opener(ghandle, "seed", "constant array");
@@ -61,14 +64,14 @@ TEST(Validate, Errors) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "WHEE", "FOO");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
     }
     expect_error(path, "WHEE", "unknown operation type 'FOO'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "seed", "BAR");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
     }
     expect_error(path, "seed", "unknown array type 'BAR'");
 
@@ -77,5 +80,5 @@ TEST(Validate, Errors) {
         auto ghandle = fhandle.createGroup("FOO");
         add_string_attribute(ghandle, "delayed_type", "YAY");
     }
-    expect_error(path, "seed", "unknown object type 'YAY'");
+    expect_error(path, "FOO", "unknown delayed type 'YAY'");
 }

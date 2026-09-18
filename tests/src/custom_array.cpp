@@ -1,98 +1,133 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "chihaya/custom_array.hpp"
+
 #include "utils.h"
 
-class CustomArrayTest : public ::testing::TestWithParam<int> {
-public:
-    CustomArrayTest() : path("Test_custom.h5") {}
-protected:
-    std::string path;
+static H5::Group custom_array_opener(H5::Group& handle, const std::string& name, const std::vector<std::size_t>& dimensions, const ritsuko::Version& version, const std::string& type) {
+    auto ghandle = array_opener(handle, name, "custom thingy");
+    add_version_string(ghandle, version);
+    add_string_scalar(ghandle, "type", type);
 
-    static H5::Group custom_array_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
-        auto ghandle = array_opener(handle, name, "custom thingy");
-        add_version_string(ghandle, version);
-        add_string_scalar(ghandle, "type", type);
-
-        if (version < 1100000) {
-            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
-        } else {
-            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);
-        }
-        return ghandle;
+    if (version.lt(1, 1, 0)) {
+        add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
+    } else {
+        add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);
     }
-};
-
-TEST_P(CustomArrayTest, Basic) {
-    auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT");
-    }
-    {
-        auto output = test_validate(path, "ext"); 
-        EXPECT_EQ(output.type, chihaya::FLOAT);
-
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 3);
-        EXPECT_EQ(dims[0], 50);
-        EXPECT_EQ(dims[1], 5);
-        EXPECT_EQ(dims[2], 10);
-
-        auto skipped = test_validate_skip(path, "ext");
-        EXPECT_EQ(skipped.type, output.type);
-        EXPECT_EQ(skipped.dimensions, output.dimensions);
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        custom_array_opener(fhandle, "ext", { 17 }, version, "BOOLEAN");
-    }
-    {
-        auto output = test_validate(path, "ext"); 
-        EXPECT_EQ(output.type, chihaya::BOOLEAN);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 1);
-        EXPECT_EQ(dims[0], 17);
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        custom_array_opener(fhandle, "ext", { 20, 10 }, version, "STRING");
-    }
-    {
-        auto output = test_validate(path, "ext"); 
-        EXPECT_EQ(output.type, chihaya::STRING);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 20);
-        EXPECT_EQ(dims[1], 10);
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        custom_array_opener(fhandle, "ext", { 20, 17 }, version, "INTEGER");
-    }
-    {
-        auto output = test_validate(path, "ext"); 
-        EXPECT_EQ(output.type, chihaya::INTEGER);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 20);
-        EXPECT_EQ(dims[1], 17);
-    }
+    return ghandle;
 }
 
-TEST_P(CustomArrayTest, Errors) {
+/***********************************/
+
+class CustomArrayPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
+
+TEST_P(CustomArrayPassTest, Float) {
+    auto path = define_test_path("custom_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 50, 5, 10 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        custom_array_opener(fhandle, "ext", dimensions, version, "FLOAT");
+    }
+
+    auto output = test_validate(path, "ext", deets);
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dimensions);
+}
+
+TEST_P(CustomArrayPassTest, Boolean) {
+    auto path = define_test_path("custom_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 17 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        custom_array_opener(fhandle, "ext", dimensions, version, "BOOLEAN");
+    }
+
+    auto output = test_validate(path, "ext", deets);
+    EXPECT_EQ(output.type, chihaya::BOOLEAN);
+    EXPECT_EQ(output.dimensions, dimensions);
+}
+
+TEST_P(CustomArrayPassTest, String) {
+    auto path = define_test_path("custom_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 23, 72 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        custom_array_opener(fhandle, "ext", dimensions, version, "STRING");
+    }
+
+    auto output = test_validate(path, "ext", deets);
+    EXPECT_EQ(output.type, chihaya::STRING);
+    EXPECT_EQ(output.dimensions, dimensions);
+}
+
+TEST_P(CustomArrayPassTest, Integer) {
+    auto path = define_test_path("custom_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 37, 17 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        custom_array_opener(fhandle, "ext", dimensions, version, "INTEGER");
+    }
+
+    auto output = test_validate(path, "ext", deets); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
+    EXPECT_EQ(output.dimensions, dimensions);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CustomArray,
+    CustomArrayPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/***********************************/
+
+class CustomArrayErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(CustomArrayErrorTest, Dimension) {
+    auto path = define_test_path("custom_array");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 12 }, version, "INTEGER");
+        auto ghandle = custom_array_opener(fhandle, "ext", {}, version, "INTEGER");
         ghandle.unlink("dimensions");
-        add_numeric_vector<int>(ghandle, "dimensions", { 50, -20 }, H5::PredType::NATIVE_DOUBLE);
+        std::vector<hsize_t> dims(2);
+        H5::DataSpace dspace(2, dims.data());
+        ghandle.createDataSet("dimensions", H5::PredType::NATIVE_UINT32, dspace);
     }
-    if (version < 1100000) {
+    expect_error(path, "ext", "1-dimensional");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = custom_array_opener(fhandle, "ext", {}, version, "INTEGER");
+        ghandle.unlink("dimensions");
+        add_numeric_vector<int>(ghandle, "dimensions", { 50, 20 }, H5::PredType::NATIVE_DOUBLE);
+    }
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "ext", "expected an integer type");
     } else {
         expect_error(path, "ext", "64-bit unsigned integer");
@@ -104,27 +139,15 @@ TEST_P(CustomArrayTest, Errors) {
         ghandle.unlink("dimensions");
         add_numeric_vector<int>(ghandle, "dimensions", { 50, -20 }, H5::PredType::NATIVE_INT);
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "ext", "non-negative");
     } else {
         expect_error(path, "ext", "64-bit unsigned integer");
     }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = custom_array_opener(fhandle, "ext", { 50, 10 }, version, "INTEGER"); 
-        ghandle.unlink("dimensions");
-
-        hsize_t dims[2];
-        dims[0] = 10;
-        dims[1] = 10;
-        H5::DataSpace dspace(2, dims);
-        ghandle.createDataSet("dimensions", H5::PredType::NATIVE_UINT32, dspace);
-    }
-    expect_error(path, "ext", "1-dimensional");
 }
 
-TEST_P(CustomArrayTest, TypeErrors) {
+TEST_P(CustomArrayErrorTest, Type) {
+    auto path = define_test_path("custom_array");
     auto version = GetParam();
 
     {
@@ -144,6 +167,6 @@ TEST_P(CustomArrayTest, TypeErrors) {
 
 INSTANTIATE_TEST_SUITE_P(
     CustomArray,
-    CustomArrayTest,
-    ::testing::Values(0, 1000000, 1100000)
+    CustomArrayErrorTest,
+    spawn_all_versions()
 );
