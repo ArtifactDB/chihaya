@@ -150,6 +150,7 @@ TEST_P(CustomArrayErrorTest, Type) {
     auto path = define_test_path("custom_array");
     auto version = GetParam();
 
+    // Test that we check for a scalar string dataset.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "INTEGER"); 

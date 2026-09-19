@@ -4,9 +4,8 @@
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
 
-#include <stdexcept>
-
-#include "minimal_array.hpp"
+#include "custom_array.hpp"
+#include "utils_misc.hpp"
 
 /**
  * @file external_hdf5.hpp
@@ -24,6 +23,9 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_external_hdf5(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    if (version.ge(1, 1, 0)) {
+        throw std::runtime_error("'external_hdf5' array type is deprecated in versions >= 1.1");
+    }
     auto deets = validate_minimal_array(handle, version, options);
     if (!options.details_only) {
         safe_open_scalar_string_dataset(handle, "file");

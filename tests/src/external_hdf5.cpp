@@ -1,72 +1,66 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "chihaya/external_hdf5.hpp"
+
 #include "utils.h"
 
-class ExternalHdf5Test : public ::testing::TestWithParam<int> {
-public:
-    ExternalHdf5Test() : path("Test_external.h5") {}
-
-protected:
-    std::string path;
-
-    static H5::Group external_array_opener(const H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
-        auto ghandle = array_opener(handle, name, "external hdf5 thingy");
-        add_version_string(ghandle, version);
-        add_string_scalar(ghandle, "type", type);
-
-        if (version < 1100000) {
-            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
-        } else {
-            add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_UINT32);
-        }
-
-        add_string_scalar(ghandle, "file", "WHEE");
-        add_string_scalar(ghandle, "name", "WHEE");
-        return ghandle;
-    }
-};
-
-TEST_P(ExternalHdf5Test, Basic) {
-    auto version = GetParam();
-    if (version >= 1100000) {
-        return;
-    }
-
-    // Re-run of the same tests in custom_array.cpp,
-    // so we won't go through that whole thing again.
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-    }
-    {
-        auto output = test_validate(path, "ext"); 
-        EXPECT_EQ(output.type, chihaya::FLOAT);
-
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 3);
-        EXPECT_EQ(dims[0], 50);
-        EXPECT_EQ(dims[1], 5);
-        EXPECT_EQ(dims[2], 10);
-
-        auto skipped = test_validate_skip(path, "ext");
-        EXPECT_EQ(skipped.type, output.type);
-        EXPECT_EQ(skipped.dimensions, output.dimensions);
-    }
+static H5::Group external_array_opener(
+    const H5::Group& handle,
+    const std::string& name,
+    const std::vector<std::size_t>& dimensions,
+    const ritsuko::Version& version,
+    const std::string& type
+) {
+    auto ghandle = array_opener(handle, name, "external hdf5 thingy");
+    add_version_string(ghandle, version);
+    add_string_scalar(ghandle, "type", type);
+    add_numeric_vector(ghandle, "dimensions", dimensions, H5::PredType::NATIVE_INT);
+    add_string_scalar(ghandle, "file", "FOO");
+    add_string_scalar(ghandle, "name", "BAR");
+    return ghandle;
 }
 
-TEST_P(ExternalHdf5Test, Errors) {
-    auto version = GetParam();
-    if (version >= 1100000) {
-        // Deprecated...
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-        }
-        expect_error(path, "ext", "unknown array type");
-        return;
+/***********************************/
+
+class ExternalHdf5PassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
+
+TEST_P(ExternalHdf5PassTest, Basic) {
+    const auto path = define_test_path("external_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 50, 5, 10 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        external_array_opener(fhandle, "ext", dimensions, version, "FLOAT"); 
     }
 
-    /*** Skipping the checks that are shared with custom_array.cpp. ***/
+    auto output = test_validate(path, "ext", deets); 
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dimensions);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ExternalHdf5,
+    ExternalHdf5PassTest,
+    ::testing::Combine(
+        ::testing::Values(ritsuko::Version(0, 99, 0), ritsuko::Version(1, 0, 0)), // this mode is deprecated in >=1.1
+        ::testing::Values(false, true)
+    )
+);
+
+/***********************************/
+
+class ExternalHdf5ErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(ExternalHdf5ErrorTest, File) {
+    const auto path = define_test_path("external_array");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -74,15 +68,13 @@ TEST_P(ExternalHdf5Test, Errors) {
         ghandle.unlink("file");
         add_string_vector(ghandle, "file", 5);
     }
-    expect_error(path, "ext", "should be scalar");
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-        ghandle.unlink("file");
-        add_numeric_scalar<int>(ghandle, "file", 5, H5::PredType::NATIVE_INT);
-    }
-    expect_error(path, "ext", "string");
+    expect_error(path, "ext", "should be scalar");
+}
+
+TEST_P(ExternalHdf5ErrorTest, Name) {
+    const auto path = define_test_path("external_array");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -90,19 +82,33 @@ TEST_P(ExternalHdf5Test, Errors) {
         ghandle.unlink("name");
         add_string_vector(ghandle, "name", 5);
     }
-    expect_error(path, "ext", "should be scalar");
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
-        ghandle.unlink("name");
-        add_numeric_scalar<int>(ghandle, "name", 5, H5::PredType::NATIVE_INT);
-    }
-    expect_error(path, "ext", "string");
+    expect_error(path, "ext", "should be scalar");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ExternalHdf5,
-    ExternalHdf5Test,
-    ::testing::Values(0, 1000000, 1100000)
+    ExternalHdf5ErrorTest,
+    ::testing::Values(ritsuko::Version(0, 99, 0), ritsuko::Version(1, 0, 0)) // this mode is deprecated in >=1.1
 );
+
+/***********************************/
+
+TEST(ExternalHdf5, Latest) {
+    const auto path = define_test_path("external_array");
+    ritsuko::Version version(1, 1, 0);
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
+    }
+
+    H5::H5File fhandle(path, H5F_ACC_RDONLY);
+    chihaya::Options options;
+    expect_error(
+        [&]() -> void {
+            chihaya::validate_external_hdf5(fhandle.openGroup("ext"), version, options);
+        },
+        "deprecated"
+    );
+}

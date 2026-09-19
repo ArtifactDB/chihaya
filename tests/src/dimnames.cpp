@@ -4,7 +4,10 @@
 #include <vector>
 #include <string>
 
-#include "chihaya/chihaya.hpp"
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/dimnames.hpp"
+
 #include "utils.h"
 
 static H5::Group dimnames_opener(H5::Group& handle, const std::string& name, const std::vector<std::size_t>& dims, const std::string& type, const ritsuko::Version& version) {
