@@ -49,7 +49,7 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, Ndim_ ple
         std::sort(permutation.begin(), permutation.end());
         for (I<decltype(plen)> p = 0; p < plen; ++p) {
             if (!sanisizer::is_equal(p, permutation[p])) {
-                throw std::runtime_error("indices in 'permutation' should be unique for a transpose operation");
+                throw std::runtime_error("indices in 'permutation' should be unique");
             }
         }
     }

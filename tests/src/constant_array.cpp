@@ -176,10 +176,22 @@ TEST_P(ConstantArrayErrorTest, Value) {
     expect_error(path, "constant", "should be a scalar");
 
     if (version.ge(1, 1, 0)) {
+        // Test that we actually check for a scalar 'type'.
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto ghandle = constant_array_opener(fhandle, "constant", { 50, 10 }, version);
             auto dhandle = add_numeric_scalar(ghandle, "value", 0.1, H5::PredType::NATIVE_DOUBLE);
+            constexpr hsize_t one = 1;
+            dhandle.createAttribute("type", H5::StrType(0, H5T_VARIABLE), H5::DataSpace(1, &one));
+        }
+        expect_error(path, "constant", "scalar");
+
+        // Test that we actually check the 'type' is consistent with the dataset's type.
+        {
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("constant");
+            auto dhandle = ghandle.openDataSet("value");
+            dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "INTEGER");
         }
         expect_error(path, "constant", "32-bit signed");

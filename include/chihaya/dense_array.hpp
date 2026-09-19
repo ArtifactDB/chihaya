@@ -72,7 +72,9 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
             } else {
                 auto type = load_scalar_string_attribute(dhandle, "type");
                 output.type = translate_type_1_1(type);
-                check_type_1_1(dhandle, output.type);
+                if (!options.details_only) {
+                    check_type_1_1(dhandle, output.type);
+                }
             }
 
             if (!options.details_only) {

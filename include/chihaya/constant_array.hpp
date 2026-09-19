@@ -64,7 +64,9 @@ inline ArrayDetails validate_constant_array(const H5::Group& handle, const ritsu
         } else {
             auto type = load_scalar_string_attribute(vhandle, "type");
             output.type = translate_type_1_1(type);
-            check_type_1_1(vhandle, output.type);
+            if (!options.details_only) {
+                check_type_1_1(vhandle, output.type);
+            }
         }
 
         if (!options.details_only) {

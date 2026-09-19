@@ -14,12 +14,12 @@ enable_testing()
 # Main test executable.
 add_executable(
     libtest 
-#    src/subset.cpp
-#    src/subset_assignment.cpp
+    src/subset.cpp
+    src/subset_assignment.cpp
     src/external_hdf5.cpp
     src/custom_array.cpp
     src/combine.cpp
-#    src/transpose.cpp
+    src/transpose.cpp
     src/dimnames.cpp
 #    src/unary_arithmetic.cpp
 #    src/unary_comparison.cpp

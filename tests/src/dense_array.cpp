@@ -250,14 +250,15 @@ TEST_P(DenseArrayErrorTest, Data) {
         }
         expect_error(path, "dense", "scalar");
 
+        // Test that we actually check the 'type' is consistent with the dataset's type.
         {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("dense");
             auto dhandle = ghandle.openDataSet("data");
             dhandle.removeAttr("type");
-            add_string_attribute(dhandle, "type", "FOOBAR");
+            add_string_attribute(dhandle, "type", "INTEGER");
         }
-        expect_error(path, "dense", "FOOBAR");
+        expect_error(path, "dense", "32-bit signed integer");
     }
 }
 

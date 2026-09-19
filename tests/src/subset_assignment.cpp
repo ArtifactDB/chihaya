@@ -1,54 +1,68 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <vector>
+#include <cstddef>
+#include <string>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/subset_assignment.hpp"
+
 #include "utils.h"
 
-class SubsetAssignmentTest : public ::testing::TestWithParam<int> {
-public:
-    SubsetAssignmentTest() : path("Test_subset_assignment.h5") {}
+static H5::Group subset_assignment_opener(
+    H5::Group& handle,
+    const std::string& name,
+    const std::vector<std::size_t>& dimensions,
+    const ritsuko::Version& version,
+    const std::string& type
+) {
+    auto ghandle = operation_opener(handle, name, "subset assignment");
+    add_version_string(ghandle, version);
+    mock_array_opener(ghandle, "seed", dimensions, version, type);
+    return ghandle;
+}
 
-protected:
-    std::string path;
+/********************************/
 
-    static H5::Group subset_assignment_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
-        auto ghandle = operation_opener(handle, name, "subset assignment");
-        add_version_string(ghandle, version);
-        mock_array_opener(ghandle, "seed", dimensions, version, type);
-        return ghandle;
-    }
-};
+class SubsetAssignmentTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
 
-TEST_P(SubsetAssignmentTest, NoOp) {
-    auto version = GetParam();
+TEST_P(SubsetAssignmentTest, FullSubstitution) {
+    auto path = define_test_path("subset_assignment");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    // Without any subset indices, we use the full extent of each dimension, so this is a full replacement of 'seed' by 'value'.
+    // A bit silly to have a delayed operation for this but it's the natural edge case.
+    std::vector<std::size_t> dims{ 14, 21 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER");
-        mock_array_opener(ghandle, "value", { 13, 19 }, version, "INTEGER"); 
+        auto ghandle = subset_assignment_opener(fhandle, "hello", dims, version, "INTEGER");
+        mock_array_opener(ghandle, "value", dims, version, "INTEGER");
         auto lhandle = list_opener(ghandle, "index", 2, version);
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
 TEST_P(SubsetAssignmentTest, AllSubsets) {
-    auto version = GetParam();
+    auto path = define_test_path("subset_assignment");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 13, 19 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "STRING");
+        auto ghandle = subset_assignment_opener(fhandle, "hello", dims, version, "STRING");
 
         auto lhandle = list_opener(ghandle, "index", 2, version);
         std::vector<int> first{ 1, 3, 0, 2, 9, 12 };
         std::vector<int> second{ 2, 2, 5, 17, 9, 9, 12 };
-        if (version < 1100000) {
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_INT);
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
         } else {
@@ -56,68 +70,126 @@ TEST_P(SubsetAssignmentTest, AllSubsets) {
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_UINT16);
         }
 
-        int first_size = first.size(), second_size = second.size();
-        mock_array_opener(ghandle, "value", { first_size, second_size }, version, "STRING"); 
+        const int first_size = first.size(), second_size = second.size();
+        mock_array_opener<int>(ghandle, "value", { first_size, second_size }, version, "STRING"); 
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::STRING);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
 TEST_P(SubsetAssignmentTest, OneSubset) {
-    auto version = GetParam();
+    auto path = define_test_path("subset_assignment");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 20, 12 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
+        auto ghandle = subset_assignment_opener(fhandle, "hello", dims, version, "BOOLEAN");
 
         auto lhandle = list_opener(ghandle, "index", 2, version);
-        std::vector<int> second{ 2, 2, 5, 17, 9, 9, 12 };
-        if (version < 1100000) {
+        std::vector<int> second{ 2, 2, 5, 11, 9, 9, 0 };
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
         } else {
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_UINT16);
         }
 
-        int second_size = second.size();
-        mock_array_opener(ghandle, "value", { 13, second_size }, version, "FLOAT"); 
+        auto valdim = dims;
+        valdim[1] = second.size();
+        mock_array_opener<std::size_t>(ghandle, "value", valdim, version, "FLOAT"); 
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SubsetAssignmentTest, Errors) {
+TEST_P(SubsetAssignmentTest, TwoSubsets) {
+    auto path = define_test_path("subset_assignment");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    // Trying a higher-dimensional seed, for some variety.
+    std::vector<std::size_t> dims{ 10, 12, 20 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_assignment_opener(fhandle, "hello", dims, version, "FLOAT");
+
+        auto lhandle = list_opener(ghandle, "index", 3, version);
+        std::vector<int> first{ 1, 9, 8, 4, 5, 2, 9, 9 };
+        std::vector<int> last{ 19, 16, 17, 10, 5, 2, 7, 8 };
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_INT);
+            add_numeric_vector(lhandle, "2", last, H5::PredType::NATIVE_UINT);
+        } else {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_UINT16);
+            add_numeric_vector(lhandle, "2", last, H5::PredType::NATIVE_UINT8);
+        }
+
+        auto valdim = dims;
+        valdim[0] = first.size();
+        valdim[2] = last.size();
+        mock_array_opener<std::size_t>(ghandle, "value", valdim, version, "INTEGER"); 
+    }
+
+    auto output = test_validate(path, "hello", deets); 
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dims);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SubsetAssignment,
+    SubsetAssignmentTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/********************************/
+
+class SubsetAssignmentErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(SubsetAssignmentErrorTest, Seed) {
+    auto path = define_test_path("subset_assignment");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
-        mock_array_opener(ghandle, "value", { 5, 4 }, version, "STRING");
+        mock_array_opener<int>(ghandle, "value", { 5, 4 }, version, "STRING");
     }
     expect_error(path, "hello", "both or neither");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "STRING");
-        mock_array_opener(ghandle, "value", { 5, 4 }, version, "FLOAT");
+        mock_array_opener<int>(ghandle, "value", { 5, 4 }, version, "FLOAT");
     }
     expect_error(path, "hello", "both or neither");
-}
-
-TEST_P(SubsetAssignmentTest, IndexErrors) {
-    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19, 4 }, version, "FLOAT");
+        mock_array_opener<int>(ghandle, "value", { 5, 4 }, version, "FLOAT");
+    }
+    expect_error(path, "hello", "same dimensionality");
+}
+
+TEST_P(SubsetAssignmentErrorTest, Index) {
+    auto path = define_test_path("subset_assignment");
+    auto version = GetParam();
+
+    // Check that the subset index list is actually validated.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
-        mock_array_opener(ghandle, "value", { 5, 19 }, version, "INTEGER"); 
+        mock_array_opener<int>(ghandle, "value", { 5, 19 }, version, "INTEGER"); 
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_INT);
     }
@@ -128,48 +200,13 @@ TEST_P(SubsetAssignmentTest, IndexErrors) {
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
         lhandle.unlink("2"); // removing the above.
-        add_numeric_vector<int>(lhandle, "0", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_DOUBLE);
-    }
-    if (version < 1100000) {
-        expect_error(path, "hello", "expected an integer type");
-    } else {
-        expect_error(path, "hello", "64-bit unsigned integer");
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
-        add_numeric_vector<int>(lhandle, "0", { 1, -3, 0, 2, 9 }, H5::PredType::NATIVE_INT);
-    }
-    if (version < 1100000) {
-        expect_error(path, "hello", "should be non-negative");
-    } else {
-        expect_error(path, "hello", "64-bit unsigned integer");
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
         add_numeric_vector<int>(lhandle, "0", { 1, 3, 0, 2, 1, 9, 5 }, H5::PredType::NATIVE_UINT16);
     }
     expect_error(path, "hello", "dimension extents are not consistent");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
-        add_numeric_vector<int>(lhandle, "0", { 1, 3, 0, 2, 200 }, H5::PredType::NATIVE_UINT16);
-    }
-    expect_error(path, "hello", "out of range");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     SubsetAssignment,
-    SubsetAssignmentTest,
-    ::testing::Values(0, 1000000, 1100000)
+    SubsetAssignmentErrorTest,
+    spawn_all_versions()
 );
