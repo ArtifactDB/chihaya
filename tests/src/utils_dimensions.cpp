@@ -1,10 +1,52 @@
 #include <gtest/gtest.h>
 
+#include <vector>
+#include <cstddef>
+
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
 #include "chihaya/utils_dimensions.hpp"
 
 #include "utils.h"
+
+TEST(AreDimensionsEqual, Basic) {
+    std::vector<int> x{ 1, 2, 3 };
+    EXPECT_TRUE(chihaya::are_dimensions_equal(x, x));
+
+    std::vector<int> y{ 10, 20 };
+    EXPECT_FALSE(chihaya::are_dimensions_equal(x, y));
+
+    y.push_back(30);
+    EXPECT_FALSE(chihaya::are_dimensions_equal(x, y));
+}
+
+/***********************************/
+
+TEST(LoadDimensionsFromUint64Contents, Basic) {
+    auto path = define_test_path("utils_dimensions");
+
+    std::vector<std::size_t> dims{ 23, 41 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        add_numeric_vector(fhandle, "dims", dims, H5::PredType::NATIVE_UINT32);
+    }
+
+    // Force a copy.
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto output = chihaya::load_dimensions_from_uint64_contents<int>(fhandle.openDataSet("dims"), 2);
+        EXPECT_EQ(output, std::vector<int>(dims.begin(), dims.end()));
+    }
+
+    // No need for a copy.
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto output = chihaya::load_dimensions_from_uint64_contents<hsize_t>(fhandle.openDataSet("dims"), 2);
+        EXPECT_EQ(output, std::vector<hsize_t>(dims.begin(), dims.end()));
+    }
+}
+
+/***********************************/
 
 class LoadAlongTest : public ::testing::TestWithParam<ritsuko::Version> {};
 

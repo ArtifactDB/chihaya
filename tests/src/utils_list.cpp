@@ -1,45 +1,40 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <vector>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/utils_list.hpp"
+
 #include "utils.h"
 
-class UtilsListTest : public ::testing::TestWithParam<int> {
-public:
-    UtilsListTest() : path("Test_list.h5") {}
-protected:
-    std::string path;
+class ValidateListTest : public ::testing::TestWithParam<ritsuko::Version> {};
 
-    static ritsuko::Version convert_from_int(int version) {
-        ritsuko::Version output;
-        output.patch = version % 1000;
-        version /= 1000;
-        output.minor = version % 1000;
-        version /= 1000;
-        output.major = version;
-        return output;
-    }
-};
+TEST_P(ValidateListTest, Empty) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
 
-TEST_P(UtilsListTest, Basic) {
-    auto raw_version = GetParam();
-    auto version = convert_from_int(raw_version);
-
-    // Mocking up a file.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "x52", 4, raw_version);
-    }
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::validate_list(ghandle, version);
-        EXPECT_EQ(deets.length, 4);
-        EXPECT_EQ(deets.present.size(), 0);
+        auto lhandle = list_opener(fhandle, "x52", 4, version);
     }
 
-    // Loading the file (partial).
+    H5::H5File fhandle(path, H5F_ACC_RDONLY);
+    auto ghandle = fhandle.openGroup("x52");
+    auto deets = chihaya::validate_list(ghandle, version);
+    EXPECT_EQ(deets.length, 4);
+    EXPECT_EQ(deets.present.size(), 0);
+}
+
+TEST_P(ValidateListTest, NonEmpty) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
+
+    // Partial occupancy.
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto lhandle = fhandle.openGroup("x52");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "x52", 4, version);
         lhandle.createGroup("0");
         lhandle.createGroup("3");
     }
@@ -50,13 +45,13 @@ TEST_P(UtilsListTest, Basic) {
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 2);
 
-        EXPECT_TRUE(deets.present.find(0) != deets.present.end());
+        ASSERT_TRUE(deets.present.find(0) != deets.present.end());
         EXPECT_EQ(deets.present[0], "0");
-        EXPECT_TRUE(deets.present.find(3) != deets.present.end());
+        ASSERT_TRUE(deets.present.find(3) != deets.present.end());
         EXPECT_EQ(deets.present[3], "3");
     }
 
-    // Loading the file (partial).
+    // Full occupancy.
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto lhandle = fhandle.openGroup("x52");
@@ -75,41 +70,61 @@ TEST_P(UtilsListTest, Basic) {
             EXPECT_EQ(deets.present[i], std::to_string(i));
         }
     }
-
-    // Works with double-digit groups.
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "x52", 20, raw_version);
-        lhandle.createGroup("9");
-        lhandle.createGroup("11");
-        lhandle.createGroup("16");
-    }
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto ghandle = fhandle.openGroup("x52");
-        auto deets = chihaya::validate_list(ghandle, version);
-        EXPECT_EQ(deets.length, 20);
-        EXPECT_EQ(deets.present.size(), 3);
-    }
 }
 
-TEST_P(UtilsListTest, Errors) {
-    auto raw_version = GetParam();
-    auto version = convert_from_int(raw_version);
+TEST_P(ValidateListTest, DoubleDigits) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
 
-    if (raw_version < 1100000) {
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "x52", 200, version);
+        lhandle.createGroup("9");
+        lhandle.createGroup("11");
+        lhandle.createGroup("164");
+    }
+
+    H5::H5File fhandle(path, H5F_ACC_RDONLY);
+    auto ghandle = fhandle.openGroup("x52");
+    auto deets = chihaya::validate_list(ghandle, version);
+    EXPECT_EQ(deets.length, 200);
+    EXPECT_EQ(deets.present.size(), 3);
+
+    ASSERT_TRUE(deets.present.find(9) != deets.present.end());
+    EXPECT_EQ(deets.present[9], "9");
+    ASSERT_TRUE(deets.present.find(11) != deets.present.end());
+    EXPECT_EQ(deets.present[11], "11");
+    ASSERT_TRUE(deets.present.find(164) != deets.present.end());
+    EXPECT_EQ(deets.present[164], "164");
+}
+
+TEST_P(ValidateListTest, TypeError) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
+
+    if (version.ge(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        operation_opener(fhandle, "foo", "whee");
+    }
+
+    expect_error([&]() -> void { 
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
+    }, "delayed_type = \"list\"");
+}
+
+TEST_P(ValidateListTest, LengthError) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
+
+    if (version.lt(1, 1, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            operation_opener(fhandle, "foo", "whee");
-        }
-        expect_error([&]() -> void { 
-            H5::H5File fhandle(path, H5F_ACC_RDONLY);
-            chihaya::validate_list(fhandle.openGroup("foo"), version);
-        }, "delayed_type = \"list\"");
-
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            auto lhandle = list_opener(fhandle, "foo", 1, version);
             lhandle.removeAttr("delayed_length");
             hsize_t dims = 9;
             lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5::DataSpace(1, &dims));
@@ -121,7 +136,7 @@ TEST_P(UtilsListTest, Errors) {
 
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            auto lhandle = list_opener(fhandle, "foo", 1, version);
             lhandle.removeAttr("delayed_length");
             add_string_attribute(lhandle, "delayed_length", "FOO");
         }
@@ -132,7 +147,7 @@ TEST_P(UtilsListTest, Errors) {
 
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            auto lhandle = list_opener(fhandle, "foo", 1, version);
             lhandle.removeAttr("delayed_length");
             auto ahandle = lhandle.createAttribute("delayed_length", H5::PredType::NATIVE_INT, H5S_SCALAR);
             int val = -1;
@@ -146,7 +161,7 @@ TEST_P(UtilsListTest, Errors) {
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            auto lhandle = list_opener(fhandle, "foo", 1, version);
             lhandle.removeAttr("length");
             constexpr hsize_t one = 1;
             H5::DataSpace lspace(1, &one); 
@@ -159,7 +174,7 @@ TEST_P(UtilsListTest, Errors) {
 
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+            auto lhandle = list_opener(fhandle, "foo", 1, version);
             lhandle.removeAttr("length");
             lhandle.createAttribute("length", H5::PredType::NATIVE_FLOAT, H5S_SCALAR);
         }
@@ -170,13 +185,13 @@ TEST_P(UtilsListTest, Errors) {
     }
 }
 
-TEST_P(UtilsListTest, ElementErrors) {
-    auto raw_version = GetParam();
-    auto version = convert_from_int(raw_version);
+TEST_P(ValidateListTest, ContentError) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+        auto lhandle = list_opener(fhandle, "foo", 1, version);
         lhandle.createGroup("0");
         lhandle.createGroup("1");
     }
@@ -184,10 +199,15 @@ TEST_P(UtilsListTest, ElementErrors) {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         chihaya::validate_list(fhandle.openGroup("foo"), version);
     }, "more objects");
+}
+
+TEST_P(ValidateListTest, NameError) {
+    auto path = define_test_path("utils_list");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+        auto lhandle = list_opener(fhandle, "foo", 1, version);
         lhandle.createGroup("blah");
     }
     expect_error([&]() -> void { 
@@ -197,7 +217,7 @@ TEST_P(UtilsListTest, ElementErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto lhandle = list_opener(fhandle, "foo", 1, raw_version);
+        auto lhandle = list_opener(fhandle, "foo", 1, version);
         lhandle.createGroup("2");
     }
     expect_error([&]() -> void { 
@@ -207,7 +227,7 @@ TEST_P(UtilsListTest, ElementErrors) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    UtilsList,
-    UtilsListTest,
-    ::testing::Values(0, 1000000, 1100000)
+    ValidateList,
+    ValidateListTest,
+    spawn_all_versions()
 );

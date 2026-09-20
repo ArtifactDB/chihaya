@@ -13,6 +13,8 @@
 #include <cstdint>
 #include <limits>
 
+#include "utils_public.hpp"
+
 namespace chihaya {
 
 ArrayDetails validate(const H5::Group&, const ritsuko::Version&, Options&);
@@ -21,7 +23,7 @@ template<typename Input_>
 using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
 
 inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuko::Version& version) {
-    if (version.major == 0) {
+    if (version.lt(1, 0, 0)) {
         return;
     }
 

@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <cassert>
 
 #include "utils_type.hpp"
 #include "utils_list.hpp"
@@ -33,6 +34,9 @@ bool are_dimensions_equal(const Vector_& left, const Vector_& right) {
 
 template<typename Output_, typename Ndims_>
 std::vector<Output_> load_dimensions_from_uint64_contents(const H5::DataSet& handle, Ndims_ ndims) {
+    assert(handle.getSpace().getSimpleExtentNdims() == 1);
+    assert(!ritsuko::hdf5::exceeds_integer_limit(handle, 64, false));
+
     auto output = sanisizer::create<std::vector<Output_> >(ndims);
     if constexpr(std::is_same<std::uint64_t, Output_>::value) {
         // Avoid a copy if we can.
@@ -52,7 +56,6 @@ inline std::uint64_t load_along(const H5::Group& handle, const ritsuko::Version&
     if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'along' dataset should be scalar");
     }
-
     if (version.lt(1, 1, 0)) {
         return load_non_negative_integer_scalar_0_99<std::uint64_t>(ahandle);
     } else {
