@@ -40,29 +40,6 @@ inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::
     } else if (method == "abs") {
         seed_details.type = std::max(seed_details.type, INTEGER);
 
-    } else if (
-        method == "log1p" ||
-        method == "sqrt" ||
-        method == "exp" ||
-        method == "expm1" ||
-        method == "ceiling" ||
-        method == "floor" || 
-        method == "trunc" ||
-        method == "sin" ||
-        method == "cos" ||
-        method == "tan" ||
-        method == "acos" ||
-        method == "asin" ||
-        method == "atan" ||
-        method == "sinh" ||
-        method == "cosh" ||
-        method == "tanh" ||
-        method == "acosh" ||
-        method == "asinh" ||
-        method == "atanh"
-    ) {
-        seed_details.type = FLOAT;
-
     } else if (method == "log") {
         if (!options.details_only) {
             if (handle.exists("base")) {
@@ -100,6 +77,9 @@ inline ArrayDetails validate_unary_math(const H5::Group& handle, const ritsuko::
                 }
             }
         }
+        seed_details.type = FLOAT;
+
+    } else if (is_other_math(method)) {
         seed_details.type = FLOAT;
 
     } else {

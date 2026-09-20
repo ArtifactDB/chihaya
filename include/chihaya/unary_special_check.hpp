@@ -31,10 +31,7 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const 
     // Checking the method.
     auto method = load_scalar_string_dataset(handle, "method");
     if (!options.details_only) {
-        if (method != "is_nan" &&
-            method != "is_finite" &&
-            method != "is_infinite"
-        ) {
+        if (!is_valid_special_check_operation(method)) {
             throw std::runtime_error("unrecognized 'method' (" + method + ")");
         }
     }

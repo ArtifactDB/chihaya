@@ -61,7 +61,7 @@ TEST_P(UnaryArithmeticPassTest, PureUnary) {
     }
 }
 
-TEST_P(UnaryArithmeticPassTest, ScalarUnary) {
+TEST_P(UnaryArithmeticPassTest, Scalar) {
     auto path = define_test_path("unary_arithmetic");
     auto params = GetParam();
     auto version = std::get<0>(params);
@@ -82,7 +82,7 @@ TEST_P(UnaryArithmeticPassTest, ScalarUnary) {
     EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(UnaryArithmeticPassTest, VectorUnary) {
+TEST_P(UnaryArithmeticPassTest, Vector) {
     auto path = define_test_path("unary_arithmetic");
     auto params = GetParam();
     auto version = std::get<0>(params);

@@ -23,7 +23,7 @@ static H5::Group unary_comparison_opener(
 
 class UnaryComparisonPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
 
-TEST_P(UnaryComparisonPassTest, ScalarUnary) {
+TEST_P(UnaryComparisonPassTest, Scalar) {
     auto path = define_test_path("unary_comparison");
     auto params = GetParam();
     auto version = std::get<0>(params);
@@ -44,7 +44,7 @@ TEST_P(UnaryComparisonPassTest, ScalarUnary) {
     EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(UnaryComparisonPassTest, ScalarUnaryStrings) {
+TEST_P(UnaryComparisonPassTest, ScalarStrings) {
     auto path = define_test_path("unary_comparison");
     auto params = GetParam();
     auto version = std::get<0>(params);
@@ -65,7 +65,7 @@ TEST_P(UnaryComparisonPassTest, ScalarUnaryStrings) {
     EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(UnaryComparisonPassTest, VectorUnary) {
+TEST_P(UnaryComparisonPassTest, Vector) {
     auto path = define_test_path("unary_comparison");
     auto params = GetParam();
     auto version = std::get<0>(params);

@@ -1,117 +1,139 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/unary_math.hpp"
+
 #include "utils.h"
 
-class UnaryMathTest : public ::testing::TestWithParam<int> {
-public:
-    UnaryMathTest() : path("Test_unary_math.h5") {}
-protected:
-    std::string path;
+static H5::Group unary_math_opener(
+    H5::Group& handle,
+    const std::string& name,
+    const std::string& method,
+    const std::vector<std::size_t>& dimensions,
+    const ritsuko::Version& version,
+    const std::string& type
+) {
+    auto ghandle = operation_opener(handle, name, "unary math");
+    add_version_string(ghandle, version);
+    mock_array_opener(ghandle, "seed", dimensions, version, type);
+    add_string_scalar(ghandle, "method", method);
+    return ghandle;
+}
 
-    static H5::Group unary_math_opener(H5::Group& handle, const std::string& name, const std::string& method, const std::vector<int>& dimensions, int version, const std::string& type) {
-        auto ghandle = operation_opener(handle, name, "unary math");
-        add_version_string(ghandle, version);
-        mock_array_opener(ghandle, "seed", dimensions, version, type);
-        add_string_scalar(ghandle, "method", method);
-        return ghandle;
-    }
-};
+/**********************************/
 
-TEST_P(UnaryMathTest, PureUnary) {
-    auto version = GetParam();
+class UnaryMathPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
 
+TEST_P(UnaryMathPassTest, PureUnary) {
+    auto path = define_test_path("unary_math");
+    auto param = GetParam();
+    auto version = std::get<0>(param);
+    auto deets = std::get<1>(param);
+
+    std::vector<std::size_t> dims{ 42, 18 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_math_opener(fhandle, "hello", "abs", { 13, 19 }, version, "INTEGER");
+        unary_math_opener(fhandle, "hello", "abs", dims, version, "INTEGER");
     }
-    auto output = test_validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::INTEGER);
-    EXPECT_EQ(output.dimensions.size(), 2);
-    EXPECT_EQ(output.dimensions[0], 13);
-    EXPECT_EQ(output.dimensions[1], 19);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    {
+        auto output = test_validate(path, "hello", deets); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions, dims);
+    }
 
     // Different type for sign.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_math_opener(fhandle, "hello", "sign", { 13, 19 }, version, "FLOAT");
+        unary_math_opener(fhandle, "hello", "sign", dims, version, "FLOAT");
     }
-    output = test_validate(path, "hello");
-    EXPECT_EQ(output.type, chihaya::INTEGER);
-
-    skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    {
+        auto output = test_validate(path, "hello", deets);
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions, dims);
+    }
 
     // Different type for log1p and related operations.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_math_opener(fhandle, "hello", "log1p", { 13, 19 }, version, "BOOLEAN");
+        unary_math_opener(fhandle, "hello", "log1p", dims, version, "BOOLEAN");
     }
-    output = test_validate(path, "hello");
-    EXPECT_EQ(output.type, chihaya::FLOAT);
-
-    skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    {
+        auto output = test_validate(path, "hello", deets);
+        EXPECT_EQ(output.type, chihaya::FLOAT);
+        EXPECT_EQ(output.dimensions, dims);
+    }
 }
 
-TEST_P(UnaryMathTest, LogBase) {
-    auto version = GetParam();
+TEST_P(UnaryMathPassTest, LogBase) {
+    auto path = define_test_path("unary_math");
+    auto param = GetParam();
+    auto version = std::get<0>(param);
+    auto deets = std::get<1>(param);
 
+    std::vector<std::size_t> dims{ 14, 27 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = unary_math_opener(fhandle, "hello", "log", { 14, 23 }, version, "INTEGER");
+        auto ghandle = unary_math_opener(fhandle, "hello", "log", dims, version, "INTEGER");
         add_numeric_scalar<double>(ghandle, "base", 2, H5::PredType::NATIVE_DOUBLE);
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
-    EXPECT_EQ(output.dimensions.size(), 2);
-    EXPECT_EQ(output.dimensions[0], 14);
-    EXPECT_EQ(output.dimensions[1], 23);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(UnaryMathTest, RoundDigits) {
-    auto version = GetParam();
+TEST_P(UnaryMathPassTest, RoundDigits) {
+    auto path = define_test_path("unary_math");
+    auto param = GetParam();
+    auto version = std::get<0>(param);
+    auto deets = std::get<1>(param);
 
+    std::vector<std::size_t> dims{ 9, 81 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = unary_math_opener(fhandle, "hello", "round", { 5, 12 }, version, "FLOAT");
+        auto ghandle = unary_math_opener(fhandle, "hello", "round", dims, version, "FLOAT");
         add_numeric_scalar<int>(ghandle, "digits", 2, H5::PredType::NATIVE_INT32);
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
-    EXPECT_EQ(output.dimensions.size(), 2);
-    EXPECT_EQ(output.dimensions[0], 5);
-    EXPECT_EQ(output.dimensions[1], 12);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(UnaryMathTest, SeedErrors) {
+INSTANTIATE_TEST_SUITE_P(
+    UnaryMath,
+    UnaryMathPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/**********************************/
+
+class UnaryMathErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(UnaryMathErrorTest, Seed) {
+    auto path = define_test_path("unary_math");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        unary_math_opener(fhandle, "hello", "round", { 5, 12 }, version, "STRING");
+        unary_math_opener(fhandle, "hello", "round", { 10, 7 }, version, "STRING");
     }
-    expect_error(path, "hello", "should be integer, float or boolean");
+    expect_error(path, "hello", "integer, float or boolean");
 }
 
-TEST_P(UnaryMathTest, MethodErrors) {
+TEST_P(UnaryMathErrorTest, Method) {
+    auto path = define_test_path("unary_math");
     auto version = GetParam();
 
+    // Test that we actually check for a scalar string dataset.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_math_opener(fhandle, "hello", "sin", { 5, 12 }, version, "FLOAT");
@@ -129,7 +151,8 @@ TEST_P(UnaryMathTest, MethodErrors) {
     expect_error(path, "hello", "unrecognized operation");
 }
 
-TEST_P(UnaryMathTest, OtherErrors) {
+TEST_P(UnaryMathErrorTest, Base) {
+    auto path = define_test_path("unary_math");
     auto version = GetParam();
 
     {
@@ -137,18 +160,23 @@ TEST_P(UnaryMathTest, OtherErrors) {
         auto ghandle = unary_math_opener(fhandle, "hello", "log", { 5, 12 }, version, "FLOAT");
         add_string_scalar(ghandle, "base", "foo");
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "hello", "'base' should be a float");
     } else {
         expect_error(path, "hello", "64-bit float");
     }
+}
+
+TEST_P(UnaryMathErrorTest, Digits) {
+    auto path = define_test_path("unary_math");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = unary_math_opener(fhandle, "hello", "signif", { 5, 12 }, version, "FLOAT");
         add_numeric_scalar<double>(ghandle, "digits", 2, H5::PredType::NATIVE_DOUBLE);
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "hello", "'digits' should be an integer");
     } else {
         expect_error(path, "hello", "32-bit signed integer");
@@ -157,6 +185,6 @@ TEST_P(UnaryMathTest, OtherErrors) {
 
 INSTANTIATE_TEST_SUITE_P(
     UnaryMath,
-    UnaryMathTest,
-    ::testing::Values(0, 1000000, 1100000)
+    UnaryMathErrorTest,
+    spawn_all_versions()
 );

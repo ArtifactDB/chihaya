@@ -63,6 +63,34 @@ inline bool is_valid_logic_operation(const std::string& method) {
     return method == "&&" || method == "||";
 }
 
+inline bool is_other_math(const std::string& method) {
+    return method == "log1p" ||
+        method == "sqrt" ||
+        method == "exp" ||
+        method == "expm1" ||
+        method == "ceiling" ||
+        method == "floor" || 
+        method == "trunc" ||
+        method == "sin" ||
+        method == "cos" ||
+        method == "tan" ||
+        method == "acos" ||
+        method == "asin" ||
+        method == "atan" ||
+        method == "sinh" ||
+        method == "cosh" ||
+        method == "tanh" ||
+        method == "acosh" ||
+        method == "asinh" ||
+        method == "atanh";
+}
+
+inline bool is_valid_special_check_operation(const std::string& method) {
+    return method == "is_nan" ||
+        method == "is_finite" ||
+        method == "is_infinite";
+}
+
 inline void check_unary_along(const H5::Group& handle, const ritsuko::Version& version, const std::vector<std::size_t>& seed_dimensions, hsize_t extent) {
     const auto along = load_along(handle, version);
 
