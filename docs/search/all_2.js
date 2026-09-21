@@ -2,25 +2,7 @@ var searchData=
 [
   ['chihaya_0',['chihaya',['../namespacechihaya.html',1,'']]],
   ['chihaya_2ehpp_1',['chihaya.hpp',['../chihaya_8hpp.html',1,'']]],
-  ['chihaya_3a_3abinary_5farithmetic_2',['binary_arithmetic',['../namespacechihaya_1_1binary__arithmetic.html',1,'chihaya']]],
-  ['chihaya_3a_3abinary_5fcomparison_3',['binary_comparison',['../namespacechihaya_1_1binary__comparison.html',1,'chihaya']]],
-  ['chihaya_3a_3abinary_5flogic_4',['binary_logic',['../namespacechihaya_1_1binary__logic.html',1,'chihaya']]],
-  ['chihaya_3a_3acombine_5',['combine',['../namespacechihaya_1_1combine.html',1,'chihaya']]],
-  ['chihaya_3a_3aconstant_5farray_6',['constant_array',['../namespacechihaya_1_1constant__array.html',1,'chihaya']]],
-  ['chihaya_3a_3acustom_5farray_7',['custom_array',['../namespacechihaya_1_1custom__array.html',1,'chihaya']]],
-  ['chihaya_3a_3adense_5farray_8',['dense_array',['../namespacechihaya_1_1dense__array.html',1,'chihaya']]],
-  ['chihaya_3a_3aexternal_5fhdf5_9',['external_hdf5',['../namespacechihaya_1_1external__hdf5.html',1,'chihaya']]],
-  ['chihaya_3a_3amatrix_5fproduct_10',['matrix_product',['../namespacechihaya_1_1matrix__product.html',1,'chihaya']]],
-  ['chihaya_3a_3asparse_5fmatrix_11',['sparse_matrix',['../namespacechihaya_1_1sparse__matrix.html',1,'chihaya']]],
-  ['chihaya_3a_3asubset_12',['subset',['../namespacechihaya_1_1subset.html',1,'chihaya']]],
-  ['chihaya_3a_3asubset_5fassignment_13',['subset_assignment',['../namespacechihaya_1_1subset__assignment.html',1,'chihaya']]],
-  ['chihaya_3a_3atranspose_14',['transpose',['../namespacechihaya_1_1transpose.html',1,'chihaya']]],
-  ['chihaya_3a_3aunary_5farithmetic_15',['unary_arithmetic',['../namespacechihaya_1_1unary__arithmetic.html',1,'chihaya']]],
-  ['chihaya_3a_3aunary_5fcomparison_16',['unary_comparison',['../namespacechihaya_1_1unary__comparison.html',1,'chihaya']]],
-  ['chihaya_3a_3aunary_5flogic_17',['unary_logic',['../namespacechihaya_1_1unary__logic.html',1,'chihaya']]],
-  ['chihaya_3a_3aunary_5fmath_18',['unary_math',['../namespacechihaya_1_1unary__math.html',1,'chihaya']]],
-  ['chihaya_3a_3aunary_5fspecial_5fcheck_19',['unary_special_check',['../namespacechihaya_1_1unary__special__check.html',1,'chihaya']]],
-  ['combine_2ehpp_20',['combine.hpp',['../combine_8hpp.html',1,'']]],
-  ['constant_5farray_2ehpp_21',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
-  ['custom_5farray_2ehpp_22',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]]
+  ['combine_2ehpp_2',['combine.hpp',['../combine_8hpp.html',1,'']]],
+  ['constant_5farray_2ehpp_3',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
+  ['custom_5farray_2ehpp_4',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]]
 ];

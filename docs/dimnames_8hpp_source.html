@@ -98,40 +98,33 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;ritsuko/ritsuko.hpp&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;ritsuko/hdf5/hdf5.hpp&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;utils_list.hpp&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="utils__public_8hpp.html">utils_public.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechihaya.html">chihaya</a> {</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>dimnames {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="dimnames_8hpp.html#abfe4d183e84d3ef5bab7c9cb1c9082a1">   28</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> validate(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version, <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> seed_details = internal_misc::load_seed_details(handle, <span class="stringliteral">&quot;seed&quot;</span>, version, options);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (!handle.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected a &#39;dimnames&#39; group&quot;</span>);</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        internal_dimnames::validate(handle, seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">dimensions</a>, version);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;utils_dimensions.hpp&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacechihaya.html">chihaya</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespacechihaya.html#a09eb0e76b30c77cafeab82c2610af9a9">   27</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya.html#a09eb0e76b30c77cafeab82c2610af9a9">validate_dimnames</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version, <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> seed_details = fetch_seed(handle, <span class="stringliteral">&quot;seed&quot;</span>, version, options);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        validate_dimnames_internal(handle, seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>, version);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
 </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:22</div></div>
-<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:36</div></div>
-<div class="ttc" id="astructchihaya_1_1ArrayDetails_html_ad572a229d1da9b90ee688f9b0572b536"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#ad572a229d1da9b90ee688f9b0572b536">chihaya::ArrayDetails::dimensions</a></div><div class="ttdeci">std::vector&lt; size_t &gt; dimensions</div><div class="ttdef"><b>Definition</b> utils_public.hpp:56</div></div>
-<div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:66</div></div>
-<div class="ttc" id="astructchihaya_1_1Options_html_a675ba55ac4e1acfe61d4ab39a6829673"><div class="ttname"><a href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">chihaya::Options::details_only</a></div><div class="ttdeci">bool details_only</div><div class="ttdef"><b>Definition</b> utils_public.hpp:71</div></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
+<div class="ttc" id="anamespacechihaya_html_a09eb0e76b30c77cafeab82c2610af9a9"><div class="ttname"><a href="namespacechihaya.html#a09eb0e76b30c77cafeab82c2610af9a9">chihaya::validate_dimnames</a></div><div class="ttdeci">ArrayDetails validate_dimnames(const H5::Group &amp;handle, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition</b> dimnames.hpp:27</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:37</div></div>
+<div class="ttc" id="astructchihaya_1_1ArrayDetails_html_aae3f97fb1bd0c25cf5cc9134f7936225"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">chihaya::ArrayDetails::dimensions</a></div><div class="ttdeci">std::vector&lt; std::size_t &gt; dimensions</div><div class="ttdef"><b>Definition</b> utils_public.hpp:57</div></div>
+<div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:67</div></div>
+<div class="ttc" id="astructchihaya_1_1Options_html_a675ba55ac4e1acfe61d4ab39a6829673"><div class="ttname"><a href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">chihaya::Options::details_only</a></div><div class="ttdeci">bool details_only</div><div class="ttdef"><b>Definition</b> utils_public.hpp:72</div></div>
 <div class="ttc" id="autils__public_8hpp_html"><div class="ttname"><a href="utils__public_8hpp.html">utils_public.hpp</a></div><div class="ttdoc">Various public utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
