@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstddef>
+#include <random>
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
@@ -39,12 +40,30 @@ public:
             add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_UINT32);
             add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
             add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
-            add_string_attribute(dhandle, "type", "FLOAT");
             add_numeric_scalar(ghandle, "by_column", 1, H5::PredType::NATIVE_INT8);
+            add_string_attribute(dhandle, "type", "FLOAT");
         }
 
         return ghandle;
     } 
+
+    static H5::Group sparse_matrix_opener_csr(H5::Group& handle, const ritsuko::Version& version) {
+        auto ghandle = array_opener(handle, "foobar", "sparse matrix");
+        add_version_string(ghandle, version);
+
+        // Works for CSR if we flip the rows and columns.
+        add_numeric_vector<std::size_t>(ghandle, "shape", { dims[1], dims[0]}, H5::PredType::NATIVE_UINT32);
+        add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
+        add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
+        add_numeric_scalar(ghandle, "by_column", 0, H5::PredType::NATIVE_INT8);
+
+        // We also create an integer datatype for some variety.
+        hsize_t len = data.size();
+        auto dhandle = ghandle.createDataSet("data", H5::PredType::NATIVE_INT16, H5::DataSpace(1, &len));
+        add_string_attribute(dhandle, "type", "INTEGER");
+
+        return ghandle;
+    }
 };
 
 /***************************************/
@@ -95,19 +114,7 @@ TEST_P(SparseMatrixPassTest, Csr) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
-        add_version_string(ghandle, version);
-
-        // Works for CSR if we flip the rows and columns.
-        add_numeric_vector<std::size_t>(ghandle, "shape", { dims[1], dims[0]}, H5::PredType::NATIVE_UINT32);
-        add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
-        add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
-        add_numeric_scalar(ghandle, "by_column", 0, H5::PredType::NATIVE_INT8);
-
-        // We also create an integer datatype for some variety.
-        hsize_t len = data.size();
-        auto dhandle = ghandle.createDataSet("data", H5::PredType::NATIVE_INT16, H5::DataSpace(1, &len));
-        add_string_attribute(dhandle, "type", "INTEGER");
+        sparse_matrix_opener_csr(fhandle, version);
     }
 
     auto output = test_validate(path, "foobar", deets); 
@@ -499,7 +506,40 @@ TEST_P(SparseMatrixErrorTest, ComplicatedIndex) {
         std::vector<int> copy(indices.size());
         add_numeric_vector<int>(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
     }
-    expect_error(path, "foobar", "strictly increasing");
+    expect_error(path, "foobar", "strictly increasing within each column");
+}
+
+TEST_P(SparseMatrixErrorTest, CsrIndex) {
+    auto version = GetParam();
+    if (version.lt(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        sparse_matrix_opener_csr(fhandle, version);
+    }
+
+    // Just getting coverage for the altered text in the error messages. 
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("foobar");
+        ghandle.unlink("indices");
+        auto copy = indices;
+        copy[0] = dims[0];
+        add_numeric_vector(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
+    }
+    expect_error(path, "foobar", "strictly increasing within each row");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("foobar");
+        ghandle.unlink("indices");
+        auto copy = indices;
+        copy.back() = dims[0];
+        add_numeric_vector(ghandle, "indices", copy, H5::PredType::NATIVE_UINT8);
+    }
+    expect_error(path, "foobar", "less than the number of columns");
 }
 
 TEST_P(SparseMatrixErrorTest, Missing) {
@@ -535,5 +575,96 @@ TEST_P(SparseMatrixErrorTest, Dimnames) {
 INSTANTIATE_TEST_SUITE_P(
     SparseMatrix,
     SparseMatrixErrorTest,
+    spawn_all_versions()
+);
+
+/***************************************/
+
+class SparseMatrixChunkTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(SparseMatrixChunkTest, IndexIteration) {
+    auto path = define_test_path("sparse_matrix");
+    auto version = GetParam();
+
+    std::vector<std::size_t> dims { 20, 100 };
+    std::vector<int> indices;
+    std::vector<int> indptr(dims[1] + 1);
+
+    std::mt19937_64 rng(version.major * 4 + version.minor * 2);
+    std::uniform_real_distribution<double> runif(0, 1);
+    for (std::size_t c = 0; c < dims[1]; ++c) {
+        indptr[c + 1] = indptr[c];
+        for (std::size_t r = 0; r < dims[0]; ++r) {
+            if (runif(rng) < 0.2) {
+                indices.push_back(r);
+                indptr[c + 1] += 1;
+            }
+        }
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_version_string(ghandle, version);
+
+        const hsize_t full = indices.size();
+        auto dhandle = ghandle.createDataSet("data", H5::PredType::NATIVE_INT8, H5::DataSpace(1, &full));
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_INT);
+            add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_INT);
+            auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
+            int val = 1;
+            ahandle.write(H5::PredType::NATIVE_INT, &val);
+        } else {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
+            add_numeric_scalar(ghandle, "by_column", 1, H5::PredType::NATIVE_INT8);
+            add_string_attribute(dhandle, "type", "BOOLEAN");
+        }
+
+        // Here, the aim is to check that we correctly iterate across chunks of indices.
+        H5::DSetCreatPropList cplist;
+        const hsize_t chunk_size = 7;
+        cplist.setChunk(1, &chunk_size);
+        cplist.setDeflate(6);
+        auto ihandle = ghandle.createDataSet("indices", H5::PredType::NATIVE_UINT8, H5::DataSpace(1, &full), cplist);
+        ihandle.write(indices.data(), H5::PredType::NATIVE_INT);
+    }
+    {
+        auto output = test_validate(path, "foobar", false); 
+        EXPECT_EQ(output.type, chihaya::BOOLEAN);
+        EXPECT_EQ(output.dimensions, dims);
+    }
+
+    // Ensuring that we can catch out-of-range errors anywhere in the index vector.
+    const int nsteps = 10;
+    for (int step = 0; step < nsteps; ++step) {
+        std::size_t loc = static_cast<double>(indices.size() - 1) * static_cast<double>(step) / static_cast<double>(nsteps - 1);
+        auto previous = indices[loc];
+        indices[loc] = dims[0];
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("foobar");
+            auto ihandle = ghandle.openDataSet("indices");
+            ihandle.write(indices.data(), H5::PredType::NATIVE_INT);
+        }
+
+        std::string msg;
+        try {
+            test_validate(path, "foobar", false); 
+        } catch (std::exception& e) {
+            msg = e.what();
+        }
+        bool found = (msg.find("less than the number of rows") != std::string::npos) || (msg.find("strictly increasing") != std::string::npos);
+        EXPECT_TRUE(found) << "wrong error message (got \"" << msg << "\")" << std::endl;
+
+        indices[loc] = previous;
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SparseMatrix,
+    SparseMatrixChunkTest,
     spawn_all_versions()
 );

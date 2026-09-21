@@ -5,6 +5,18 @@
 
 #include "utils.h"
 
+TEST(CreateIntegerError_0_99, Basic) {
+    {
+        auto err = chihaya::create_integer_error_0_99("foo", H5T_STRING);
+        EXPECT_TRUE(std::string(err.what()).find("expected an integer") != std::string::npos);
+    }
+
+    {
+        auto err = chihaya::create_integer_error_0_99("bar", H5T_INTEGER);
+        EXPECT_TRUE(std::string(err.what()).find("too large") != std::string::npos);
+    }
+}
+
 TEST(LoadNonNegativeIntegerScalar_0_99, Dataset) {
     auto path = define_test_path("utils_type");
 
@@ -37,6 +49,18 @@ TEST(LoadNonNegativeIntegerScalar_0_99, Dataset) {
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         EXPECT_EQ(chihaya::load_non_negative_integer_scalar_0_99<int>(handle.openDataSet("foo")), 1000);
+    }
+
+    // Other type. 
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        handle.createDataSet("foo", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        expect_error([&]() -> void {
+            chihaya::load_non_negative_integer_scalar_0_99<int>(handle.openDataSet("foo"));
+        }, "integer");
     }
 }
 
@@ -85,6 +109,20 @@ TEST(LoadNonNegativeIntegerScalar_0_99, Attribute) {
         auto ghandle = handle.openGroup("foo");
         EXPECT_EQ(chihaya::load_non_negative_integer_scalar_0_99<int>(ghandle.openAttribute("bar")), 12398);
     }
+
+    // Some other type.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        auto ghandle = handle.createGroup("foo");
+        ghandle.createAttribute("bar", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto ghandle = handle.openGroup("foo");
+        expect_error([&]() -> void {
+            chihaya::load_non_negative_integer_scalar_0_99<int>(ghandle.openAttribute("bar"));
+        }, "integer");
+    }
 }
 
 TEST(LoadNonNegativeIntegerVector_0_99, Basic) {
@@ -122,6 +160,19 @@ TEST(LoadNonNegativeIntegerVector_0_99, Basic) {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         EXPECT_EQ(chihaya::load_non_negative_integer_vector_0_99<std::uint8_t>(handle.openDataSet("foo"), expected2.size()), expected2);
     }
+
+    // Other.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        hsize_t dim = 1;
+        handle.createDataSet("foo", H5::PredType::NATIVE_DOUBLE, H5::DataSpace(1, &dim));
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        expect_error([&]() -> void {
+            chihaya::load_non_negative_integer_vector_0_99<int>(handle.openDataSet("foo"), 1);
+        }, "integer");
+    }
 }
 
 TEST(LoadBooleanScalar_0_99, Dataset) {
@@ -151,6 +202,18 @@ TEST(LoadBooleanScalar_0_99, Dataset) {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         EXPECT_TRUE(chihaya::load_boolean_scalar_0_99(handle.openDataSet("foo")));
         EXPECT_FALSE(chihaya::load_boolean_scalar_0_99(handle.openDataSet("bar")));
+    }
+
+    // Some other weird integer.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        handle.createDataSet("foo", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        expect_error([&]() -> void {
+            chihaya::load_boolean_scalar_0_99(handle.openDataSet("foo"));
+        }, "integer");
     }
 }
 
@@ -205,6 +268,20 @@ TEST(LoadBooleanScalar_0_99, Attribute) {
         auto ghandle = handle.openGroup("stuff");
         EXPECT_TRUE(chihaya::load_boolean_scalar_0_99(ghandle.openAttribute("foo")));
         EXPECT_FALSE(chihaya::load_boolean_scalar_0_99(ghandle.openAttribute("bar")));
+    }
+
+    // Some other type.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        auto ghandle = handle.createGroup("stuff");
+        ghandle.createAttribute("foo", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto ghandle = handle.openGroup("stuff");
+        expect_error([&]() -> void {
+            chihaya::load_boolean_scalar_0_99(ghandle.openAttribute("foo"));
+        }, "integer");
     }
 }
 

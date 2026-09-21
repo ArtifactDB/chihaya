@@ -27,7 +27,6 @@ inline auto create_integer_error_0_99(const std::string& name, H5T_class_t type_
 template<typename Output_>
 Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
     static_assert(std::is_integral<Output_>::value);
-    assert(handle.getTypeClass() == H5T_INTEGER);
 
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
@@ -51,7 +50,6 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
 template<typename Output_>
 Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
     static_assert(std::is_integral<Output_>::value);
-    assert(handle.getTypeClass() == H5T_INTEGER);
 
     if (!ritsuko::hdf5::exceeds_integer_limit(handle, 64, true)) {
         std::int64_t val;
@@ -75,7 +73,6 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
 template<typename Output_>
 std::vector<Output_> load_non_negative_integer_vector_0_99(const H5::DataSet& handle, hsize_t len) {
     static_assert(std::is_integral<Output_>::value);
-    assert(handle.getTypeClass() == H5T_INTEGER);
 
     std::vector<Output_> output;
     output.reserve(len);
