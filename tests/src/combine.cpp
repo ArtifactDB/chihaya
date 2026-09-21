@@ -3,6 +3,7 @@
 #include <string>
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "chihaya/combine.hpp"
 
 #include "utils.h"

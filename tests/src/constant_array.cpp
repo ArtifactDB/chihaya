@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "chihaya/constant_array.hpp"
 
 #include "utils.h"

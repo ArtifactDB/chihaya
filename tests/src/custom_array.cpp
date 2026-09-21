@@ -5,6 +5,7 @@
 #include <cstddef>
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "chihaya/custom_array.hpp"
 
 #include "utils.h"

@@ -5,6 +5,7 @@
 #include <cstddef>
 
 #include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
 #include "chihaya/binary_comparison.hpp"
 
 #include "utils.h"

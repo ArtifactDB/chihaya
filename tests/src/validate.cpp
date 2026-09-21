@@ -14,7 +14,7 @@ chihaya::ArrayDetails test_validate(const std::string& path, const std::string& 
 }
 
 TEST(Validate, CustomRegistry) {
-    const char* path = "Test_validate.h5";
+    auto path = define_test_path("validate");
     chihaya::Options options;
 
     std::vector<std::string> known_arrays;
@@ -59,7 +59,7 @@ TEST(Validate, CustomRegistry) {
 }
 
 TEST(Validate, Errors) {
-    const char* path = "Test_validate.h5";
+    auto path = define_test_path("validate");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
