@@ -25,7 +25,7 @@ else()
     find_package(artifactdb_ritsuko 0.6.0 CONFIG REQUIRED)
 endif()
 
-target_link_libraries(chihaya INTERFACE artifactdb::ritsuko)
+target_link_libraries(chihaya INTERFACE artifactdb::ritsuko ltla::sanisizer)
 
 # Switch between include directories depending on whether the downstream is
 # using the build directly or is using the installed package.

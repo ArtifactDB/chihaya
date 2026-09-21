@@ -1,7 +1,8 @@
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/c9461a9b55ba954df0489bab6420eb297bed846b.zip
+  GIT_REPOSITORY https://github.com/google/googletest
+  GIT_TAG main
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -33,9 +34,12 @@ add_executable(
     src/matrix_product.cpp
     src/constant_array.cpp
     src/validate.cpp
-    src/utils_type.cpp
+    src/utils_dimensions.cpp
     src/utils_list.cpp
     src/utils_misc.cpp
+    src/utils_nary.cpp
+    src/utils_subset.cpp
+    src/utils_type.cpp
 )
 
 target_link_libraries(

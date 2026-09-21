@@ -1,102 +1,151 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+#include <random>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/sparse_matrix.hpp"
+
 #include "utils.h"
 
-class SparseMatrixTest : public ::testing::TestWithParam<int> {
+class SparseMatrixCore {
 public:
-    SparseMatrixTest() : path("Test_sparse_matrix.h5"), nr(10), nc(5) {
+    inline static std::string path;
+    inline static std::vector<std::size_t> dims;
+    inline static std::vector<double> data;
+    inline static std::vector<int> indices;
+    inline static std::vector<int> indptr;
+
+    static void initialize() {
+        path = define_test_path("sparse_matrix");
+        dims = std::vector<std::size_t>{ 10, 5 };
         data = std::vector<double>{ -1.10, 0.18, 0.95, -0.17, -0.031, -0.75, 0.13, -0.89, 0.74, -0.43 };
         indices = std::vector<int>{ 0, 4, 4, 5, 7, 8, 4, 9, 2, 9 };
         indptr = std::vector<int>{ 0, 2, 5, 6, 8, 10 };
     }
 
-protected:
-    std::string path;
-    int nr, nc;
-    std::vector<double> data;
-    std::vector<int> indices;
-    std::vector<int> indptr;
-
-    H5::Group sparse_matrix_opener(H5::Group& handle, int version) const {
+    static H5::Group sparse_matrix_opener(H5::Group& handle, const ritsuko::Version& version) {
         auto ghandle = array_opener(handle, "foobar", "sparse matrix");
         add_version_string(ghandle, version);
 
         auto dhandle = add_numeric_vector(ghandle, "data", data, H5::PredType::NATIVE_DOUBLE);
-        if (version < 1100000) {
-            add_numeric_vector<int>(ghandle, "shape", { nr, nc }, H5::PredType::NATIVE_INT);
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_INT);
             add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_INT);
             add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_INT);
         } else {
-            add_numeric_vector<int>(ghandle, "shape", { nr, nc }, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_UINT32);
             add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
             add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
-            add_string_attribute(dhandle, "type", "FLOAT");
             add_numeric_scalar(ghandle, "by_column", 1, H5::PredType::NATIVE_INT8);
+            add_string_attribute(dhandle, "type", "FLOAT");
         }
 
         return ghandle;
     } 
+
+    static H5::Group sparse_matrix_opener_csr(H5::Group& handle, const ritsuko::Version& version) {
+        auto ghandle = array_opener(handle, "foobar", "sparse matrix");
+        add_version_string(ghandle, version);
+
+        // Works for CSR if we flip the rows and columns.
+        add_numeric_vector<std::size_t>(ghandle, "shape", { dims[1], dims[0]}, H5::PredType::NATIVE_UINT32);
+        add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
+        add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
+        add_numeric_scalar(ghandle, "by_column", 0, H5::PredType::NATIVE_INT8);
+
+        // We also create an integer datatype for some variety.
+        hsize_t len = data.size();
+        auto dhandle = ghandle.createDataSet("data", H5::PredType::NATIVE_INT16, H5::DataSpace(1, &len));
+        add_string_attribute(dhandle, "type", "INTEGER");
+
+        return ghandle;
+    }
 };
 
-TEST_P(SparseMatrixTest, Basic) {
-    auto version = GetParam();
+/***************************************/
+
+class SparseMatrixPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> >, public SparseMatrixCore {
+protected:
+    static void SetUpTestSuite() {
+        initialize();
+    }
+};
+
+TEST_P(SparseMatrixPassTest, Basic) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         sparse_matrix_opener(fhandle, version);
     }
     {
-        auto output = test_validate(path, "foobar"); 
+        auto output = test_validate(path, "foobar", deets); 
         EXPECT_EQ(output.type, chihaya::FLOAT);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 10);
-        EXPECT_EQ(dims[1], 5);
-
-        auto skipped = test_validate_skip(path, "foobar");
-        EXPECT_EQ(skipped.type, output.type);
-        EXPECT_EQ(skipped.dimensions, output.dimensions);
+        EXPECT_EQ(output.dimensions, dims);
     }
 
-    // Works for CSR if we flip the rows and columns.
-    if (version >= 1100000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
-            add_version_string(ghandle, version);
-
-            auto dhandle = add_numeric_vector(ghandle, "data", data, H5::PredType::NATIVE_DOUBLE);
-            add_numeric_vector<int>(ghandle, "shape", { nc, nr }, H5::PredType::NATIVE_UINT32);
-            add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT32);
-            add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
-            add_string_attribute(dhandle, "type", "FLOAT");
-            add_numeric_scalar(ghandle, "by_column", 0, H5::PredType::NATIVE_INT8);
-        }
-        auto output = test_validate(path, "foobar"); 
-        EXPECT_EQ(output.type, chihaya::FLOAT);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 5);
-        EXPECT_EQ(dims[1], 10);
+    // Forcibly using an unsigned HDF5 type for the indices.
+    // This gives us some code coverage for the legacy handlers of unsigned integers.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        ghandle.unlink("indices");
+        add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_UINT8);
     }
+    auto output = test_validate(path, "foobar", false); 
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SparseMatrixTest, Dimnames) {
-    auto version = GetParam();
+TEST_P(SparseMatrixPassTest, Csr) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    if (version.lt(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        sparse_matrix_opener_csr(fhandle, version);
+    }
+
+    auto output = test_validate(path, "foobar", deets); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], dims[1]);
+    EXPECT_EQ(output.dimensions[1], dims[0]);
+}
+
+TEST_P(SparseMatrixPassTest, Dimnames) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         auto lhandle = list_opener(ghandle, "dimnames", 2, version);
-        add_string_vector(lhandle, "0", nr, /* len = */ 2);
-        add_string_vector(lhandle, "1", nc, /* len = */ 2);
+        add_string_vector(lhandle, "0", dims[0], /* strlen = */ 2);
+        add_string_vector(lhandle, "1", dims[1], /* strlen = */ 2);
     }
-    auto output = test_validate(path, "foobar"); 
+
+    auto output = test_validate(path, "foobar", deets); 
     EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SparseMatrixTest, Boolean) {
-    auto version = GetParam();
+TEST_P(SparseMatrixPassTest, Boolean) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -104,48 +153,98 @@ TEST_P(SparseMatrixTest, Boolean) {
         ghandle.unlink("data");
 
         std::vector<int> copy(data.begin(), data.end());
-        if (version < 1100000) {
-            auto dhandle = add_numeric_vector<int>(ghandle, "data", copy, H5::PredType::NATIVE_INT); 
+        if (version.lt(1, 1, 0)) {
+            auto dhandle = add_numeric_vector(ghandle, "data", copy, H5::PredType::NATIVE_INT); 
             auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
             int val = 1;
             ahandle.write(H5::PredType::NATIVE_INT, &val);
         } else {
-            auto dhandle = add_numeric_vector<int>(ghandle, "data", copy, H5::PredType::NATIVE_INT8); 
+            auto dhandle = add_numeric_vector(ghandle, "data", copy, H5::PredType::NATIVE_INT8); 
             add_string_attribute(dhandle, "type", "BOOLEAN");
         }
     }
 
-    auto output = test_validate(path, "foobar"); 
+    auto output = test_validate(path, "foobar", deets); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SparseMatrixTest, Missing) {
-    auto version = GetParam();
+TEST_P(SparseMatrixPassTest, Missing) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         auto dhandle = ghandle.openDataSet("data");
-        if (version >= 1100000) {
-            add_numeric_missing_placeholder(dhandle, 2.5, H5::PredType::NATIVE_DOUBLE);
+        add_numeric_missing_placeholder(dhandle, 2.5, H5::PredType::NATIVE_DOUBLE);
+    }
+
+    auto output = test_validate(path, "foobar", deets); 
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dims);
+}
+
+TEST_P(SparseMatrixPassTest, Empty) {
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    // Edge case of an empty sparse matrix.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_version_string(ghandle, version);
+
+        auto dhandle = add_numeric_vector<int>(ghandle, "data", {}, H5::PredType::NATIVE_INT);
+        std::vector<int> empty(dims[1] + 1);
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_INT);
+            add_numeric_vector<int>(ghandle, "indices", {}, H5::PredType::NATIVE_INT);
+            add_numeric_vector(ghandle, "indptr", empty, H5::PredType::NATIVE_INT);
         } else {
-            add_numeric_missing_placeholder(dhandle, 2.5, H5::PredType::NATIVE_FLOAT);
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector<int>(ghandle, "indices", {}, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector(ghandle, "indptr", empty, H5::PredType::NATIVE_UINT64);
+            add_string_attribute(dhandle, "type", "INTEGER");
+            add_numeric_scalar(ghandle, "by_column", 1, H5::PredType::NATIVE_INT8);
         }
     }
 
-    auto output = test_validate(path, "foobar"); 
-    EXPECT_EQ(output.type, chihaya::FLOAT);
+    auto output = test_validate(path, "foobar", deets); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SparseMatrixTest, ShapeErrors) {
+INSTANTIATE_TEST_SUITE_P(
+    SparseMatrix,
+    SparseMatrixPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/***************************************/
+
+class SparseMatrixErrorTest : public ::testing::TestWithParam<ritsuko::Version>, public SparseMatrixCore {
+protected:
+    static void SetUpTestSuite() {
+        initialize();
+    }
+};
+
+TEST_P(SparseMatrixErrorTest, Shape) {
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
         add_version_string(ghandle, version);
+        add_numeric_scalar(ghandle, "shape", 10, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "foobar", "expected a dataset at 'shape'");
+    expect_error(path, "foobar", "1-dimensional");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -153,16 +252,16 @@ TEST_P(SparseMatrixTest, ShapeErrors) {
         add_version_string(ghandle, version);
         add_numeric_vector<int>(ghandle, "shape", { 10, 5, 2 }, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "foobar", "'shape' should have length 2");
+    expect_error(path, "foobar", "'shape' dataset should have length 2");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
         add_version_string(ghandle, version);
-        add_numeric_vector<int>(ghandle, "shape", { nr, nc }, H5::PredType::NATIVE_DOUBLE);
+        add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_DOUBLE);
     }
-    if (version < 1100000) {
-        expect_error(path, "foobar", "'shape' should be integer");
+    if (version.lt(1, 1, 0)) {
+        expect_error(path, "foobar", "expected an integer type");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
     }
@@ -171,61 +270,134 @@ TEST_P(SparseMatrixTest, ShapeErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
         add_version_string(ghandle, version);
-        add_numeric_vector<int>(ghandle, "shape", { -1, nc }, H5::PredType::NATIVE_INT);
+        add_numeric_vector<int>(ghandle, "shape", { -1, 10 }, H5::PredType::NATIVE_INT);
     }
-    if (version < 1100000) {
-        expect_error(path, "foobar", "'shape' should contain non-negative");
+    if (version.lt(1, 1, 0)) {
+        expect_error(path, "foobar", "should contain non-negative");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
     }
 }
 
-TEST_P(SparseMatrixTest, DataErrors) {
+TEST_P(SparseMatrixErrorTest, Data) {
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("data");
-    }
-    expect_error(path, "foobar", "expected a dataset at 'data'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
         ghandle.createDataSet("data", H5::PredType::NATIVE_INT, H5S_SCALAR);
     }
-    expect_error(path, "foobar", "expected a 1-dimensional dataset");
+    expect_error(path, "foobar", "should be 1-dimensional");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("foobar");
         ghandle.unlink("data");
 
-        auto dhandle = add_string_vector(ghandle, "data", 20);
-        if (version >= 1100000) {
+        auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 5);
+        if (version.ge(1, 1, 0)) {
             add_string_attribute(dhandle, "type", "STRING");
         }
     }
     expect_error(path, "foobar", "integer, float or boolean");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("foobar");
+        ghandle.unlink("data");
+
+        auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 23);
+        if (version.ge(1, 1, 0)) {
+            add_string_attribute(dhandle, "type", "STRING");
+        }
+    }
+    expect_error(path, "foobar", "integer, float or boolean");
+
+    if (version.ge(1, 1, 0)) {
+        // Test that we actually check for a scalar 'type'.
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = sparse_matrix_opener(fhandle, version);
+            auto dhandle = ghandle.openDataSet("data");
+            dhandle.removeAttr("type");
+            constexpr hsize_t one = 1;
+            dhandle.createAttribute("type", H5::StrType(0, H5T_VARIABLE), H5::DataSpace(1, &one));
+        }
+        expect_error(path, "foobar", "scalar");
+
+        // Test that we actually check the 'type' is consistent with the dataset's type.
+        {
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("foobar");
+            auto dhandle = ghandle.openDataSet("data");
+            dhandle.removeAttr("type");
+            add_string_attribute(dhandle, "type", "BOOLEAN");
+        }
+        expect_error(path, "foobar", "8-bit signed integer");
+    }
 }
 
-TEST_P(SparseMatrixTest, SimpleIndexErrors) {
+TEST_P(SparseMatrixErrorTest, ByColumn) {
+    auto version = GetParam();
+    if (version.lt(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        ghandle.unlink("by_column");
+        constexpr hsize_t one = 1;
+        ghandle.createDataSet("by_column", H5::PredType::NATIVE_INT8, H5::DataSpace(1, &one));
+    }
+    expect_error(path, "foobar", "scalar");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        ghandle.unlink("by_column");
+        ghandle.createDataSet("by_column", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    expect_error(path, "foobar", "8-bit signed integer");
+}
+
+TEST_P(SparseMatrixErrorTest, Boolean) {
+    auto version = GetParam();
+    if (version.ge(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        ghandle.unlink("data");
+        std::vector<int> copy(data.begin(), data.end());
+        auto dhandle = add_numeric_vector(ghandle, "data", copy, H5::PredType::NATIVE_INT); 
+        auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_DOUBLE, H5S_SCALAR);
+    }
+    expect_error(path, "foobar", "expected an integer");
+}
+
+TEST_P(SparseMatrixErrorTest, SimpleIndex) {
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indices");
+        hsize_t dims[2] = { 10, 20 };
+        ghandle.createDataSet("indices", H5::PredType::NATIVE_UINT8, H5::DataSpace(2, dims));
     }
-    expect_error(path, "foobar", "expected a dataset at 'indices'");
+    expect_error(path, "foobar", "1-dimensional");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("foobar");
-        add_numeric_vector<double>(ghandle, "indices", { 1, 2 }, H5::PredType::NATIVE_DOUBLE);
+        ghandle.unlink("indices");
+        add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_DOUBLE);
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "foobar", "'indices' should be integer");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
@@ -236,27 +408,28 @@ TEST_P(SparseMatrixTest, SimpleIndexErrors) {
         auto ghandle = fhandle.openGroup("foobar");
         ghandle.unlink("indices");
         add_numeric_vector<int>(ghandle, "indices", { 1, 2 }, H5::PredType::NATIVE_UINT32);
-        ghandle.unlink("indptr");
     }
     expect_error(path, "foobar", "same length");
 }
 
-TEST_P(SparseMatrixTest, IndptrErrors) {
+TEST_P(SparseMatrixErrorTest, Indptr) {
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indptr");
+        add_numeric_scalar(ghandle, "indptr", 5, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "foobar", "expected a dataset at 'indptr'");
+    expect_error(path, "foobar", "1-dimensional");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
-        add_numeric_vector<double>(ghandle, "indptr", { 0 }, H5::PredType::NATIVE_DOUBLE);
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        ghandle.unlink("indptr");
+        add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_DOUBLE);
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "foobar", "'indptr' should be integer");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
@@ -301,7 +474,7 @@ TEST_P(SparseMatrixTest, IndptrErrors) {
     expect_error(path, "foobar", "sorted");
 }
 
-TEST_P(SparseMatrixTest, ComplexIndexErrors) {
+TEST_P(SparseMatrixErrorTest, ComplicatedIndex) {
     auto version = GetParam();
 
     {
@@ -309,12 +482,12 @@ TEST_P(SparseMatrixTest, ComplexIndexErrors) {
         auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indices");
         auto copy = indices;
-        copy[0] = nr + 10;
+        copy.back() = dims[1] + 10;
         add_numeric_vector<int>(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
     }
     expect_error(path, "foobar", "number of rows");
 
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_RDWR);
             auto ghandle = fhandle.openGroup("foobar");
@@ -330,43 +503,168 @@ TEST_P(SparseMatrixTest, ComplexIndexErrors) {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
         auto ghandle = fhandle.openGroup("foobar");
         ghandle.unlink("indices");
-        auto copy = indices;
-        std::fill(copy.begin(), copy.end(), 0);
+        std::vector<int> copy(indices.size());
         add_numeric_vector<int>(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
     }
-    expect_error(path, "foobar", "strictly increasing");
+    expect_error(path, "foobar", "strictly increasing within each column");
 }
 
-TEST_P(SparseMatrixTest, MissingErrors) {
+TEST_P(SparseMatrixErrorTest, CsrIndex) {
+    auto version = GetParam();
+    if (version.lt(1, 1, 0)) {
+        return;
+    }
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        sparse_matrix_opener_csr(fhandle, version);
+    }
+
+    // Just getting coverage for the altered text in the error messages. 
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("foobar");
+        ghandle.unlink("indices");
+        auto copy = indices;
+        copy[0] = dims[0];
+        add_numeric_vector(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
+    }
+    expect_error(path, "foobar", "strictly increasing within each row");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDWR);
+        auto ghandle = fhandle.openGroup("foobar");
+        ghandle.unlink("indices");
+        auto copy = indices;
+        copy.back() = dims[0];
+        add_numeric_vector(ghandle, "indices", copy, H5::PredType::NATIVE_UINT8);
+    }
+    expect_error(path, "foobar", "less than the number of columns");
+}
+
+TEST_P(SparseMatrixErrorTest, Missing) {
     auto version = GetParam();
 
-    if (version >= 1000000) {
+    if (version.ge(1, 0, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
             auto ghandle = sparse_matrix_opener(fhandle, version);
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT32);
         }
-        if (version < 1100000) {
-            expect_error(path, "foobar", "same type class");
+        if (version.lt(1, 1, 0)) {
+            expect_error(path, "foobar", "same datatype class");
         } else {
-            expect_error(path, "foobar", "same type as");
+            expect_error(path, "foobar", "same datatype as");
+        }
+    }
+}
+
+TEST_P(SparseMatrixErrorTest, Dimnames) {
+    auto version = GetParam();
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
+        auto lhandle = list_opener(ghandle, "dimnames", 2, version);
+        add_string_vector(lhandle, "0", 99, /* strlen = */ 2);
+    }
+    expect_error(path, "foobar", "length equal to the extent");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SparseMatrix,
+    SparseMatrixErrorTest,
+    spawn_all_versions()
+);
+
+/***************************************/
+
+class SparseMatrixChunkTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(SparseMatrixChunkTest, IndexIteration) {
+    auto path = define_test_path("sparse_matrix");
+    auto version = GetParam();
+
+    std::vector<std::size_t> dims { 20, 100 };
+    std::vector<int> indices;
+    std::vector<int> indptr(dims[1] + 1);
+
+    std::mt19937_64 rng(version.major * 4 + version.minor * 2);
+    std::uniform_real_distribution<double> runif(0, 1);
+    for (std::size_t c = 0; c < dims[1]; ++c) {
+        indptr[c + 1] = indptr[c];
+        for (std::size_t r = 0; r < dims[0]; ++r) {
+            if (runif(rng) < 0.2) {
+                indices.push_back(r);
+                indptr[c + 1] += 1;
+            }
         }
     }
 
-    if (version >= 1100000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = sparse_matrix_opener(fhandle, version);
-            auto dhandle = ghandle.openDataSet("data");
-            add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_FLOAT);
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = array_opener(fhandle, "foobar", "sparse matrix");
+        add_version_string(ghandle, version);
+
+        const hsize_t full = indices.size();
+        auto dhandle = ghandle.createDataSet("data", H5::PredType::NATIVE_INT8, H5::DataSpace(1, &full));
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_INT);
+            add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_INT);
+            auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
+            int val = 1;
+            ahandle.write(H5::PredType::NATIVE_INT, &val);
+        } else {
+            add_numeric_vector(ghandle, "shape", dims, H5::PredType::NATIVE_UINT32);
+            add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_UINT64);
+            add_numeric_scalar(ghandle, "by_column", 1, H5::PredType::NATIVE_INT8);
+            add_string_attribute(dhandle, "type", "BOOLEAN");
         }
-        expect_error(path, "foobar", "same type as");
+
+        // Here, the aim is to check that we correctly iterate across chunks of indices.
+        H5::DSetCreatPropList cplist;
+        const hsize_t chunk_size = 7;
+        cplist.setChunk(1, &chunk_size);
+        cplist.setDeflate(6);
+        auto ihandle = ghandle.createDataSet("indices", H5::PredType::NATIVE_UINT8, H5::DataSpace(1, &full), cplist);
+        ihandle.write(indices.data(), H5::PredType::NATIVE_INT);
+    }
+    {
+        auto output = test_validate(path, "foobar", false); 
+        EXPECT_EQ(output.type, chihaya::BOOLEAN);
+        EXPECT_EQ(output.dimensions, dims);
+    }
+
+    // Ensuring that we can catch out-of-range errors anywhere in the index vector.
+    const int nsteps = 10;
+    for (int step = 0; step < nsteps; ++step) {
+        std::size_t loc = static_cast<double>(indices.size() - 1) * static_cast<double>(step) / static_cast<double>(nsteps - 1);
+        auto previous = indices[loc];
+        indices[loc] = dims[0];
+
+        {
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("foobar");
+            auto ihandle = ghandle.openDataSet("indices");
+            ihandle.write(indices.data(), H5::PredType::NATIVE_INT);
+        }
+
+        std::string msg;
+        try {
+            test_validate(path, "foobar", false); 
+        } catch (std::exception& e) {
+            msg = e.what();
+        }
+        bool found = (msg.find("less than the number of rows") != std::string::npos) || (msg.find("strictly increasing") != std::string::npos);
+        EXPECT_TRUE(found) << "wrong error message (got \"" << msg << "\")" << std::endl;
+
+        indices[loc] = previous;
     }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     SparseMatrix,
-    SparseMatrixTest,
-    ::testing::Values(0, 1000000, 1100000)
+    SparseMatrixChunkTest,
+    spawn_all_versions()
 );

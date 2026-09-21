@@ -1,35 +1,38 @@
+#include <gtest/gtest.h>
+
+#include <vector>
+#include <string>
+
+#include "chihaya/chihaya.hpp"
+
 #include "utils.h"
 
-chihaya::ArrayDetails test_validate(const std::string& path, const std::string& name) {
-    return chihaya::validate(path, name);
-}
-
-chihaya::ArrayDetails test_validate_skip(const std::string& path, const std::string& name) {
+chihaya::ArrayDetails test_validate(const std::string& path, const std::string& name, bool details_only) {
     chihaya::Options opts;
-    opts.details_only = true;
+    opts.details_only = details_only;
     return chihaya::validate(path, name, opts);
 }
 
 TEST(Validate, CustomRegistry) {
-    const char* path = "Test_validate.h5";
+    auto path = define_test_path("validate");
     chihaya::Options options;
 
     std::vector<std::string> known_arrays;
     options.array_validate_registry["constant array"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails {
         known_arrays.push_back("constant array"); 
-        return chihaya::constant_array::validate(h, v, o);
+        return chihaya::validate_constant_array(h, v, o);
     }; 
 
     std::vector<std::string> known_operations;
     options.operation_validate_registry["transpose"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails { 
         known_operations.push_back("transpose"); 
-        return chihaya::transpose::validate(h, v, o);
+        return chihaya::validate_transpose(h, v, o);
     }; 
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "WHEE", "transpose");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
         add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_UINT32);
 
         auto shandle = array_opener(ghandle, "seed", "constant array");
@@ -56,19 +59,19 @@ TEST(Validate, CustomRegistry) {
 }
 
 TEST(Validate, Errors) {
-    const char* path = "Test_validate.h5";
+    auto path = define_test_path("validate");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = operation_opener(fhandle, "WHEE", "FOO");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
     }
     expect_error(path, "WHEE", "unknown operation type 'FOO'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = array_opener(fhandle, "seed", "BAR");
-        add_version_string(ghandle, 1100000);
+        add_version_string(ghandle, ritsuko::Version(1, 1, 0));
     }
     expect_error(path, "seed", "unknown array type 'BAR'");
 
@@ -77,5 +80,5 @@ TEST(Validate, Errors) {
         auto ghandle = fhandle.createGroup("FOO");
         add_string_attribute(ghandle, "delayed_type", "YAY");
     }
-    expect_error(path, "seed", "unknown object type 'YAY'");
+    expect_error(path, "FOO", "unknown delayed type 'YAY'");
 }

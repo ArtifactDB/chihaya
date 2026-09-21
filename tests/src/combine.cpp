@@ -1,92 +1,141 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/combine.hpp"
+
 #include "utils.h"
 
-class CombineTest : public ::testing::TestWithParam<int> {
-public:
-    CombineTest() : path("Test_combine.h5") {}
-protected:
-    std::string path;
-
-    static H5::Group combine_opener(H5::Group& handle, const std::string& name, int along, int version) {
-        auto ghandle = operation_opener(handle, name, "combine");
-        add_version_string(ghandle, version);
-
-        if (version < 1100000) {
-            add_numeric_scalar(ghandle, "along", along, H5::PredType::NATIVE_INT);
-        } else {
-            add_numeric_scalar(ghandle, "along", along, H5::PredType::NATIVE_UINT32);
-        }
-
-        return ghandle;
+static H5::Group combine_opener(H5::Group& handle, const std::string& name, int along, const ritsuko::Version& version) {
+    auto ghandle = operation_opener(handle, name, "combine");
+    add_version_string(ghandle, version);
+    if (version.lt(1, 1, 0)) {
+        add_numeric_scalar(ghandle, "along", along, H5::PredType::NATIVE_INT);
+    } else {
+        add_numeric_scalar(ghandle, "along", along, H5::PredType::NATIVE_UINT32);
     }
-};
+    return ghandle;
+}
 
-TEST_P(CombineTest, Simple) {
-    auto version = GetParam();
+/***********************************/
+
+class CombinePassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
+
+TEST_P(CombinePassTest, Simple) {
+    auto path = define_test_path("combine");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        mock_array_opener(lhandle, "0", { 13, 19 }, version, "FLOAT");
-        mock_array_opener(lhandle, "1", { 20, 19 }, version, "FLOAT"); 
+        mock_array_opener<int>(lhandle, "0", { 13, 19 }, version, "FLOAT");
+        mock_array_opener<int>(lhandle, "1", { 20, 19 }, version, "FLOAT"); 
     }
     {
-        auto output = test_validate(path, "hello"); 
+        auto output = test_validate(path, "hello", deets);
         EXPECT_EQ(output.type, chihaya::FLOAT);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims[0], 33);
-        EXPECT_EQ(dims[1], 19);
-
-        auto skipped = test_validate_skip(path, "hello");
-        EXPECT_EQ(skipped.type, output.type);
-        EXPECT_EQ(skipped.dimensions, output.dimensions);
+        EXPECT_EQ(output.dimensions.size(), 2);
+        EXPECT_EQ(output.dimensions[0], 33);
+        EXPECT_EQ(output.dimensions[1], 19);
     }
 
+    // Works with all-string seeds.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 1, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        mock_array_opener(lhandle, "0", { 10, 52 }, version, "STRING");
-        mock_array_opener(lhandle, "1", { 10, 12 }, version, "STRING"); 
+        mock_array_opener<int>(lhandle, "0", { 10, 52 }, version, "STRING");
+        mock_array_opener<int>(lhandle, "1", { 10, 12 }, version, "STRING"); 
     }
     {
-        auto output = test_validate(path, "hello"); 
+        auto output = test_validate(path, "hello", deets);
         EXPECT_EQ(output.type, chihaya::STRING);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims[0], 10);
-        EXPECT_EQ(dims[1], 64);
+        EXPECT_EQ(output.dimensions.size(), 2);
+        EXPECT_EQ(output.dimensions[0], 10);
+        EXPECT_EQ(output.dimensions[1], 64);
     }
 }
 
-TEST_P(CombineTest, Mixed) {
-    auto version = GetParam();
+TEST_P(CombinePassTest, MixedType) {
+    auto path = define_test_path("combine");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 1, version);
         auto lhandle = list_opener(ghandle, "seeds", 3, version);
-        mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
-        mock_array_opener(lhandle, "1", { 13, 20 }, version, "INTEGER"); 
-        mock_array_opener(lhandle, "2", { 13, 30 }, version, "BOOLEAN"); 
+        mock_array_opener<int>(lhandle, "0", { 13, 10, 5 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "1", { 13, 20, 5 }, version, "INTEGER"); 
+        mock_array_opener<int>(lhandle, "2", { 13, 30, 5 }, version, "BOOLEAN"); 
     }
-    auto output = test_validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 60);
+    {
+        auto output = test_validate(path, "hello", deets); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions.size(), 3);
+        EXPECT_EQ(output.dimensions[0], 13);
+        EXPECT_EQ(output.dimensions[1], 60);
+        EXPECT_EQ(output.dimensions[2], 5);
+    }
+
+    // Also involving FLOATs.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = combine_opener(fhandle, "hello", 2, version);
+        auto lhandle = list_opener(ghandle, "seeds", 4, version);
+        mock_array_opener<int>(lhandle, "0", { 10, 7, 20 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "1", { 10, 7, 10 }, version, "INTEGER"); 
+        mock_array_opener<int>(lhandle, "2", { 10, 7, 15 }, version, "FLOAT"); 
+        mock_array_opener<int>(lhandle, "3", { 10, 7, 10 }, version, "INTEGER"); 
+    }
+    {
+        auto output = test_validate(path, "hello", deets); 
+        EXPECT_EQ(output.type, chihaya::FLOAT);
+        EXPECT_EQ(output.dimensions.size(), 3);
+        EXPECT_EQ(output.dimensions[0], 10);
+        EXPECT_EQ(output.dimensions[1], 7);
+        EXPECT_EQ(output.dimensions[2], 55);
+    }
 }
 
-TEST_P(CombineTest, AlongErrors) {
-    auto version = GetParam();
+TEST_P(CombinePassTest, Empty) {
+    auto path = define_test_path("combine");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = combine_opener(fhandle, "hello", 0, version);
-        ghandle.unlink("along");
+        auto ghandle = combine_opener(fhandle, "hello", 99, version);
+        auto lhandle = list_opener(ghandle, "seeds", 0, version);
     }
-    expect_error(path, "hello", "expected a dataset at 'along'");
+    auto output = test_validate(path, "hello", deets); 
+    EXPECT_EQ(output.type, chihaya::BOOLEAN);
+    EXPECT_EQ(output.dimensions.size(), 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Combine,
+    CombinePassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/***********************************/
+
+class CombineErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(CombineErrorTest, Along) {
+    auto path = define_test_path("combine");
+    auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -94,46 +143,32 @@ TEST_P(CombineTest, AlongErrors) {
         ghandle.unlink("along");
         add_numeric_vector<int>(ghandle, "along", { 1 }, H5::PredType::NATIVE_INT);
     }
-    expect_error(path, "hello", "'along' should be a scalar dataset");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = combine_opener(fhandle, "hello", 0, version);
-        ghandle.unlink("along");
-        add_numeric_scalar(ghandle, "along", -1, H5::PredType::NATIVE_INT);
-    }
-    if (version >= 1100000) {
-        expect_error(path, "hello", "64-bit unsigned integer");
-    } else {
-        expect_error(path, "hello", "'along' should be non-negative");
-    }
+    expect_error(path, "hello", "should be scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 2, version);
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
-        mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
     }
     expect_error(path, "hello", "'along' should be less than the seed dimensionality");
 }
 
-TEST_P(CombineTest, SeedErrors) {
+TEST_P(CombineErrorTest, Seed) {
+    auto path = define_test_path("combine");
     auto version = GetParam();
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        combine_opener(fhandle, "hello", 0, version);
-    }
-    expect_error(path, "hello", "expected a group at 'seeds'");
-
+    // Check that the list validation function is run.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
-        if (version < 1100000) {
+        if (version.lt(1, 1, 0)) {
             lhandle.removeAttr("delayed_length");
+            add_string_attribute(lhandle, "delayed_length", "FOO");
         } else {
             lhandle.removeAttr("length");
+            add_string_attribute(lhandle, "length", "FOO");
         }
     }
     expect_error(path, "hello", "failed to load 'seeds' list");
@@ -149,7 +184,8 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 1, version);
-        lhandle.createGroup("0");
+        auto shandle = lhandle.createGroup("0");
+        add_string_attribute(shandle, "delayed_type", "FOOBAR");
     }
     expect_error(path, "hello", "failed to validate 'seeds/0'");
 
@@ -157,8 +193,8 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
-        mock_array_opener(lhandle, "1", { 13, 10, 5 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "1", { 13, 10, 5 }, version, "BOOLEAN");
     }
     expect_error(path, "hello", "dimensionality mismatch");
 
@@ -166,8 +202,8 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 0, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        mock_array_opener(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
-        mock_array_opener(lhandle, "1", { 5, 15 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "0", { 13, 10 }, version, "BOOLEAN");
+        mock_array_opener<int>(lhandle, "1", { 5, 15 }, version, "BOOLEAN");
     }
     expect_error(path, "hello", "inconsistent dimension extents");
 
@@ -175,14 +211,14 @@ TEST_P(CombineTest, SeedErrors) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = combine_opener(fhandle, "hello", 1, version);
         auto lhandle = list_opener(ghandle, "seeds", 2, version);
-        mock_array_opener(lhandle, "0", { 13, 10 }, version, "STRING");
-        mock_array_opener(lhandle, "1", { 13, 15 }, version, "INTEGER");
+        mock_array_opener<int>(lhandle, "0", { 13, 10 }, version, "STRING");
+        mock_array_opener<int>(lhandle, "1", { 13, 15 }, version, "INTEGER");
     }
     expect_error(path, "hello", "contain strings");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     Combine,
-    CombineTest,
-    ::testing::Values(0, 1000000, 1100000)
+    CombineErrorTest,
+    spawn_all_versions()
 );

@@ -1,53 +1,64 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/subset.hpp"
+
 #include "utils.h"
 
-class SubsetTest : public ::testing::TestWithParam<int> {
-public:
-    SubsetTest() : path("Test_subset.h5") {}
+static H5::Group subset_opener(
+    H5::Group& handle,
+    const std::string& name,
+    const std::vector<std::size_t>& dimensions,
+    const ritsuko::Version& version,
+    const std::string& type
+) {
+    auto ghandle = operation_opener(handle, name, "subset");
+    add_version_string(ghandle, version);
+    mock_array_opener(ghandle, "seed", dimensions, version, type);
+    return ghandle;
+}
 
-protected:
-    std::string path;
+/********************************/
 
-    static H5::Group subset_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
-        auto ghandle = operation_opener(handle, name, "subset");
-        add_version_string(ghandle, version);
-        mock_array_opener(ghandle, "seed", dimensions, version, type);
-        return ghandle;
-    }
-};
+class SubsetPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
 
-TEST_P(SubsetTest, NoOp) {
-    auto version = GetParam();
+TEST_P(SubsetPassTest, NoOp) {
+    auto path = define_test_path("subset");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 24, 41 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER");
+        auto ghandle = subset_opener(fhandle, "hello", dims, version, "INTEGER");
         list_opener(ghandle, "index", 2, version);
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(SubsetTest, AllSubsets) {
-    auto version = GetParam();
+TEST_P(SubsetPassTest, AllSubsets) {
+    auto path = define_test_path("subset");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
     std::vector<int> first { 1, 3, 0, 2, 9, 12 };
     std::vector<int> second { 2, 2, 15, 7, 9, 9, 12 };
-
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "STRING");
         auto lhandle = list_opener(ghandle, "index", 2, version);
 
-        if (version < 1100000) {
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_INT);
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
         } else {
@@ -56,56 +67,94 @@ TEST_P(SubsetTest, AllSubsets) {
         }
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets);
     EXPECT_EQ(output.type, chihaya::STRING);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], first.size());
-    EXPECT_EQ(dims[1], second.size());
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], first.size());
+    EXPECT_EQ(output.dimensions[1], second.size());
 }
 
-TEST_P(SubsetTest, OneSubset) {
-    auto version = GetParam();
-    std::vector<int> second{ 2, 2, 5, 7, 9, 9, 12 };
+TEST_P(SubsetPassTest, OneSubset) {
+    auto path = define_test_path("subset");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<int> second{ 2, 2, 5, 7, 9, 9, 12 };
+    std::vector<std::size_t> dims{ 2, 15 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
+        auto ghandle = subset_opener(fhandle, "hello", dims, version, "BOOLEAN");
         auto lhandle = list_opener(ghandle, "index", 2, version);
 
-        if (version < 1100000) {
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_INT);
         } else {
             add_numeric_vector(lhandle, "1", second, H5::PredType::NATIVE_UINT16);
         }
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets);
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 7);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], dims[0]);
+    EXPECT_EQ(output.dimensions[1], second.size());
 }
 
-TEST_P(SubsetTest, Errors) {
-    auto version = GetParam();
+TEST_P(SubsetPassTest, TwoSubset) {
+    auto path = define_test_path("subset");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    // Getting some coverage of a 3-dimensional array.
+    std::vector<std::size_t> dims{ 5, 1, 10 };
+    std::vector<int> first{ 0, 1, 0, 2, 0, 3 };
+    std::vector<int> last{ 7, 3, 1, 8, 2, 3 };
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_opener(fhandle, "hello", dims, version, "FLOAT");
+        auto lhandle = list_opener(ghandle, "index", 3, version);
+
+        if (version.lt(1, 1, 0)) {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_INT);
+            add_numeric_vector(lhandle, "2", last, H5::PredType::NATIVE_INT);
+        } else {
+            add_numeric_vector(lhandle, "0", first, H5::PredType::NATIVE_UINT8);
+            add_numeric_vector(lhandle, "2", last, H5::PredType::NATIVE_UINT8);
+        }
+    }
+
+    auto output = test_validate(path, "hello", deets);
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions.size(), 3);
+    EXPECT_EQ(output.dimensions[0], first.size());
+    EXPECT_EQ(output.dimensions[1], dims[1]);
+    EXPECT_EQ(output.dimensions[2], last.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Subset,
+    SubsetPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/********************************/
+
+class SubsetErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(SubsetErrorTest, Index) {
+    auto path = define_test_path("subset");
+    auto version = GetParam();
+
+    // Check that the subset list validation is actually called.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        mock_array_opener(ghandle, "seed", { 13, 19 }, version, "INTEGER"); 
-    }
-    expect_error(path, "hello", "expected a group at 'index'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_UINT16);
     }
@@ -116,41 +165,6 @@ TEST_P(SubsetTest, Errors) {
         auto ghandle = fhandle.openGroup("hello");
         auto lhandle = ghandle.openGroup("index");
         lhandle.unlink("2"); // removing the above.
-        lhandle.createGroup("0");
-    }
-    expect_error(path, "hello", "expected a dataset at '0'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("0"); // removing the above.
-        add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_DOUBLE);
-    }
-    if (version < 1100000) {
-        expect_error(path, "hello", "expected an integer dataset");
-    } else {
-        expect_error(path, "hello", "64-bit unsigned integer");
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("1"); // removing the above.
-        add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, -2, 9 }, H5::PredType::NATIVE_INT);
-    }
-    if (version < 1100000) {
-        expect_error(path, "hello", "non-negative");
-    } else {
-        expect_error(path, "hello", "64-bit unsigned integer");
-    }
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("1"); // removing the above.
         add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 1009 }, H5::PredType::NATIVE_UINT32);
     }
     expect_error(path, "hello", "indices out of range");
@@ -158,7 +172,6 @@ TEST_P(SubsetTest, Errors) {
 
 INSTANTIATE_TEST_SUITE_P(
     Subset,
-    SubsetTest,
-    ::testing::Values(0, 1000000, 1100000)
+    SubsetErrorTest,
+    spawn_all_versions()
 );
-

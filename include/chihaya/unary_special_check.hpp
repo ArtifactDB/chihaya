@@ -6,7 +6,9 @@
 
 #include <stdexcept>
 
-#include "utils_unary.hpp"
+#include "utils_public.hpp"
+#include "utils_misc.hpp"
+#include "utils_nary.hpp"
 
 /**
  * @file unary_special_check.hpp
@@ -16,12 +18,6 @@
 namespace chihaya {
 
 /**
- * @namespace chihaya::unary_special_check
- * @brief Namespace for delayed unary special checks.
- */
-namespace unary_special_check {
-
-/**
  * @param handle An open handle on a HDF5 group representing an unary special check operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -29,27 +25,19 @@ namespace unary_special_check {
  * @return Details of the object after applying the special check.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = internal_misc::load_seed_details(handle, "seed", version, options);
-    if (seed_details.type == STRING) {
-        throw std::runtime_error("'seed' should contain integer, float or boolean values");
-    }
+inline ArrayDetails validate_unary_special_check(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_numeric_seed(handle, "seed", version, options);
 
     // Checking the method.
-    auto method = internal_unary::load_method(handle);
+    auto method = load_scalar_string_dataset(handle, "method");
     if (!options.details_only) {
-        if (method != "is_nan" &&
-            method != "is_finite" &&
-            method != "is_infinite")
-        {
+        if (!is_valid_special_check_operation(method)) {
             throw std::runtime_error("unrecognized 'method' (" + method + ")");
         }
     }
 
     seed_details.type = BOOLEAN;
     return seed_details;
-}
-
 }
 
 }

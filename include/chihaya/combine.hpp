@@ -3,15 +3,17 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 #include <stdexcept>
 #include <vector>
 #include <string>
-#include <cstdint>
+#include <cstddef>
 
-#include "utils_list.hpp"
+#include "utils_public.hpp"
 #include "utils_misc.hpp"
+#include "utils_list.hpp"
+#include "utils_dimensions.hpp"
 
 /**
  * @file combine.hpp
@@ -21,20 +23,6 @@
 namespace chihaya {
 
 /**
- * @cond
- */
-inline ArrayDetails validate(const H5::Group&, const ritsuko::Version&, Options&);
-/**
- * @endcond
- */
-
-/**
- * @namespace chihaya::combine
- * @brief Namespace for delayed combining operations.
- */
-namespace combine {
-
-/**
  * @param handle An open handle on a HDF5 group representing a combining operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -42,70 +30,66 @@ namespace combine {
  * @return Details of the combined object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    uint64_t along = internal_misc::load_along(handle, version);
+inline ArrayDetails validate_combine(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    const auto along = load_along(handle, version);
 
-    auto shandle = ritsuko::hdf5::open_group(handle, "seeds");
-    internal_list::ListDetails list_params;
+    const auto shandle = handle.openGroup("seeds");
+    ListDetails list_params;
     try {
-        list_params = internal_list::validate(shandle, version);
+        list_params = validate_list(shandle, version);
     } catch (std::exception& e) {
-        throw std::runtime_error(std::string("failed to load 'seeds' list; ") + e.what());
+        throw std::runtime_error("failed to load 'seeds' list; " + std::string(e.what()));
     }
     if (list_params.present.size() != list_params.length) {
         throw std::runtime_error("missing elements in the 'seeds' list");
     }
 
-    std::vector<size_t> dimensions;
+    std::vector<std::size_t> dimensions;
     ArrayType type = BOOLEAN;
-    {
-        bool first = true;
-        size_t num_strings = 0;
+    bool first = true;
+    I<decltype(list_params.length)> num_strings = 0;
 
-        for (const auto& p : list_params.present) {
-            auto current = ritsuko::hdf5::open_group(shandle, p.second.c_str());
+    for (auto& p : list_params.present) {
+        ArrayDetails cur_seed;
+        try {
+            cur_seed = fetch_seed(shandle, p.second, version, options);
+        } catch (std::exception& e) {
+            throw std::runtime_error("failed to validate 'seeds/" + p.second + "'; " + std::string(e.what()));
+        }
 
-            ArrayDetails cur_seed;
-            try {
-                cur_seed = ::chihaya::validate(current, version, options);
-            } catch (std::exception& e) {
-                throw std::runtime_error("failed to validate 'seeds/" + p.second + "'; " + std::string(e.what()));
+        if (first) {
+            type = cur_seed.type;
+            dimensions = std::move(cur_seed.dimensions);
+            if (sanisizer::is_greater_than_or_equal(along, dimensions.size())) {
+                throw std::runtime_error("'along' should be less than the seed dimensionality");
             }
+            first = false;
 
-            if (first) {
+        } else {
+            if (type < cur_seed.type) {
                 type = cur_seed.type;
-                dimensions = cur_seed.dimensions;
-                if (static_cast<size_t>(along) >= dimensions.size()) {
-                    throw std::runtime_error("'along' should be less than the seed dimensionality");
-                }
-                first = false;
-            } else {
-                if (type < cur_seed.type) {
-                    type = cur_seed.type;
-                }
-                if (dimensions.size() != cur_seed.dimensions.size()) {
-                    throw std::runtime_error("dimensionality mismatch between seeds");
-                }
-                for (size_t d = 0; d < dimensions.size(); ++d) {
-                    if (d == static_cast<size_t>(along)) {
-                        dimensions[d] += cur_seed.dimensions[d];
-                    } else if (dimensions[d] != cur_seed.dimensions[d]) {
-                        throw std::runtime_error("inconsistent dimension extents between seeds");
-                    }
+            }
+            const auto ndims = dimensions.size();
+            if (ndims != cur_seed.dimensions.size()) {
+                throw std::runtime_error("dimensionality mismatch between seeds");
+            }
+            for (I<decltype(ndims)> d = 0; d < ndims; ++d) {
+                if (sanisizer::is_equal(d, along)) {
+                    dimensions[d] = sanisizer::sum<std::size_t>(dimensions[d], cur_seed.dimensions[d]);
+                } else if (dimensions[d] != cur_seed.dimensions[d]) {
+                    throw std::runtime_error("inconsistent dimension extents between seeds");
                 }
             }
-
-            num_strings += (cur_seed.type == STRING);
         }
 
-        if (num_strings != 0 && num_strings != list_params.length) {
-            throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
-        }
+        num_strings += (cur_seed.type == STRING);
+    }
+
+    if (num_strings != 0 && num_strings != list_params.length) {
+        throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
     }
 
     return ArrayDetails(type, std::move(dimensions));
-}
-
 }
 
 }

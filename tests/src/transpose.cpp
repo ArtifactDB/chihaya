@@ -1,114 +1,148 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/transpose.hpp"
+
 #include "utils.h"
 
-class TransposeTest : public ::testing::TestWithParam<int> {
-public:
-    TransposeTest() : path("Test_transpose.h5") {}
+static H5::Group transpose_opener(
+    H5::Group& handle,
+    const std::string& name,
+    const std::vector<std::size_t>& dimensions,
+    const ritsuko::Version& version,
+    const std::string& type
+) {
+    auto ghandle = operation_opener(handle, name, "transpose");
+    add_version_string(ghandle, version);
+    mock_array_opener(ghandle, "seed", dimensions, version, type);
+    return ghandle;
+}
 
-protected:
-    std::string path;
+/********************************/
 
-    static H5::Group transpose_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dimensions, int version, std::string type) {
-        auto ghandle = operation_opener(handle, name, "transpose");
-        add_version_string(ghandle, version);
-        mock_array_opener(ghandle, "seed", dimensions, version, type);
-        return ghandle;
-    }
-};
+class TransposePassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
 
-TEST_P(TransposeTest, NoOp) {
-    auto version = GetParam();
+TEST_P(TransposePassTest, NoOp) {
+    auto path = define_test_path("transpose");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 28, 13 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
-        if (version < 1100000) {
+        auto ghandle = transpose_opener(fhandle, "hello", dims, version, "INTEGER"); 
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector<int>(ghandle, "permutation", { 0, 1 }, H5::PredType::NATIVE_INT);
         } else {
             add_numeric_vector<int>(ghandle, "permutation", { 0, 1 }, H5::PredType::NATIVE_UINT32);
         }
     }
+    {
+        auto output = test_validate(path, "hello", deets); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions, dims);
+    }
 
-    auto output = test_validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
-}
-
-TEST_P(TransposeTest, Simple) {
-    auto version = GetParam();
-
+    // Using an unsigned integer datatype in HDF5 to get some coverage of the legacy unsigned case.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "STRING"); 
-        if (version < 1100000) {
+        auto ghandle = transpose_opener(fhandle, "hello", dims, version, "INTEGER"); 
+        add_numeric_vector<int>(ghandle, "permutation", { 0, 1 }, H5::PredType::NATIVE_UINT8);
+    }
+    {
+        auto output = test_validate(path, "hello", deets); 
+        EXPECT_EQ(output.type, chihaya::INTEGER);
+        EXPECT_EQ(output.dimensions, dims);
+    }
+}
+
+TEST_P(TransposePassTest, Simple) {
+    auto path = define_test_path("transpose");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dims{ 31, 17 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", dims, version, "STRING"); 
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_INT);
         } else {
             add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_UINT32);
         }
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets);
     EXPECT_EQ(output.type, chihaya::STRING);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 19);
-    EXPECT_EQ(dims[1], 13);
+    EXPECT_EQ(output.dimensions.size(), 2);
+    EXPECT_EQ(output.dimensions[0], dims[1]);
+    EXPECT_EQ(output.dimensions[1], dims[0]);
 }
 
-TEST_P(TransposeTest, Complex) {
-    auto version = GetParam();
+TEST_P(TransposePassTest, Complicated) {
+    auto path = define_test_path("transpose");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 13, 29, 5 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19, 5 }, version, "BOOLEAN"); 
-        if (version < 1100000) {
+        auto ghandle = transpose_opener(fhandle, "hello", dims, version, "BOOLEAN"); 
+        if (version.lt(1, 1, 0)) {
             add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_INT);
         } else {
             add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
         }
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets);
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 19);
-    EXPECT_EQ(dims[1], 5);
-    EXPECT_EQ(dims[2], 13);
+    EXPECT_EQ(output.dimensions.size(), 3);
+    EXPECT_EQ(output.dimensions[0], dims[1]);
+    EXPECT_EQ(output.dimensions[1], dims[2]);
+    EXPECT_EQ(output.dimensions[2], dims[0]);
 }
 
-TEST_P(TransposeTest, Errors) {
-    auto version = GetParam();
+INSTANTIATE_TEST_SUITE_P(
+    Transpose,
+    TransposePassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
-    }
-    expect_error(path, "hello", "expected a dataset at 'permutation'");
+/********************************/
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-}
+class TransposeErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
 
-TEST_P(TransposeTest, PermutationErrors) {
+TEST_P(TransposeErrorTest, Permutation) {
+    auto path = define_test_path("transpose");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
-        add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_DOUBLE);
+        hsize_t dims[2] = { 13, 15 };
+        ghandle.createDataSet("permutation", H5::PredType::NATIVE_UINT8, H5::DataSpace(2, dims));
     }
-    if (version < 1100000) {
-        expect_error(path, "hello", "'permutation' should be integer");
+    expect_error(path, "hello", "1-dimensional");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
+        add_numeric_vector<int>(ghandle, "permutation", { 1, 0 }, H5::PredType::NATIVE_DOUBLE);
+    }
+    if (version.lt(1, 1, 0)) {
+        expect_error(path, "hello", "expected an integer type");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
     }
@@ -135,7 +169,7 @@ TEST_P(TransposeTest, PermutationErrors) {
         ghandle.unlink("permutation");
         add_numeric_vector<int>(ghandle, "permutation", { -1, 0 }, H5::PredType::NATIVE_INT);
     }
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         expect_error(path, "hello", "non-negative");
     } else {
         expect_error(path, "hello", "64-bit unsigned integer");
@@ -152,6 +186,6 @@ TEST_P(TransposeTest, PermutationErrors) {
 
 INSTANTIATE_TEST_SUITE_P(
     Transpose,
-    TransposeTest,
-    ::testing::Values(0, 1000000, 1100000)
+    TransposeErrorTest,
+    spawn_all_versions()
 );

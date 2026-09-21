@@ -1,104 +1,63 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <cstddef>
+#include <vector>
+#include <string>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/dimnames.hpp"
+
 #include "utils.h"
 
-class DimnamesTest : public ::testing::TestWithParam<int> {
-public:
-    DimnamesTest() : path("Test_dimnames.h5") {}
-protected:
-    std::string path;
-
-    static H5::Group dimnames_opener(H5::Group& handle, const std::string& name, const std::vector<int>& dims, const std::string& type, int version) {
-        auto ghandle = operation_opener(handle, name, "dimnames");
-        add_version_string(ghandle, version);
-        mock_array_opener(ghandle, "seed", dims, version, type);
-        list_opener(ghandle, "dimnames", dims.size(), version);
-        return ghandle;
-    }
-};
-
-TEST_P(DimnamesTest, NoOp) {
-    auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        dimnames_opener(fhandle, "hello", { 13, 19 }, "FLOAT", version);
-    }
-
-    auto output = test_validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::FLOAT);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 19);
-
-    auto skipped = test_validate_skip(path, "hello");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+static H5::Group dimnames_opener(H5::Group& handle, const std::string& name, const std::vector<std::size_t>& dims, const std::string& type, const ritsuko::Version& version) {
+    auto ghandle = operation_opener(handle, name, "dimnames");
+    add_version_string(ghandle, version);
+    mock_array_opener(ghandle, "seed", dims, version, type);
+    list_opener(ghandle, "dimnames", dims.size(), version);
+    return ghandle;
 }
 
-TEST_P(DimnamesTest, Partial) {
-    auto version = GetParam();
+/***********************************/
 
+class DimnamesPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
+
+TEST_P(DimnamesPassTest, Basic) {
+    auto path = define_test_path("dimnames");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 12, 20 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 13, 10 }, "INTEGER", version);
+        auto ghandle = dimnames_opener(fhandle, "hello", dimensions, "INTEGER", version);
         auto lhandle = ghandle.openGroup("dimnames");
-        add_string_vector(lhandle, "1", 10, /* len = */ 5);
+        add_string_vector(lhandle, "0", 12, /* strlen = */ 5);
+        add_string_vector(lhandle, "1", 20, /* strlen = */ 2);
     }
 
-    auto output = test_validate(path, "hello"); 
+    auto output = test_validate(path, "hello", deets); 
     EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 10);
+    EXPECT_EQ(output.dimensions, dimensions);
 }
 
-TEST_P(DimnamesTest, Full) {
+INSTANTIATE_TEST_SUITE_P(
+    Dimnames,
+    DimnamesPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/***********************************/
+
+class DimnamesErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(DimnamesErrorTest, Dimnames) {
+    auto path = define_test_path("dimnames");
     auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 13, 10 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        add_string_vector(lhandle, "0", 13, /* len = */ 5);
-        add_string_vector(lhandle, "1", 10, /* len = */ 2);
-    }
-
-    auto output = test_validate(path, "hello"); 
-    EXPECT_EQ(output.type, chihaya::INTEGER);
-    const auto& dims = output.dimensions;
-    EXPECT_EQ(dims[0], 13);
-    EXPECT_EQ(dims[1], 10);
-}
-
-TEST_P(DimnamesTest, Errors) {
-    auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        ghandle.unlink("seed");
-    }
-    expect_error(path, "hello", "expected a group at 'seed'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        ghandle.unlink("dimnames");
-    }
-    expect_error(path, "hello", "expected a 'dimnames' group");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        if (version >= 1100000) {
-            lhandle.removeAttr("length");
-        } else {
-            lhandle.removeAttr("delayed_length");
-        }
-    }
-    expect_error(path, "hello", "expected an attribute at");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -107,42 +66,10 @@ TEST_P(DimnamesTest, Errors) {
         list_opener(ghandle, "dimnames", 3, version);
     }
     expect_error(path, "hello", "length of 'dimnames' list");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        lhandle.createGroup("0");
-    }
-    expect_error(path, "hello", "expected a dataset at '0'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        add_numeric_vector<int>(lhandle, "0", {1}, H5::PredType::NATIVE_INT32);
-    }
-    expect_error(path, "hello", "should be a 1-dimensional string dataset");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        add_string_vector(lhandle, "1", 15, /* len = */ 3);
-    }
-    expect_error(path, "hello", "length equal to the extent");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dimnames_opener(fhandle, "hello", { 10, 20 }, "INTEGER", version);
-        auto lhandle = ghandle.openGroup("dimnames");
-        add_string_vector(lhandle, "1", 20, /* len = */ H5T_VARIABLE);
-    }
-    expect_error(path, "hello", "NULL");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     Dimnames,
-    DimnamesTest,
-    ::testing::Values(0, 1000000, 1100000)
+    DimnamesErrorTest,
+    spawn_all_versions()
 );

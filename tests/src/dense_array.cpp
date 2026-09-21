@@ -1,158 +1,170 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <vector>
+#include <string>
+#include <cstddef>
+
+#include "H5Cpp.h"
+#include "ritsuko/ritsuko.hpp"
+#include "chihaya/dense_array.hpp"
+
 #include "utils.h"
 
-class DenseArrayTest : public ::testing::TestWithParam<int> {
-public:
-    DenseArrayTest() : path("Test_dense_array.h5") {}
+static H5::Group dense_array_opener(
+    H5::Group& handle,
+    const std::string& name,
+    const std::vector<std::size_t>& dimensions,
+    const H5::DataType& type,
+    const ritsuko::Version& version,
+    bool native
+) {
+    auto ghandle = array_opener(handle, name, "dense array");
+    add_version_string(ghandle, version);
 
-protected:
-    std::string path;
+    std::vector<hsize_t> dims(dimensions.begin(), dimensions.end());
+    H5::DataSpace dspace(dims.size(), dims.data());
+    auto dhandle = ghandle.createDataSet("data", type, dspace);
 
-    H5::Group dense_array_opener(H5::Group& handle, const std::string& name, std::vector<hsize_t> dimensions, const H5::DataType& type, int version, bool native = true) {
-        auto ghandle = array_opener(handle, name, "dense array");
-        add_version_string(ghandle, version);
-
-        if (!native) {
-            std::reverse(dimensions.begin(), dimensions.end());
+    if (version.ge(1, 1, 0)) {
+        auto cls = type.getClass();
+        std::string type;
+        if (cls == H5T_FLOAT) {
+            type = "FLOAT";
+        } else if (cls == H5T_INTEGER) {
+            type = "INTEGER";
+        } else {
+            type = "STRING";
         }
-        H5::DataSpace dspace(dimensions.size(), dimensions.data());
-        auto dhandle = ghandle.createDataSet("data", type, dspace);
-
-        if (version >= 1100000) {
-            auto cls = type.getClass();
-            std::string type;
-            if (cls == H5T_FLOAT) {
-                type = "FLOAT";
-            } else if (cls == H5T_INTEGER) {
-                type = "INTEGER";
-            } else {
-                type = "STRING";
-            }
-            add_string_attribute(dhandle, "type", type);
-        }
-
-        add_numeric_scalar<int>(ghandle, "native", native, H5::PredType::NATIVE_INT8);
-        return ghandle;
-    }
-};
-
-TEST_P(DenseArrayTest, Basic) {
-    auto version = GetParam();
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT16, version); 
-    }
-    {
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::INTEGER);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 20);
-        EXPECT_EQ(dims[1], 17);
-
-        auto skipped = test_validate_skip(path, "dense");
-        EXPECT_EQ(skipped.type, output.type);
-        EXPECT_EQ(skipped.dimensions, output.dimensions);
+        add_string_attribute(dhandle, "type", type);
     }
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        dense_array_opener(fhandle, "dense", { 5, 17 }, H5::PredType::NATIVE_FLOAT, version); 
-    }
-    {
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::FLOAT);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 5);
-        EXPECT_EQ(dims[1], 17);
-    }
-
-    // Get some coverage for string types.
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        dense_array_opener(fhandle, "dense", { 3, 4, 5 }, H5::StrType(0, 3), version); 
-    }
-    {
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::STRING);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 3);
-        EXPECT_EQ(dims[0], 3);
-        EXPECT_EQ(dims[1], 4);
-        EXPECT_EQ(dims[2], 5);
-    }
+    add_numeric_scalar<int>(ghandle, "native", native, H5::PredType::NATIVE_INT8);
+    return ghandle;
 }
 
-TEST_P(DenseArrayTest, NonNative) {
-    auto version = GetParam();
+/***********************************/
 
+class DenseArrayPassTest : public ::testing::TestWithParam<std::tuple<ritsuko::Version, bool> > {};
+
+TEST_P(DenseArrayPassTest, Integer) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dims{ 20, 17 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version, false); 
+        dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_INT16, version, /* native = */ true); 
     }
-    {
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::INTEGER);
-        const auto& dims = output.dimensions;
-        EXPECT_EQ(dims.size(), 2);
-        EXPECT_EQ(dims[0], 20);
-        EXPECT_EQ(dims[1], 17);
-    }
+
+    auto output = test_validate(path, "dense", deets); 
+    EXPECT_EQ(output.type, chihaya::INTEGER);
+    EXPECT_EQ(output.dimensions, dims);
 }
 
-TEST_P(DenseArrayTest, Missing) {
-    auto version = GetParam();
+TEST_P(DenseArrayPassTest, Float) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
-    if (version == 1000000) {
+    std::vector<std::size_t> dims{ 15 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_FLOAT, version, /* native = */ true); 
+    }
+
+    auto output = test_validate(path, "dense", deets);
+    EXPECT_EQ(output.type, chihaya::FLOAT);
+    EXPECT_EQ(output.dimensions, dims);
+}
+
+TEST_P(DenseArrayPassTest, String) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dims{ 3, 5, 4 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", dims, H5::StrType(0, 3), version, /* native = */ true); 
+    }
+
+    auto output = test_validate(path, "dense", deets);
+    EXPECT_EQ(output.type, chihaya::STRING);
+    EXPECT_EQ(output.dimensions, dims);
+}
+
+TEST_P(DenseArrayPassTest, NonNative) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dims{ 10, 20 };
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_INT32, version, /* native = */ false); 
+    }
+
+    auto output = test_validate(path, "dense", deets);
+    EXPECT_EQ(output.type, chihaya::INTEGER);
+    auto modified = dims;
+    std::reverse(modified.begin(), modified.end());
+    EXPECT_EQ(output.dimensions, modified);
+}
+
+TEST_P(DenseArrayPassTest, Missing) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
+
+    std::vector<std::size_t> dimensions{ 42, 21 };
+    if (version.eq(1, 0, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version, false); 
+            auto ghandle = dense_array_opener(fhandle, "dense", dimensions, H5::PredType::NATIVE_INT32, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder<int>(dhandle, 2, H5::PredType::NATIVE_INT8);
         }
-        auto output = test_validate(path, "dense"); 
+        auto output = test_validate(path, "dense", deets);
         EXPECT_EQ(output.type, chihaya::INTEGER);
-    } else if (version >= 1100000) {
+        EXPECT_EQ(output.dimensions, dimensions);
+
+    } else if (version.ge(1, 1, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version, false); 
+            auto ghandle = dense_array_opener(fhandle, "dense", dimensions, H5::PredType::NATIVE_INT32, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             add_numeric_missing_placeholder<int>(dhandle, 2, H5::PredType::NATIVE_INT32);
         }
-        auto output = test_validate(path, "dense"); 
+        auto output = test_validate(path, "dense", deets); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
-    }
-
-    if (version >= 1000000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::StrType(0, 2), version, false); 
-            auto dhandle = ghandle.openDataSet("data");
-            add_string_missing_placeholder(dhandle, "foo", H5T_VARIABLE);
-        }
-        auto output = test_validate(path, "dense"); 
-        EXPECT_EQ(output.type, chihaya::STRING);
+        EXPECT_EQ(output.dimensions, dimensions);
     }
 }
 
-TEST_P(DenseArrayTest, Dimnames) {
-    auto version = GetParam();
+TEST_P(DenseArrayPassTest, Dimnames) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
+    std::vector<std::size_t> dims{ 19, 82 };
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version); 
+        auto ghandle = dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_INT32, version, /* native = */ true); 
         auto lhandle = list_opener(ghandle, "dimnames", 2, version);
-        add_string_vector(lhandle, "0", 20, /* len = */ 2);
-        add_string_vector(lhandle, "1", 17, /* len = */ 2);
+        add_string_vector(lhandle, "0", dims[0], /* strlen = */ 2);
+        add_string_vector(lhandle, "1", dims[1], /* strlen = */ 2);
     }
     {
-        auto output = test_validate(path, "dense"); 
+        auto output = test_validate(path, "dense", deets); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
-        EXPECT_EQ(output.dimensions[0], 20);
-        EXPECT_EQ(output.dimensions[1], 17);
+        EXPECT_EQ(output.dimensions, dims);
     }
 
     // Works correctly in native mode with shuffling of dimensions.
@@ -163,20 +175,25 @@ TEST_P(DenseArrayTest, Dimnames) {
         add_numeric_scalar(ghandle, "native", 0, H5::PredType::NATIVE_INT8); 
     }
     {
-        auto output = test_validate(path, "dense"); 
+        auto output = test_validate(path, "dense", deets); 
         EXPECT_EQ(output.type, chihaya::INTEGER);
-        EXPECT_EQ(output.dimensions[0], 17);
-        EXPECT_EQ(output.dimensions[1], 20);
+        auto modified = dims;
+        std::reverse(modified.begin(), modified.end());
+        EXPECT_EQ(output.dimensions, modified);
     }
 }
 
-TEST_P(DenseArrayTest, Boolean) {
-    auto version = GetParam();
+TEST_P(DenseArrayPassTest, Boolean) {
+    auto path = define_test_path("dense_array");
+    auto params = GetParam();
+    auto version = std::get<0>(params);
+    auto deets = std::get<1>(params);
 
-    if (version < 1100000) {
+    std::vector<std::size_t> dimensions{ 13, 12, 4 };
+    if (version.lt(1, 1, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, version); 
+            auto ghandle = dense_array_opener(fhandle, "dense", dimensions, H5::PredType::NATIVE_INT, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT, H5S_SCALAR);
             int val = 1;
@@ -185,67 +202,112 @@ TEST_P(DenseArrayTest, Boolean) {
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT8, version); 
+            auto ghandle = dense_array_opener(fhandle, "dense", dimensions, H5::PredType::NATIVE_INT8, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
         }
     }
 
-    auto output = test_validate(path, "dense"); 
+    auto output = test_validate(path, "dense", deets); 
     EXPECT_EQ(output.type, chihaya::BOOLEAN);
-
-    auto skipped = test_validate_skip(path, "dense");
-    EXPECT_EQ(skipped.type, output.type);
-    EXPECT_EQ(skipped.dimensions, output.dimensions);
+    EXPECT_EQ(output.dimensions, dimensions);
 }
 
-TEST_P(DenseArrayTest, DataErrors) {
+INSTANTIATE_TEST_SUITE_P(
+    DenseArray,
+    DenseArrayPassTest,
+    ::testing::Combine(
+        spawn_all_versions(),
+        ::testing::Values(false, true)
+    )
+);
+
+/***********************************/
+
+class DenseArrayErrorTest : public ::testing::TestWithParam<ritsuko::Version> {};
+
+TEST_P(DenseArrayErrorTest, Data) {
+    auto path = define_test_path("dense_array");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
         ghandle.unlink("data");
-    }
-    expect_error(path, "dense", "expected a dataset at 'data'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("dense");
         add_numeric_scalar<int>(ghandle, "data", 50, H5::PredType::NATIVE_INT32);
     }
-    expect_error(path, "dense", "'data' should have non-zero");
+    expect_error(path, "dense", "non-zero dimensions");
+
+    if (version.ge(1, 1, 0)) {
+        // Test that we actually check for a scalar 'type'.
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
+            auto dhandle = ghandle.openDataSet("data");
+            dhandle.removeAttr("type");
+            constexpr hsize_t one = 1;
+            dhandle.createAttribute("type", H5::StrType(0, H5T_VARIABLE), H5::DataSpace(1, &one));
+        }
+        expect_error(path, "dense", "scalar");
+
+        // Test that we actually check the 'type' is consistent with the dataset's type.
+        {
+            H5::H5File fhandle(path, H5F_ACC_RDWR);
+            auto ghandle = fhandle.openGroup("dense");
+            auto dhandle = ghandle.openDataSet("data");
+            dhandle.removeAttr("type");
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
+        expect_error(path, "dense", "32-bit signed integer");
+    }
+}
+
+TEST_P(DenseArrayErrorTest, Missing) {
+    auto path = define_test_path("dense_array");
+    auto version = GetParam();
+
+    if (version.ge(1, 0, 0)) {
+        {
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, version, /* native = */ true); 
+            auto dhandle = ghandle.openDataSet("data");
+            add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_DOUBLE);
+        }
+        if (version.lt(1, 1, 0)) {
+            expect_error(path, "dense", "same datatype class");
+        } else {
+            expect_error(path, "dense", "same datatype as");
+        }
+    }
+}
+
+TEST_P(DenseArrayErrorTest, NullStrings) {
+    auto path = define_test_path("dense_array");
+    auto version = GetParam();
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("dense");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
         ghandle.unlink("data");
         H5::StrType stype(0, H5T_VARIABLE);
         hsize_t dim[2] = { 10, 20 };
-        H5::DataSpace dspace(1, dim);
+        H5::DataSpace dspace(2, dim);
         auto dhandle = ghandle.createDataSet("data", stype, dspace);
-        if (version >= 1100000) {
+        if (version.ge(1, 1, 0)) {
             add_string_attribute(dhandle, "type", "STRING");
         }
     }
     expect_error(path, "dense", "NULL");
 }
 
-TEST_P(DenseArrayTest, NativeErrors) {
+TEST_P(DenseArrayErrorTest, Native) {
+    auto path = define_test_path("dense_array");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
-        ghandle.unlink("native");
-        ghandle.createGroup("native");
-    }
-    expect_error(path, "dense", "expected a dataset at 'native'");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
         ghandle.unlink("native");
         add_numeric_vector<int>(ghandle, "native", { 2 }, H5::PredType::NATIVE_INT8);
     }
@@ -253,44 +315,47 @@ TEST_P(DenseArrayTest, NativeErrors) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version);
+        auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
         ghandle.unlink("native");
         add_numeric_scalar<int>(ghandle, "native", 2, H5::PredType::NATIVE_FLOAT);
     }
-    if (version < 1100000) {
-        expect_error(path, "dense", "should have an integer datatype");
+    if (version.lt(1, 1, 0)) {
+        expect_error(path, "dense", "expected an integer type");
     } else {
         expect_error(path, "dense", "8-bit signed integer");
     }
 }
 
-TEST_P(DenseArrayTest, DimnameErrors) {
+TEST_P(DenseArrayErrorTest, Dimnames) {
+    auto path = define_test_path("dense_array");
     auto version = GetParam();
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version); 
-        auto lhandle = list_opener(ghandle, "dimnames", 2);
-        lhandle.createGroup("0");
+        auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version, /* native = */ true); 
+        auto lhandle = list_opener(ghandle, "dimnames", 2, version);
+        mock_array_opener<int>(lhandle, "3", { 2 }, version, "STRING");
     }
     expect_error(path, "dense", "dimnames");
 }
 
-TEST_P(DenseArrayTest, BooleanErrors) {
+TEST_P(DenseArrayErrorTest, Boolean) {
+    auto path = define_test_path("dense_array");
     auto version = GetParam();
 
-    if (version < 1100000) {
+    if (version.lt(1, 1, 0)) {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version); 
+            auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             add_string_attribute(dhandle, "is_boolean", "YAY");
         }
-        expect_error(path, "dense", "should be integer");
+        expect_error(path, "dense", "expected an integer type");
+
     } else {
         {
             H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT32, version); 
+            auto ghandle = dense_array_opener(fhandle, "dense", { 50, 10 }, H5::PredType::NATIVE_INT32, version, /* native = */ true); 
             auto dhandle = ghandle.openDataSet("data");
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
@@ -299,36 +364,8 @@ TEST_P(DenseArrayTest, BooleanErrors) {
     }
 }
 
-TEST_P(DenseArrayTest, MissingErrors) {
-    auto version = GetParam();
-
-    if (version >= 1000000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT, version); 
-            auto dhandle = ghandle.openDataSet("data");
-            add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_DOUBLE);
-        }
-        if (version < 1100000) {
-            expect_error(path, "dense", "have the same type class");
-        } else {
-            expect_error(path, "dense", "have the same type as");
-        }
-    }
-
-    if (version >= 1100000) {
-        {
-            H5::H5File fhandle(path, H5F_ACC_TRUNC);
-            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_INT32, version);
-            auto dhandle = ghandle.openDataSet("data");
-            add_numeric_missing_placeholder(dhandle, 1, H5::PredType::NATIVE_INT8);
-        }
-        expect_error(path, "dense", "same type as");
-    }
-}
-
 INSTANTIATE_TEST_SUITE_P(
     DenseArray,
-    DenseArrayTest,
-    ::testing::Values(0, 1000000, 1100000)
+    DenseArrayErrorTest,
+    spawn_all_versions()
 );

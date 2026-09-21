@@ -3,15 +3,14 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
-#include "ritsuko/hdf5/hdf5.hpp"
 
 #include <stdexcept>
+#include <string>
 
 #include "utils_public.hpp"
-#include "utils_unary.hpp"
 #include "utils_type.hpp"
 #include "utils_misc.hpp"
-#include "utils_arithmetic.hpp"
+#include "utils_nary.hpp"
 
 /**
  * @file unary_arithmetic.hpp
@@ -21,12 +20,6 @@
 namespace chihaya {
 
 /**
- * @namespace chihaya::unary_arithmetic
- * @brief Namespace for delayed unary arithmetic operations.
- */
-namespace unary_arithmetic {
-
-/**
  * @param handle An open handle on a HDF5 group representing an unary arithmetic operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
@@ -34,17 +27,17 @@ namespace unary_arithmetic {
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = internal_arithmetic::fetch_seed(handle, "seed", version, options);
+inline ArrayDetails validate_unary_arithmetic(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_numeric_seed(handle, "seed", version, options);
 
-    auto method = internal_unary::load_method(handle);
+    auto method = load_scalar_string_dataset(handle, "method");
     if (!options.details_only) {
-        if (!internal_arithmetic::is_valid_operation(method)) {
+        if (!is_valid_arithmetic_operation(method)) {
             throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
         }
     }
 
-    auto side = internal_unary::load_side(handle);
+    auto side = load_scalar_string_dataset(handle, "side");
     if (!options.details_only) {
         if (side == "none") {
             if (method != "+" && method != "-") {
@@ -56,38 +49,35 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     // If side = none, we set it to INTEGER to promote BOOLEANs to integer (implicit multiplication by +/-1).
-    ArrayType min_type = INTEGER;
+    ArrayType val_type = INTEGER;
 
     if (side != "none") {
-        auto vhandle = ritsuko::hdf5::open_dataset(handle, "value");
-        
+        auto vhandle = handle.openDataSet("value");
+
         try {
             if (version.lt(1, 1, 0)) {
-                if (vhandle.getTypeClass() == H5T_STRING) {
-                    throw std::runtime_error("dataset should be integer, float or boolean");
-                } else if (vhandle.getTypeClass() == H5T_FLOAT) {
-                    min_type = FLOAT;
-                }
+                val_type = translate_type_0_99(vhandle.getTypeClass());
             } else {
-                auto type = ritsuko::hdf5::open_and_load_scalar_string_attribute(vhandle, "type");
-                min_type = internal_type::translate_type_1_1(type);
-                if (min_type != INTEGER && min_type != BOOLEAN && min_type != FLOAT) {
-                    throw std::runtime_error("dataset should be integer, float or boolean");
-                }
-                internal_type::check_type_1_1(vhandle, min_type);
+                auto type = load_scalar_string_attribute(vhandle, "type");
+                val_type = translate_type_1_1(type);
+                check_type_1_1(vhandle, val_type);
+            }
+
+            if (val_type != INTEGER && val_type != BOOLEAN && val_type != FLOAT) {
+                throw std::runtime_error("dataset should be integer, float or boolean");
             }
 
             if (!options.details_only) {
-                internal_misc::validate_missing_placeholder(vhandle, version);
+                validate_missing_placeholder(vhandle, version);
         
                 auto vspace = vhandle.getSpace();
-                size_t ndims = vspace.getSimpleExtentNdims();
+                const auto ndims = vspace.getSimpleExtentNdims();
                 if (ndims == 0) {
                     // scalar operation.
                 } else if (ndims == 1) {
                     hsize_t extent;
                     vspace.getSimpleExtentDims(&extent);
-                    internal_unary::check_along(handle, version, seed_details.dimensions, extent);
+                    check_unary_along(handle, version, seed_details.dimensions, extent);
                 } else { 
                     throw std::runtime_error("dataset should be scalar or 1-dimensional");
                 }
@@ -99,11 +89,9 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
     }
 
     // Determining type promotion rules.
-    seed_details.type = internal_arithmetic::determine_output_type(min_type, seed_details.type, method);
+    seed_details.type = determine_arithmetic_output_type(val_type, seed_details.type, method);
 
     return seed_details;
-}
-
 }
 
 }

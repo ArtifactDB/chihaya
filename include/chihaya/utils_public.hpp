@@ -8,6 +8,7 @@
 #include <functional>
 #include <vector>
 #include <unordered_map>
+#include <cstddef>
 
 /**
  * @file utils_public.hpp
@@ -39,7 +40,7 @@ struct ArrayDetails {
      */
     ArrayDetails() {}
 
-    ArrayDetails(ArrayType t, std::vector<size_t> d) : type(t), dimensions(std::move(d)) {}
+    ArrayDetails(ArrayType t, std::vector<std::size_t> d) : type(t), dimensions(std::move(d)) {}
     /**
      * @endcond
      */
@@ -53,7 +54,7 @@ struct ArrayDetails {
      * Dimensions of the array.
      * Values should be non-negative.
      */
-    std::vector<size_t> dimensions;
+    std::vector<std::size_t> dimensions;
 };
 
 /**
