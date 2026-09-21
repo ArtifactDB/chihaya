@@ -35,7 +35,7 @@ void validate_subset_indices(const H5::DataSet& dhandle, hsize_t len, std::size_
     }
 }
 
-inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_list(const H5::Group& ihandle, const std::vector<size_t>& seed_dims, const ritsuko::Version& version) {
+inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_list(const H5::Group& ihandle, const std::vector<std::size_t>& seed_dims, const ritsuko::Version& version) {
     ListDetails list_params;
     try {
         list_params = validate_list(ihandle, version);
@@ -70,7 +70,7 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
                 }
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
-                    throw std::runtime_error("datatype should be exactly represented by a 64-bit unsigned integer");
+                    throw std::runtime_error("datatype should fit into a 64-bit unsigned integer");
                 }
                 validate_subset_indices<std::uint64_t>(dhandle, len, seed_dims[p.first]);
             }

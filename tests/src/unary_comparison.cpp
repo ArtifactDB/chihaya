@@ -1,5 +1,11 @@
 #include <gtest/gtest.h>
-#include "chihaya/chihaya.hpp"
+
+#include <string>
+#include <vector>
+#include <cstddef>
+
+#include "chihaya/unary_comparison.hpp"
+
 #include "utils.h"
 
 static H5::Group unary_comparison_opener(

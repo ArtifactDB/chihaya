@@ -38,6 +38,7 @@ add_executable(
     src/utils_list.cpp
     src/utils_misc.cpp
     src/utils_nary.cpp
+    src/utils_subset.cpp
 #    src/utils_type.cpp
 )
 
