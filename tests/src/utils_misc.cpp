@@ -96,14 +96,28 @@ TEST_P(ValidateMissingPlaceholderTest, StringTypeError) {
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto shandle = add_string_vector(fhandle, "stringy", 20);
+        auto shandle = add_string_vector(fhandle, "stringy", 20, /* strlen = */ 10);
         add_numeric_missing_placeholder<int>(shandle, 3.0, H5::PredType::NATIVE_DOUBLE);
     }
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        expect_error([&]() -> void {
+            chihaya::validate_missing_placeholder(fhandle.openDataSet("stringy"), version);
+        }, "string datatype class");
+    }
 
-    H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    expect_error([&]() -> void {
-        chihaya::validate_missing_placeholder(fhandle.openDataSet("stringy"), version);
-    }, "string datatype class");
+    // Check that we actually validate the string.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto shandle = add_string_vector(fhandle, "stringy", 20, /* strlen = */ 10);
+        shandle.createAttribute("missing_placeholder", H5::StrType(0, H5T_VARIABLE), H5S_SCALAR);
+    }
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        expect_error([&]() -> void {
+            chihaya::validate_missing_placeholder(fhandle.openDataSet("stringy"), version);
+        }, "NULL");
+    }
 }
 
 TEST_P(ValidateMissingPlaceholderTest, NumericTypeError) {
@@ -193,7 +207,7 @@ TEST(LoadScalarStringDataset, Basic) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         add_string_scalar(fhandle, "foo", "bar");
-        add_string_vector(fhandle, "whee", 20);
+        add_string_vector(fhandle, "whee", 20, /* strlen = */ 19);
         add_numeric_scalar<int>(fhandle, "stuff", 20, H5::PredType::NATIVE_INT);
     }
 

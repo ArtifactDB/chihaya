@@ -158,8 +158,8 @@ TEST_P(DenseArrayPassTest, Dimnames) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_INT32, version, /* native = */ true); 
         auto lhandle = list_opener(ghandle, "dimnames", 2, version);
-        add_string_vector(lhandle, "0", dims[0], /* len = */ 2);
-        add_string_vector(lhandle, "1", dims[1], /* len = */ 2);
+        add_string_vector(lhandle, "0", dims[0], /* strlen = */ 2);
+        add_string_vector(lhandle, "1", dims[1], /* strlen = */ 2);
     }
     {
         auto output = test_validate(path, "dense", deets); 

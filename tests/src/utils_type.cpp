@@ -391,7 +391,7 @@ TEST(CheckType_1_1, Basic) {
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_string_vector(handle, "stringy", 20);
+        add_string_vector(handle, "stringy", 20, /* strlen = */ 16);
         add_numeric_vector<int>(handle, "i8", {1,2,3}, H5::PredType::NATIVE_INT8);
         add_numeric_vector<int>(handle, "u16", {1,2,3}, H5::PredType::NATIVE_UINT16);
         add_numeric_vector<int>(handle, "i32", {1,2,3}, H5::PredType::NATIVE_INT32);

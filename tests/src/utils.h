@@ -17,8 +17,8 @@
 /*** HDF5-related utilities ***/
 
 template<typename H5Object_>
-void add_string_attribute(const H5Object_& handle, const std::string& name, const std::string& value, size_t len = H5T_VARIABLE) {
-    H5::StrType stype(0, len);
+void add_string_attribute(const H5Object_& handle, const std::string& name, const std::string& value) {
+    H5::StrType stype(0, H5T_VARIABLE);
     auto ahandle = handle.createAttribute(name, stype, H5S_SCALAR);
     ahandle.write(stype, value);
 }
@@ -46,9 +46,11 @@ H5::DataSet add_numeric_vector(const H5::Group& handle, const std::string& name,
     return dhandle;
 }
 
-inline H5::DataSet add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n, hsize_t len = H5T_VARIABLE) {
+inline H5::DataSet add_string_vector(const H5::Group& handle, const std::string& name, hsize_t n, hsize_t strlen) {
+    // Use a fixed-length string type here, otherwise we'd have to populate it to avoid NULL pointers.
+    // This would be unnecessary work given that chihaya never actually looks at the (non-NULL) contents of a string vector. 
     H5::DataSpace dspace(1, &n);
-    return handle.createDataSet(name, H5::StrType(0, len), dspace); 
+    return handle.createDataSet(name, H5::StrType(0, strlen), dspace); 
 }
 
 template<typename Value_>
@@ -58,8 +60,8 @@ H5::DataSet add_numeric_scalar(const H5::Group& handle, const std::string& name,
     return dhandle;
 }
 
-inline H5::DataSet add_string_scalar(const H5::Group& handle, const std::string& name, const std::string& value, size_t len = H5T_VARIABLE) {
-    H5::StrType stype(0, len);
+inline H5::DataSet add_string_scalar(const H5::Group& handle, const std::string& name, const std::string& value) {
+    H5::StrType stype(0, H5T_VARIABLE);
     auto dhandle = handle.createDataSet(name, stype, H5S_SCALAR); 
     dhandle.write(value, stype);
     return dhandle;
@@ -96,8 +98,8 @@ void add_numeric_missing_placeholder(const H5::DataSet& handle, Value_ value, co
     dhandle.write(ritsuko::hdf5::as_numeric_datatype<Value_>(), &value);
 }
 
-inline void add_string_missing_placeholder(const H5::DataSet& handle, const std::string& value, size_t len = H5T_VARIABLE) {
-    add_string_attribute(handle, "missing_placeholder", value, len);
+inline void add_string_missing_placeholder(const H5::DataSet& handle, const std::string& value) {
+    add_string_attribute(handle, "missing_placeholder", value);
 }
 
 inline void add_version_string(const H5::Group& handle, const ritsuko::Version& version) {

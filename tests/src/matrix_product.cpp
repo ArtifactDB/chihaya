@@ -151,7 +151,7 @@ TEST_P(MatrixProductErrorTest, Orientation) {
         add_seed(ghandle, { 10, 20 }, version, "FLOAT", /* left = */ true, /* transposed = */ false);
         add_seed(ghandle, { 20, 10 }, version, "FLOAT", /* left = */ false, /* transposed = */ false);
         ghandle.unlink("right_orientation");
-        add_string_vector(ghandle, "right_orientation", 2);
+        add_string_vector(ghandle, "right_orientation", 2, /* strlen = */ 8);
     }
     expect_error(path, "foos", "scalar");
 

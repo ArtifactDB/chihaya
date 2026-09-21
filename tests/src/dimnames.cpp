@@ -33,8 +33,8 @@ TEST_P(DimnamesPassTest, Basic) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dimnames_opener(fhandle, "hello", dimensions, "INTEGER", version);
         auto lhandle = ghandle.openGroup("dimnames");
-        add_string_vector(lhandle, "0", 12, /* len = */ 5);
-        add_string_vector(lhandle, "1", 20, /* len = */ 2);
+        add_string_vector(lhandle, "0", 12, /* strlen = */ 5);
+        add_string_vector(lhandle, "1", 20, /* strlen = */ 2);
     }
 
     auto output = test_validate(path, "hello", deets); 

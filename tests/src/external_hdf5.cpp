@@ -66,7 +66,7 @@ TEST_P(ExternalHdf5ErrorTest, File) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("file");
-        add_string_vector(ghandle, "file", 5);
+        add_string_vector(ghandle, "file", 5, /* strlen = */ 2);
     }
 
     expect_error(path, "ext", "should be scalar");
@@ -80,7 +80,7 @@ TEST_P(ExternalHdf5ErrorTest, Name) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("name");
-        add_string_vector(ghandle, "name", 5);
+        add_string_vector(ghandle, "name", 5, /* strlen = */ 2);
     }
 
     expect_error(path, "ext", "should be scalar");

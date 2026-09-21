@@ -133,8 +133,8 @@ TEST_P(SparseMatrixPassTest, Dimnames) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         auto lhandle = list_opener(ghandle, "dimnames", 2, version);
-        add_string_vector(lhandle, "0", dims[0], /* len = */ 2);
-        add_string_vector(lhandle, "1", dims[1], /* len = */ 2);
+        add_string_vector(lhandle, "0", dims[0], /* strlen = */ 2);
+        add_string_vector(lhandle, "1", dims[1], /* strlen = */ 2);
     }
 
     auto output = test_validate(path, "foobar", deets); 
@@ -295,7 +295,7 @@ TEST_P(SparseMatrixErrorTest, Data) {
         auto ghandle = fhandle.openGroup("foobar");
         ghandle.unlink("data");
 
-        auto dhandle = add_string_vector(ghandle, "data", 20);
+        auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 5);
         if (version.ge(1, 1, 0)) {
             add_string_attribute(dhandle, "type", "STRING");
         }
@@ -307,7 +307,7 @@ TEST_P(SparseMatrixErrorTest, Data) {
         auto ghandle = fhandle.openGroup("foobar");
         ghandle.unlink("data");
 
-        auto dhandle = add_string_vector(ghandle, "data", 20);
+        auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 23);
         if (version.ge(1, 1, 0)) {
             add_string_attribute(dhandle, "type", "STRING");
         }
@@ -567,7 +567,7 @@ TEST_P(SparseMatrixErrorTest, Dimnames) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = sparse_matrix_opener(fhandle, version);
         auto lhandle = list_opener(ghandle, "dimnames", 2, version);
-        add_string_vector(lhandle, "0", 99, /* len = */ 2);
+        add_string_vector(lhandle, "0", 99, /* strlen = */ 2);
     }
     expect_error(path, "foobar", "length equal to the extent");
 }
