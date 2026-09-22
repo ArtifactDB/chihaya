@@ -1,5 +1,9 @@
 # Delayed operations in HDF5
 
+![Unit tests](https://github.com/ArtifactDB/chihaya/actions/workflows/run-tests.yaml/badge.svg)
+![Documentation](https://github.com/ArtifactDB/chihaya/actions/workflows/doxygenate.yaml/badge.svg)
+[![codecov](https://codecov.io/gh/ArtifactDB/chihaya/branch/master/graph/badge.svg?token=R9AF352G8A)](https://codecov.io/gh/ArtifactDB/chihaya)
+
 ## Introduction
 
 This repository contains a specification for delayed array operations stored in a HDF5 file.
@@ -45,10 +49,11 @@ In C++, a delayed object in a file can be validated by calling the `validate()` 
 chihaya::validate("path_to_file.h5", "delayed/object/name");
 ```
 
-R users can check out the [**alabaster.matrix**](https://bioconductor.org/packages/alabaster.matrix) package,
-which saves [`DelayedArray` objects](https://bioconductor.org/packages/DelayedArray) into a **chihaya**-compliant HDF5 file.
-Similarly, Python users can use the [**dolomite-matrix**](https://pypi.org/project/dolomite-matrix/) package,
-which operates on the equivalent [Python `DelayedArray` representation](https://pypi.org/project/delayedarray).
+To actually read/write delayed objects, check out the following packages:
+
+- [**alabaster.matrix**](https://bioconductor.org/packages/alabaster.matrix) for R, using Bioconductor's [`DelayedArray`](https://bioconductor.org/packages/DelayedArray).
+- [**dolomite-matrix**](https://pypi.org/project/dolomite-matrix/) for Python, via [BiocPy](https://github.com/BiocPy).
+- [**chihaya**](https://npmjs.com/package/chihaya) for Javascript, via [**scran.js**](https://npmjs.com/package/scran.js).
 
 ## Building projects
 
@@ -88,7 +93,7 @@ You can install the library by cloning a suitable version of this repository and
 
 ```sh
 mkdir build && cd build
-cmake .. -DTATAMI_TESTS=OFF
+cmake .. -DCHIHAYA_TESTS=OFF
 cmake --build . --target install
 ```
 
@@ -109,11 +114,6 @@ This requires the dependencies listed in the [`extern/CMakeLists.txt`](extern/CM
 You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).
 
 ## Further comments
-
-Web applications can read delayed matrices into memory using the [**chihaya**](https://npmjs.com/package/chihaya) Javascript package.
-
-At some point, we may also add [**tatami**](https://github.com/tatami-inc/tatami) bindings to load the delayed operations into memory.
-This would enable C++ applications to natively read from the HDF5 files that comply with **chihaya**'s specification.
 
 The library is provisionally named after [Chihaya Kisaragi](https://myanimelist.net/character/10369/Chihaya_Kisaragi), one of my favorite characters.
 
