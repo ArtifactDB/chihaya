@@ -90,6 +90,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__2github_2workspace_2README"></a></p>
+<p><img src="https://github.com/ArtifactDB/chihaya/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/ArtifactDB/chihaya/actions/workflows/doxygenate.yaml/badge.svg" alt="Documentation" style="pointer-events: none;" class="inline"/> <a href="https://codecov.io/gh/ArtifactDB/chihaya"><img src="https://codecov.io/gh/ArtifactDB/chihaya/branch/master/graph/badge.svg?token=R9AF352G8A" alt="codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1>Introduction</h1>
 <p>This repository contains a specification for delayed array operations stored in a HDF5 file. The concept of delayed operations is taken from Bioconductor's <a href="https://bioconductor.org/packages/DelayedArray"><b>DelayedArray</b></a> package, where any operations on a <code>DelayedArray</code> are cached in memory and evaluated on an as-needed basis. Our aim is to save these operations to file in a well-defined, cross-language format; this avoids the need to compute and store the results of such operations, which may be prohibitively expensive.</p>
 <p>Several use cases benefit from the serialization of delayed operations:</p>
@@ -113,7 +114,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a class="code hl_function" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">chihaya::validate</a>(<span class="stringliteral">&quot;path_to_file.h5&quot;</span>, <span class="stringliteral">&quot;delayed/object/name&quot;</span>);</div>
 <div class="ttc" id="achihaya_8hpp_html"><div class="ttname"><a href="chihaya_8hpp.html">chihaya.hpp</a></div><div class="ttdoc">Umbrella header for all chihaya code.</div></div>
 <div class="ttc" id="anamespacechihaya_html_a8d3d0003d24bf25847b399e8d62fea42"><div class="ttname"><a href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> validate.hpp:90</div></div>
-</div><!-- fragment --><p>R users can check out the <a href="https://bioconductor.org/packages/alabaster.matrix"><b>alabaster.matrix</b></a> package, which saves <a href="https://bioconductor.org/packages/DelayedArray"><code>DelayedArray</code> objects</a> into a <b>chihaya</b>-compliant HDF5 file. Similarly, Python users can use the <a href="https://pypi.org/project/dolomite-matrix/"><b>dolomite-matrix</b></a> package, which operates on the equivalent <a href="https://pypi.org/project/delayedarray">Python <code>DelayedArray</code> representation</a>.</p>
+</div><!-- fragment --><p>To actually read/write delayed objects, check out the following packages:</p>
+<ul>
+<li><a href="https://bioconductor.org/packages/alabaster.matrix"><b>alabaster.matrix</b></a> for R, using Bioconductor's <a href="https://bioconductor.org/packages/DelayedArray"><code>DelayedArray</code></a>.</li>
+<li><a href="https://pypi.org/project/dolomite-matrix/"><b>dolomite-matrix</b></a> for Python, via <a href="https://github.com/BiocPy">BiocPy</a>.</li>
+<li><a href="https://npmjs.com/package/chihaya"><b>chihaya</b></a> for Javascript, via <a href="https://npmjs.com/package/scran.js"><b>scran.js</b></a>.</li>
+</ul>
 <h1>Building projects</h1>
 <h2>CMake with <code>FetchContent</code></h2>
 <p>If you're using CMake, you just need to add something like this to your <code>CMakeLists.txt</code>:</p>
@@ -145,8 +151,6 @@ $(function(){ initResizable(false); });
 <h2>Manual</h2>
 <p>If you're not using CMake, the simple approach is to just copy the files the <code>include/</code> subdirectory - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the dependencies listed in the <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> directory. You will also need to link to the HDF5 library, usually from a system installation (1.10 or higher).</p>
 <h1>Further comments</h1>
-<p>Web applications can read delayed matrices into memory using the <a href="https://npmjs.com/package/chihaya"><b>chihaya</b></a> Javascript package.</p>
-<p>At some point, we may also add <a href="https://github.com/tatami-inc/tatami"><b>tatami</b></a> bindings to load the delayed operations into memory. This would enable C++ applications to natively read from the HDF5 files that comply with <b>chihaya</b>'s specification.</p>
 <p>The library is provisionally named after <a href="https://myanimelist.net/character/10369/Chihaya_Kisaragi">Chihaya Kisaragi</a>, one of my favorite characters.</p>
 <p><img src="https://raw.githubusercontent.com/LTLA/acceptable-anime-gifs/master/registry/10278_Idolmaster/0001.gif" alt="Chihaya GIF" class="inline"/> </p>
 </div></div><!-- PageDoc -->
