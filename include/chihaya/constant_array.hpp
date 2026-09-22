@@ -23,17 +23,17 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing a constant array.
+ * @param group HDF5 group representing a constant array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the constant array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_constant_array(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
     ArrayDetails output;
 
-    auto dhandle = handle.openDataSet("dimensions");
+    auto dhandle = group.openDataSet("dimensions");
     auto dspace = dhandle.getSpace();
     if (dspace.getSimpleExtentNdims() != 1) {
         throw std::runtime_error("'dimensions' dataset should be 1-dimensional");
@@ -53,7 +53,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& handle, const ritsu
         output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, size);
     }
 
-    auto vhandle = handle.openDataSet("value");
+    auto vhandle = group.openDataSet("value");
     if (vhandle.getSpace().getSimpleExtentNdims() != 0) {
         throw std::runtime_error("'value' dataset should be a scalar");
     }

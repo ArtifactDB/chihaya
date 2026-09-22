@@ -23,17 +23,17 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing a combining operation.
+ * @param group HDF5 group representing a combining operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  * 
  * @return Details of the combined object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_combine(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    const auto along = load_along(handle, version);
+inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    const auto along = load_along(group, version);
 
-    const auto shandle = handle.openGroup("seeds");
+    const auto shandle = group.openGroup("seeds");
     ListDetails list_params;
     try {
         list_params = validate_list(shandle, version);

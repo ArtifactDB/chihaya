@@ -21,13 +21,19 @@ namespace chihaya {
 /**
  * @cond
  */
-inline std::pair<ArrayDetails, bool> fetch_matprod_seed(const H5::Group& handle, const std::string& target, const std::string& orientation, const ritsuko::Version& version, Options& options) {
-    auto seed_details = fetch_numeric_seed(handle, target, version, options);
+inline std::pair<ArrayDetails, bool> fetch_matprod_seed(
+    const H5::Group& group,
+    const std::string& target,
+    const std::string& orientation,
+    const ritsuko::Version& version,
+    Options& options
+) {
+    auto seed_details = fetch_numeric_seed(group, target, version, options);
     if (seed_details.dimensions.size() != 2) {
         throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array for a matrix product");
     }
     
-    auto oristr = load_scalar_string_dataset(handle, orientation);
+    auto oristr = load_scalar_string_dataset(group, orientation);
     if (oristr != "N" && oristr != "T") {
         throw std::runtime_error("'" + orientation + "' should be either 'N' or 'T' for a matrix product");
     }
@@ -39,16 +45,16 @@ inline std::pair<ArrayDetails, bool> fetch_matprod_seed(const H5::Group& handle,
  */
 
 /**
- * @param handle An open handle on a HDF5 group representing a matrix product.
+ * @param group HDF5 group representing a matrix product.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the matrix product.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_matrix_product(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto left_details = fetch_matprod_seed(handle, "left_seed", "left_orientation", version, options);
-    auto right_details = fetch_matprod_seed(handle, "right_seed", "right_orientation", version, options);
+inline ArrayDetails validate_matrix_product(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto left_details = fetch_matprod_seed(group, "left_seed", "left_orientation", version, options);
+    auto right_details = fetch_matprod_seed(group, "right_seed", "right_orientation", version, options);
 
     ArrayDetails output;
     output.dimensions.resize(2);

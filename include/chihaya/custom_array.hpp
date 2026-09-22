@@ -25,10 +25,10 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate_minimal_array(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
     ArrayDetails output;
 
-    auto dhandle = handle.openDataSet("dimensions");
+    auto dhandle = group.openDataSet("dimensions");
     auto dspace = dhandle.getSpace();
     if (dspace.getSimpleExtentNdims() != 1) {
         throw std::runtime_error("'dimensions' dataset should be 1-dimensional");
@@ -45,7 +45,7 @@ inline ArrayDetails validate_minimal_array(const H5::Group& handle, const ritsuk
         output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, len);
     }
 
-    auto type = load_scalar_string_dataset(handle, "type");
+    auto type = load_scalar_string_dataset(group, "type");
     if (type == "BOOLEAN") {
         output.type = BOOLEAN;
     } else if (type == "INTEGER") {
@@ -65,15 +65,15 @@ inline ArrayDetails validate_minimal_array(const H5::Group& handle, const ritsuk
  */
 
 /**
- * @param handle An open handle on a HDF5 group representing an external array.
+ * @param group HDF5 group representing a custom array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the custom array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_custom_array(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    return validate_minimal_array(handle, version, options);
+inline ArrayDetails validate_custom_array(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    return validate_minimal_array(group, version, options);
 }
 
 }

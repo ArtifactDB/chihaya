@@ -74,19 +74,19 @@ void validate_sparse_indices(const H5::DataSet& ihandle, const std::vector<std::
  */
 
 /**
- * @param handle An open handle on a HDF5 group representing a sparse matrix.
+ * @param group HDF5 group representing a sparse matrix.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  * 
  * @return Details of the sparse matrix.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko::Version& version, Options& options) {
     std::vector<std::size_t> dims;
     ArrayType array_type;
 
     {
-        auto shandle = handle.openDataSet("shape");
+        auto shandle = group.openDataSet("shape");
         auto sspace = shandle.getSpace();
         if (sspace.getSimpleExtentNdims() != 1) {
             throw std::runtime_error("'shape' dataset should be 1-dimensional");
@@ -109,7 +109,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
 
     hsize_t nnz;
     {
-        auto dhandle = handle.openDataSet("data");
+        auto dhandle = group.openDataSet("data");
         auto dspace = dhandle.getSpace();
         if (dspace.getSimpleExtentNdims() != 1) {
             throw std::runtime_error("'data' dataset should be 1-dimensional");
@@ -140,7 +140,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
     if (!options.details_only) {
         bool csc = true;
         if (!version.lt(1, 1, 0)) {
-            auto bhandle = handle.openDataSet("by_column");
+            auto bhandle = group.openDataSet("by_column");
             if (bhandle.getSpace().getSimpleExtentNdims() != 0) {
                 throw std::runtime_error("'by_column' dataset should be scalar");
             }
@@ -157,7 +157,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
 
         std::vector<std::uint64_t> indptrs;
         {
-            auto iphandle = handle.openDataSet("indptr");
+            auto iphandle = group.openDataSet("indptr");
             auto ipspace = iphandle.getSpace();
             if (ipspace.getSimpleExtentNdims() != 1) {
                 throw std::runtime_error("'indptr' dataset should be 1-dimensional");
@@ -192,7 +192,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
         }
 
         {
-            auto ihandle = handle.openDataSet("indices");
+            auto ihandle = group.openDataSet("indices");
             auto ispace = ihandle.getSpace();
             if (ispace.getSimpleExtentNdims() != 1) {
                 throw std::runtime_error("'indices' dataset should be 1-dimensional");
@@ -221,8 +221,8 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& handle, const ritsuk
         }
 
         // Validating dimnames.
-        if (handle.exists("dimnames")) {
-            validate_dimnames_internal(handle, dims, version);
+        if (group.exists("dimnames")) {
+            validate_dimnames_internal(group, dims, version);
         }
     }
 

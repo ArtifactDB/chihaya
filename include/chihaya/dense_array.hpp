@@ -43,18 +43,18 @@ void transplant_dimensions(std::vector<hsize_t>& src, std::vector<Output_>& outp
  */
 
 /**
- * @param handle An open handle on a HDF5 group representing a dense array.
+ * @param group HDF5 group representing a dense array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the dense array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
     ArrayDetails output;
 
     {
-        auto dhandle = handle.openDataSet("data");
+        auto dhandle = group.openDataSet("data");
         auto dspace = dhandle.getSpace();
         const auto ndims = dspace.getSimpleExtentNdims();
         if (ndims == 0) {
@@ -93,7 +93,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
 
     bool native;
     {
-        auto nhandle = handle.openDataSet("native");
+        auto nhandle = group.openDataSet("native");
         if (nhandle.getSpace().getSimpleExtentNdims() != 0) {
             throw std::runtime_error("'native' attribute should be a scalar");
         }
@@ -112,8 +112,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& handle, const ritsuko:
 
     // Do this before applying the 'native' reversal.
     if (!options.details_only) {
-        if (handle.exists("dimnames")) {
-            validate_dimnames_internal(handle, output.dimensions, version);
+        if (group.exists("dimnames")) {
+            validate_dimnames_internal(group, output.dimensions, version);
         }
     }
 

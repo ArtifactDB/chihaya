@@ -21,31 +21,31 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing an unary logic operation.
+ * @param group HDF5 group representing an unary logic operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the object after applying the logical operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_logic(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = fetch_numeric_seed(handle, "seed", version, options);
+inline ArrayDetails validate_unary_logic(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_numeric_seed(group, "seed", version, options);
 
     if (!options.details_only) { 
-        auto method = load_scalar_string_dataset(handle, "method");
+        auto method = load_scalar_string_dataset(group, "method");
         if (method != "!" && method != "&&" && method != "||") {
             throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
         }
 
         // Checking the sidedness.
         if (method != "!") {
-            auto side = load_scalar_string_dataset(handle, "side");
+            auto side = load_scalar_string_dataset(group, "side");
             if (side != "left" && side != "right") {
                 throw std::runtime_error("'side' for operation '" + method + "' should be 'left' or 'right' (got '" + side + "')");
             }
 
             // Checking the value.
-            auto vhandle = handle.openDataSet("value");
+            auto vhandle = group.openDataSet("value");
 
             try {
                 ArrayType val_type;
@@ -69,7 +69,7 @@ inline ArrayDetails validate_unary_logic(const H5::Group& handle, const ritsuko:
                 } else if (ndims == 1) {
                     hsize_t extent;
                     vspace.getSimpleExtentDims(&extent);
-                    check_unary_along(handle, version, seed_details.dimensions, extent);
+                    check_unary_along(group, version, seed_details.dimensions, extent);
                 } else { 
                     throw std::runtime_error("dataset should be scalar or 1-dimensional");
                 }

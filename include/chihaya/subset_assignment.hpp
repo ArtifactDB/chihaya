@@ -22,18 +22,18 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing a subset assignment.
+ * @param group HDF5 group representing a subset assignment.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the object after subset assignment.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = fetch_seed(handle, "seed", version, options);
+inline ArrayDetails validate_subset_assignment(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_seed(group, "seed", version, options);
     const auto& seed_dims = seed_details.dimensions;
 
-    auto value_details = fetch_seed(handle, "value", version, options);
+    auto value_details = fetch_seed(group, "value", version, options);
     if (!options.details_only) {
         if ((value_details.type == STRING) != (seed_details.type == STRING)) {
             throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
@@ -42,7 +42,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& handle, const ri
             throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionality");
         }
 
-        auto ihandle = handle.openGroup("index");
+        auto ihandle = group.openGroup("index");
         auto collected = validate_subset_index_list(ihandle, seed_dims, version);
         auto expected_dims = seed_dims;
         for (auto p : collected) {

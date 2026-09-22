@@ -77,27 +77,28 @@ inline auto default_array_registry() {
  */
 
 /**
+ * Validate a HDF5 group representing a delayed oepration or array.
  * For operations, this function will first search `options.custom_operation_validate_registry` for an available validation function.
  * For arrays, this function will first search `options.custom_array_validate_registry` for an available validation function.
  *
- * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
+ * @param group HDF5 group representing a delayed operation or array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options, possibly containing custom validation functions.
  *
- * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
  */
-inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto dtype = load_scalar_string_attribute(handle, "delayed_type");
+inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto dtype = load_scalar_string_attribute(group, "delayed_type");
     ArrayDetails output;
 
     if (dtype == "array") {
-        auto atype = load_scalar_string_attribute(handle, "delayed_array");
+        auto atype = load_scalar_string_attribute(group, "delayed_array");
 
         const auto& custom = options.array_validate_registry;
         auto cit = custom.find(atype);
         if (cit != custom.end()) {
             try {
-                output = (cit->second)(handle, version, options);
+                output = (cit->second)(group, version, options);
             } catch (std::exception& e) {
                 throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
             }
@@ -107,19 +108,19 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             auto git = global.find(atype);
             if (git != global.end()) {
                 try {
-                    output = (git->second)(handle, version, options);
+                    output = (git->second)(group, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
                 }
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 try {
-                    output = validate_custom_array(handle, version, options);
+                    output = validate_custom_array(group, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
                 }
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
                 try {
-                    output = validate_external_hdf5(handle, version, options);
+                    output = validate_external_hdf5(group, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
                 }
@@ -129,13 +130,13 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
         }
 
     } else if (dtype == "operation") {
-        auto otype = load_scalar_string_attribute(handle, "delayed_operation");
+        auto otype = load_scalar_string_attribute(group, "delayed_operation");
 
         const auto& custom = options.operation_validate_registry;
         auto cit = custom.find(otype);
         if (cit != custom.end()) {
             try {
-                output = (cit->second)(handle, version, options);
+                output = (cit->second)(group, version, options);
             } catch (std::exception& e) {
                 throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
             }
@@ -145,7 +146,7 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
             auto git = global.find(otype);
             if (git != global.end()) {
                 try {
-                    output = (git->second)(handle, version, options);
+                    output = (git->second)(group, version, options);
                 } catch (std::exception& e) {
                     throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
                 }
@@ -162,19 +163,19 @@ inline ArrayDetails validate(const H5::Group& handle, const ritsuko::Version& ve
 }
 
 /**
- * The version is taken from the `delayed_version` attribute of the `handle`.
+ * The version is taken from the `delayed_version` attribute of the `group`.
  * This should be a version string of the form `<MAJOR>.<MINOR>`.
  * For back-compatibility purposes, the string `"1.0.0"` is also allowed, corresponding to version 1.0;
  * and if `delayed_version` is missing, it defaults to `0.99`.
  *
- * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
+ * @param group HDF5 group corresponding to a delayed operation or array.
  * @return Version of the **chihaya** specification.
  */
-inline ritsuko::Version extract_version(const H5::Group& handle) {
+inline ritsuko::Version extract_version(const H5::Group& group) {
     ritsuko::Version version;
 
-    if (handle.attrExists("delayed_version")) {
-        auto vstring = load_scalar_string_attribute(handle, "delayed_version");
+    if (group.attrExists("delayed_version")) {
+        auto vstring = load_scalar_string_attribute(group, "delayed_version");
         if (vstring == "1.0.0") {
             version.major = 1;
         } else {
@@ -188,22 +189,21 @@ inline ritsuko::Version extract_version(const H5::Group& handle) {
 }
 
 /**
- * Validate a delayed operation/array at the specified HDF5 group,
+ * Overload of `validate()` that extracts the version from `group` via `extract_version()`.
  * 
- * @param handle Open handle to a HDF5 group corresponding to a delayed operation or array.
+ * @param group HDF5 group representing a delayed operation or array.
  * @param options Validation options, see `validate()` for details.
- * @return Details of the array after all delayed operations in `handle` (and its children) have been applied.
+ * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
  */
-inline ArrayDetails validate(const H5::Group& handle, Options& options) {
-    return validate(handle, extract_version(handle), options);
+inline ArrayDetails validate(const H5::Group& group, Options& options) {
+    return validate(group, extract_version(group), options);
 }
 
 /**
- * Validate a delayed operation/array at the specified HDF5 group.
- * This simply calls the `validate()` overload for a `H5::Group`.
+ * Overload of `validate()` that accepts a file path and group name.
  * 
  * @param path Path to a HDF5 file.
- * @param name Name of the group inside the file.
+ * @param name Name of the HDF5 group inside the file representing a delayed operation or array.
  * @param options Validation options, see `validate()` for details.
  *
  * @return Details of the array after all delayed operations have been applied.
@@ -215,11 +215,10 @@ inline ArrayDetails validate(const std::string& path, const std::string& name, O
 }
 
 /**
- * Validate a delayed operation/array at the specified HDF5 group.
- * This simply calls the `validate()` overload for a `H5::Group`.
+ * Overload of `validate()` that accepts a file path and group name, and uses the default `Options`. 
  * 
  * @param path Path to a HDF5 file.
- * @param name Name of the group inside the file.
+ * @param name Name of the HDF5 group inside the file representing a delayed operation or array.
  *
  * @return Details of the array after all delayed operations have been applied.
  */

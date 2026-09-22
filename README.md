@@ -37,7 +37,7 @@ More details about the on-disk representation of each operation can be found in 
 
 ## Using the validation library
 
-In C++, a delayed object in a file can be validated by calling the [`validate`](https://artifactdb.github.io/chihaya/validate_8hpp.html) function:
+In C++, a delayed object in a file can be validated by calling the `validate()` function:
 
 ```cpp
 #include "chihaya/chihaya.hpp"
@@ -45,20 +45,10 @@ In C++, a delayed object in a file can be validated by calling the [`validate`](
 chihaya::validate("path_to_file.h5", "delayed/object/name");
 ```
 
-In R, `DelayedArray` objects (from the [**DelayedArray**](https://bioconductor.org/packages/DelayedArray) package)
-can be saved to a **chihaya**-compliant HDF5 file using the [our R package](https://github.com/AritfactDB/chihaya-R).
-The same package also reconstitutes a `DelayedArray` from the file.
-
-```r
-library(DelayedArray)
-X <- DelayedArray(matrix(runif(100), 100, 20)) 
-X <- log(t(t(X) / runif(ncol(X))) + 1) 
-
-library(chihaya)
-tmp <- tempfile(fileext=".h5")
-saveDelayed(X, tmp)
-Y <- loadDelayed(tmp)
-```
+R users can check out the [**alabaster.matrix**](https://bioconductor.org/packages/alabaster.matrix) package,
+which saves [`DelayedArray` objects](https://bioconductor.org/packages/DelayedArray) into a **chihaya**-compliant HDF5 file.
+Similarly, Python users can use the [**dolomite-matrix**](https://pypi.org/project/dolomite-matrix/) package,
+which operates on the equivalent [Python `DelayedArray` representation](https://pypi.org/project/delayedarray).
 
 ## Building projects
 

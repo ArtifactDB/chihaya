@@ -61,17 +61,17 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, Ndim_ ple
  */
 
 /**
- * @param handle An open handle on a HDF5 group representing a transposition.
+ * @param group HDF5 group representing a transposition.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the transposed object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_transpose(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = fetch_seed(handle, "seed", version, options);
+inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_seed(group, "seed", version, options);
 
-    auto phandle = handle.openDataSet("permutation");
+    auto phandle = group.openDataSet("permutation");
     auto pspace = phandle.getSpace();
     if (pspace.getSimpleExtentNdims() != 1) {
         throw std::runtime_error("'permutation' should be a 1-dimensional dataset");

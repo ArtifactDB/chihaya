@@ -20,29 +20,29 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing an unary comparison operation.
+ * @param group HDF5 group representing an unary comparison operation.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto seed_details = fetch_seed(handle, "seed", version, options);
+inline ArrayDetails validate_unary_comparison(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto seed_details = fetch_seed(group, "seed", version, options);
 
     if (!options.details_only) {
-        auto method = load_scalar_string_dataset(handle, "method");
+        auto method = load_scalar_string_dataset(group, "method");
         if (!is_valid_comparison_operation(method)) {
             throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
         }
 
-        auto side = load_scalar_string_dataset(handle, "side");
+        auto side = load_scalar_string_dataset(group, "side");
         if (side != "left" && side != "right") {
             throw std::runtime_error("'side' should be either 'left' or 'right' (got '" + side + "')");
         }
 
         // Checking the value.
-        auto vhandle = handle.openDataSet("value");
+        auto vhandle = group.openDataSet("value");
         try {
             ArrayType val_type;
             if (version.lt(1, 1, 0)) {
@@ -67,7 +67,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& handle, const rit
             } else if (ndims == 1) {
                 hsize_t extent;
                 vhandle.getSpace().getSimpleExtentDims(&extent);
-                check_unary_along(handle, version, seed_details.dimensions, extent);
+                check_unary_along(group, version, seed_details.dimensions, extent);
                 if (vhandle.getTypeClass() == H5T_STRING) {
                     ritsuko::hdf5::validate_1d_strings(vhandle, extent);
                 }

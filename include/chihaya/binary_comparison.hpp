@@ -19,16 +19,16 @@
 namespace chihaya {
 
 /**
- * @param handle An open handle on a HDF5 group representing a binary comparison.
+ * @param group HDF5 group representing a binary comparison.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options.
  *
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const ritsuko::Version& version, Options& options) {
-    auto left_details = fetch_seed(handle, "left", version, options);
-    auto right_details = fetch_seed(handle, "right", version, options);
+inline ArrayDetails validate_binary_comparison(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+    auto left_details = fetch_seed(group, "left", version, options);
+    auto right_details = fetch_seed(group, "right", version, options);
 
     if (!options.details_only) {
         if (!are_dimensions_equal(left_details.dimensions, right_details.dimensions)) {
@@ -39,7 +39,7 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& handle, const ri
             throw std::runtime_error("both or neither of 'left' and 'right' should contain strings");
         }
 
-        auto method = load_scalar_string_dataset(handle, "method");
+        auto method = load_scalar_string_dataset(group, "method");
         if (!is_valid_comparison_operation(method)) {
             throw std::runtime_error("unrecognized 'method' (" + method + ")");
         }
