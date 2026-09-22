@@ -25,7 +25,7 @@ namespace chihaya {
  * @return Details of the object after applying the special check.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_special_check(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_unary_special_check(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_numeric_seed(group, "seed", version, options);
 
     // Checking the method.

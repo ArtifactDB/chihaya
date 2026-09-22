@@ -24,7 +24,7 @@ namespace chihaya {
  * @return Details of the object after assigning dimnames.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_dimnames(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_dimnames(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     ArrayDetails seed_details = fetch_seed(group, "seed", version, options);
     if (!options.details_only) {
         validate_dimnames_internal(group, seed_details.dimensions, version);

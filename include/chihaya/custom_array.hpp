@@ -25,7 +25,7 @@ namespace chihaya {
 /**
  * @cond
  */
-inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
     auto dhandle = group.openDataSet("dimensions");
@@ -72,7 +72,7 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
  * @return Details of the custom array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_custom_array(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_custom_array(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     return validate_minimal_array(group, version, options);
 }
 

@@ -26,7 +26,7 @@ namespace chihaya {
  * @return Details of the object after applying the comparison operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_binary_comparison(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_binary_comparison(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto left_details = fetch_seed(group, "left", version, options);
     auto right_details = fetch_seed(group, "right", version, options);
 

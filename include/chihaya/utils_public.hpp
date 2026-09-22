@@ -75,13 +75,13 @@ struct Options {
      * Custom registry of functions to be used by `validate()` on arrays.
      * If a custom function is provided for an array type, it is used instead of the default function .
      */
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Options&)> > array_validate_registry;
+    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > array_validate_registry;
 
     /**
      * Custom registry of functions to be used by `validate()` on operations.
      * If a custom function is provided for an operation type, it is used instead of the default function .
      */
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, Options&)> > operation_validate_registry;
+    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > operation_validate_registry;
 };
 
 }

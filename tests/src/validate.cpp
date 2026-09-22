@@ -18,13 +18,13 @@ TEST(Validate, CustomRegistry) {
     chihaya::Options options;
 
     std::vector<std::string> known_arrays;
-    options.array_validate_registry["constant array"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails {
+    options.array_validate_registry["constant array"] = [&](const H5::Group& h, const ritsuko::Version& v, const chihaya::Options& o) -> chihaya::ArrayDetails {
         known_arrays.push_back("constant array"); 
         return chihaya::validate_constant_array(h, v, o);
     }; 
 
     std::vector<std::string> known_operations;
-    options.operation_validate_registry["transpose"] = [&](const H5::Group& h, const ritsuko::Version& v, chihaya::Options& o) -> chihaya::ArrayDetails { 
+    options.operation_validate_registry["transpose"] = [&](const H5::Group& h, const ritsuko::Version& v, const chihaya::Options& o) -> chihaya::ArrayDetails { 
         known_operations.push_back("transpose"); 
         return chihaya::validate_transpose(h, v, o);
     }; 
@@ -47,12 +47,12 @@ TEST(Validate, CustomRegistry) {
     EXPECT_EQ(known_operations.size(), 1);
     EXPECT_EQ(known_operations.front(), "transpose");
 
-    options.array_validate_registry["constant array"] = [&](const H5::Group&, const ritsuko::Version&, chihaya::Options&) -> chihaya::ArrayDetails {
+    options.array_validate_registry["constant array"] = [&](const H5::Group&, const ritsuko::Version&, const chihaya::Options&) -> chihaya::ArrayDetails {
         throw std::runtime_error("uh no");
     };
     expect_error([&]() { chihaya::validate(path, "WHEE", options); }, "uh no");
 
-    options.operation_validate_registry["transpose"] = [&](const H5::Group&, const ritsuko::Version&, chihaya::Options&) -> chihaya::ArrayDetails {
+    options.operation_validate_registry["transpose"] = [&](const H5::Group&, const ritsuko::Version&, const chihaya::Options&) -> chihaya::ArrayDetails {
         throw std::runtime_error("no means no!");
     };
     expect_error([&]() { chihaya::validate(path, "WHEE", options); }, "no means no!");

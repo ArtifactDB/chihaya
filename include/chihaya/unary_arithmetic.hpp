@@ -27,7 +27,7 @@ namespace chihaya {
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_numeric_seed(group, "seed", version, options);
 
     auto method = load_scalar_string_dataset(group, "method");

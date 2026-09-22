@@ -13,7 +13,7 @@
 
 namespace chihaya {
 
-inline ArrayDetails fetch_numeric_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails fetch_numeric_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version, const Options& options) {
     auto output = fetch_seed(handle, target, version, options);
     if (output.type == STRING) {
         throw std::runtime_error("type of '" + target + "' should be integer, float or boolean");

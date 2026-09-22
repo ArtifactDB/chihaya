@@ -30,7 +30,7 @@ namespace chihaya {
  * @return Details of the constant array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
     auto dhandle = group.openDataSet("dimensions");

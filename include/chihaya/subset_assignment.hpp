@@ -29,7 +29,7 @@ namespace chihaya {
  * @return Details of the object after subset assignment.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_subset_assignment(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_subset_assignment(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_seed(group, "seed", version, options);
     const auto& seed_dims = seed_details.dimensions;
 

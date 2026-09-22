@@ -50,7 +50,7 @@ void transplant_dimensions(std::vector<hsize_t>& src, std::vector<Output_>& outp
  * @return Details of the dense array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] Options& options) {
+inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
     {

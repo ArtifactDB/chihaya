@@ -22,7 +22,7 @@ namespace chihaya {
  * @return Details of the external HDF5 array.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_external_hdf5(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_external_hdf5(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     if (version.ge(1, 1, 0)) {
         throw std::runtime_error("'external_hdf5' array type is deprecated in versions >= 1.1");
     }

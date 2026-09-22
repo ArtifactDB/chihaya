@@ -28,7 +28,7 @@ namespace chihaya {
  * @return Details of the object after applying the logical operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_logic(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_unary_logic(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_numeric_seed(group, "seed", version, options);
 
     if (!options.details_only) { 

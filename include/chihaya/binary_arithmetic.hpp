@@ -27,7 +27,7 @@ namespace chihaya {
  * @return Details of the object after applying the arithmetic operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_binary_arithmetic(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_binary_arithmetic(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto left_details = fetch_numeric_seed(group, "left", version, options);
     auto right_details = fetch_numeric_seed(group, "right", version, options);
 

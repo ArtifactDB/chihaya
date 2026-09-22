@@ -30,7 +30,7 @@ namespace chihaya {
  * @return Details of the combined object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     const auto along = load_along(group, version);
 
     const auto shandle = group.openGroup("seeds");

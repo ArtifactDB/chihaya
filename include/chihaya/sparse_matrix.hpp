@@ -81,7 +81,7 @@ void validate_sparse_indices(const H5::DataSet& ihandle, const std::vector<std::
  * @return Details of the sparse matrix.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     std::vector<std::size_t> dims;
     ArrayType array_type;
 

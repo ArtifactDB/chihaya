@@ -24,8 +24,8 @@ namespace chihaya {
 /**
  * @cond
  */
-template<typename Perm_, typename Ndim_>
-std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, Ndim_ plen, const std::vector<size_t>& input_dimensions, bool details_only) {
+template<typename Perm_>
+std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, hsize_t plen, const std::vector<std::size_t>& input_dimensions, bool details_only) {
     if (!sanisizer::is_equal(plen, input_dimensions.size())) {
         throw std::runtime_error("length of 'permutation' should match dimensionality of 'seed'");
     }
@@ -68,7 +68,7 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, Ndim_ ple
  * @return Details of the transposed object.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_seed(group, "seed", version, options);
 
     auto phandle = group.openDataSet("permutation");

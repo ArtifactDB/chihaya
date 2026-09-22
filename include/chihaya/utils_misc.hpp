@@ -17,7 +17,7 @@
 
 namespace chihaya {
 
-ArrayDetails validate(const H5::Group&, const ritsuko::Version&, Options&);
+ArrayDetails validate(const H5::Group&, const ritsuko::Version&, const Options&);
 
 template<typename Input_>
 using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
@@ -56,7 +56,7 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
     }
 }
 
-inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name, const ritsuko::Version& version, const Options& options) {
     ArrayDetails output;
     auto shandle = handle.openGroup(name);
     try {

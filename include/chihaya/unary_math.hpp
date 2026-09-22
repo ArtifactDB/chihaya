@@ -26,7 +26,7 @@ namespace chihaya {
  * @return Details of the object after applying the mathal operation.
  * Otherwise, if the validation failed, an error is raised.
  */
-inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::Version& version, Options& options) {
+inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto seed_details = fetch_numeric_seed(group, "seed", version, options);
     if (seed_details.type == STRING) {
         throw std::runtime_error("type of 'seed' should be integer, float or boolean");
