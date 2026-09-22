@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['extract_5fversion_0',['extract_version',['../namespacechihaya.html#a638e9ab1195112740d03fd001c4f40e1',1,'chihaya']]]
+  ['extract_5fversion_0',['extract_version',['../namespacechihaya.html#a76ca2345a827887cecfeb3d44c3af746',1,'chihaya']]]
 ];

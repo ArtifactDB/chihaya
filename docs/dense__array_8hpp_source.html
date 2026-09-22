@@ -126,11 +126,11 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
 <div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespacechihaya.html#a43f2c1245e6353489ef16a63432f5b00">   53</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya.html#a43f2c1245e6353489ef16a63432f5b00">validate_dense_array</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keyword">const</span> ritsuko::Version&amp; version, [[maybe_unused]] <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespacechihaya.html#a50a0cfca8894c6a94961704745963799">   53</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya.html#a50a0cfca8894c6a94961704745963799">validate_dense_array</a>(<span class="keyword">const</span> H5::Group&amp; group, <span class="keyword">const</span> ritsuko::Version&amp; version, [[maybe_unused]] <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> output;</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">auto</span> dhandle = handle.openDataSet(<span class="stringliteral">&quot;data&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">auto</span> dhandle = group.openDataSet(<span class="stringliteral">&quot;data&quot;</span>);</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">auto</span> dspace = dhandle.getSpace();</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keyword">auto</span> ndims = dspace.getSimpleExtentNdims();</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (ndims == 0) {</div>
@@ -169,7 +169,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">bool</span> native;</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    {</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keyword">auto</span> nhandle = handle.openDataSet(<span class="stringliteral">&quot;native&quot;</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keyword">auto</span> nhandle = group.openDataSet(<span class="stringliteral">&quot;native&quot;</span>);</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">if</span> (nhandle.getSpace().getSimpleExtentNdims() != 0) {</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;native&#39; attribute should be a scalar&quot;</span>);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
@@ -188,8 +188,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="comment">// Do this before applying the &#39;native&#39; reversal.</span></div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!options.details_only) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (handle.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            validate_dimnames_internal(handle, output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>, version);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (group.exists(<span class="stringliteral">&quot;dimnames&quot;</span>)) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            validate_dimnames_internal(group, output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>, version);</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        }</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
@@ -205,7 +205,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
-<div class="ttc" id="anamespacechihaya_html_a43f2c1245e6353489ef16a63432f5b00"><div class="ttname"><a href="namespacechihaya.html#a43f2c1245e6353489ef16a63432f5b00">chihaya::validate_dense_array</a></div><div class="ttdeci">ArrayDetails validate_dense_array(const H5::Group &amp;handle, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition</b> dense_array.hpp:53</div></div>
+<div class="ttc" id="anamespacechihaya_html_a50a0cfca8894c6a94961704745963799"><div class="ttname"><a href="namespacechihaya.html#a50a0cfca8894c6a94961704745963799">chihaya::validate_dense_array</a></div><div class="ttdeci">ArrayDetails validate_dense_array(const H5::Group &amp;group, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition</b> dense_array.hpp:53</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:37</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html_aae3f97fb1bd0c25cf5cc9134f7936225"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">chihaya::ArrayDetails::dimensions</a></div><div class="ttdeci">std::vector&lt; std::size_t &gt; dimensions</div><div class="ttdef"><b>Definition</b> utils_public.hpp:57</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html_ad73104cbd51217fc0b79efe8a88b349a"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">chihaya::ArrayDetails::type</a></div><div class="ttdeci">ArrayType type</div><div class="ttdef"><b>Definition</b> utils_public.hpp:51</div></div>

@@ -107,22 +107,14 @@ $(function(){ initResizable(false); });
 <li><a href="https://github.com/ArtifactDB/chihaya/tree/gh-pages/docs/specifications/0.99/_general.md">0.99</a></li>
 </ul>
 <h1>Using the validation library</h1>
-<p>In C++, a delayed object in a file can be validated by calling the <a href="https://artifactdb.github.io/chihaya/validate_8hpp.html"><code>validate</code></a> function:</p>
+<p>In C++, a delayed object in a file can be validated by calling the <code>validate()</code> function:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="chihaya_8hpp.html">chihaya/chihaya.hpp</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line"><a class="code hl_function" href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">chihaya::validate</a>(<span class="stringliteral">&quot;path_to_file.h5&quot;</span>, <span class="stringliteral">&quot;delayed/object/name&quot;</span>);</div>
+<div class="line"><a class="code hl_function" href="namespacechihaya.html#a759346e23fdd5f26d70f46b2e829c76f">chihaya::validate</a>(<span class="stringliteral">&quot;path_to_file.h5&quot;</span>, <span class="stringliteral">&quot;delayed/object/name&quot;</span>);</div>
 <div class="ttc" id="achihaya_8hpp_html"><div class="ttname"><a href="chihaya_8hpp.html">chihaya.hpp</a></div><div class="ttdoc">Umbrella header for all chihaya code.</div></div>
-<div class="ttc" id="anamespacechihaya_html_aae8f495308b7b74dce0570e73ec70072"><div class="ttname"><a href="namespacechihaya.html#aae8f495308b7b74dce0570e73ec70072">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;handle, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition</b> validate.hpp:89</div></div>
-</div><!-- fragment --><p>In R, <code>DelayedArray</code> objects (from the <a href="https://bioconductor.org/packages/DelayedArray"><b>DelayedArray</b></a> package) can be saved to a <b>chihaya</b>-compliant HDF5 file using the <a href="https://github.com/AritfactDB/chihaya-R">our R package</a>. The same package also reconstitutes a <code>DelayedArray</code> from the file.</p>
-<div class="fragment"><div class="line">library(DelayedArray)</div>
-<div class="line">X &lt;- DelayedArray(matrix(runif(100), 100, 20)) </div>
-<div class="line">X &lt;- log(t(t(X) / runif(ncol(X))) + 1) </div>
-<div class="line"> </div>
-<div class="line">library(chihaya)</div>
-<div class="line">tmp &lt;- tempfile(fileext=&quot;.h5&quot;)</div>
-<div class="line">saveDelayed(X, tmp)</div>
-<div class="line">Y &lt;- loadDelayed(tmp)</div>
-</div><!-- fragment --><h1>Building projects</h1>
+<div class="ttc" id="anamespacechihaya_html_a759346e23fdd5f26d70f46b2e829c76f"><div class="ttname"><a href="namespacechihaya.html#a759346e23fdd5f26d70f46b2e829c76f">chihaya::validate</a></div><div class="ttdeci">ArrayDetails validate(const H5::Group &amp;group, const ritsuko::Version &amp;version, Options &amp;options)</div><div class="ttdef"><b>Definition</b> validate.hpp:90</div></div>
+</div><!-- fragment --><p>R users can check out the <a href="https://bioconductor.org/packages/alabaster.matrix"><b>alabaster.matrix</b></a> package, which saves <a href="https://bioconductor.org/packages/DelayedArray"><code>DelayedArray</code> objects</a> into a <b>chihaya</b>-compliant HDF5 file. Similarly, Python users can use the <a href="https://pypi.org/project/dolomite-matrix/"><b>dolomite-matrix</b></a> package, which operates on the equivalent <a href="https://pypi.org/project/delayedarray">Python <code>DelayedArray</code> representation</a>.</p>
+<h1>Building projects</h1>
 <h2>CMake with <code>FetchContent</code></h2>
 <p>If you're using CMake, you just need to add something like this to your <code>CMakeLists.txt</code>:</p>
 <div class="fragment"><div class="line">include(FetchContent)</div>
