@@ -3,6 +3,7 @@
 
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 #include <string>
 #include <functional>
@@ -70,6 +71,12 @@ struct Options {
      * If this is set to true, it is assumed that the array/operation is already valid.
      */
     bool details_only = false;
+
+    /**
+     * Size of the streaming chunks (in terms of the number of elements) to use for contiguous HDF5 datasets.
+     * Ignored for chunked datasets where streaming chunk size is defined as the dataset's chunk size.
+     */
+    hsize_t contiguous_chunk_size = sanisizer::cap<hsize_t>(10000);
 
     /**
      * Custom registry of functions to be used by `validate()` on arrays.

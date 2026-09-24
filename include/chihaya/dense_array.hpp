@@ -80,7 +80,15 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
             if (!options.details_only) {
                 validate_missing_placeholder(dhandle, version);
                 if (dhandle.getTypeClass() == H5T_STRING) {
-                    ritsuko::hdf5::validate_nd_strings(dhandle, dims);
+                    ritsuko::hdf5::validate_nd_strings(
+                        dhandle,
+                        dims,
+                        [&]{
+                            ritsuko::hdf5::ValidateNdStringsOptions opt;
+                            opt.contiguous_chunk_size = options.contiguous_chunk_size;
+                            return opt;
+                        }()
+                    );
                 }
             }
 
@@ -113,7 +121,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
     // Do this before applying the 'native' reversal.
     if (!options.details_only) {
         if (group.exists("dimnames")) {
-            validate_dimnames_internal(group, output.dimensions, version);
+            validate_dimnames_internal(group, output.dimensions, version, options.contiguous_chunk_size);
         }
     }
 

@@ -43,7 +43,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& group, const rit
         }
 
         auto ihandle = group.openGroup("index");
-        auto collected = validate_subset_index_list(ihandle, seed_dims, version);
+        auto collected = validate_subset_index_list(ihandle, seed_dims, version, options.contiguous_chunk_size);
         auto expected_dims = seed_dims;
         for (auto p : collected) {
             expected_dims[p.first] = p.second;

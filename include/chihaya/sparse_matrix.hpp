@@ -26,8 +26,23 @@ namespace chihaya {
  * @cond
  */
 template<typename Index_>
-void validate_sparse_indices(const H5::DataSet& ihandle, const std::vector<std::uint64_t>& indptrs, std::size_t primary, std::size_t secondary, bool csc) {
-    ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(&ihandle, sanisizer::cast<hsize_t>(indptrs.back()));
+void validate_sparse_indices(
+    const H5::DataSet& ihandle,
+    const std::vector<std::uint64_t>& indptrs,
+    const std::size_t primary,
+    const std::size_t secondary,
+    const bool csc,
+    const hsize_t contiguous_chunk_size
+) {
+    ritsuko::hdf5::Stream1dNumericDataset<Index_> stream(
+        &ihandle,
+        sanisizer::cast<hsize_t>(indptrs.back()),
+        [&]{
+            ritsuko::hdf5::Stream1dNumericDatasetOptions opt;
+            opt.contiguous_chunk_size = contiguous_chunk_size;
+            return opt;
+        }()
+    );
     auto buffer = sanisizer::create<std::vector<Index_> >(stream.chunk_size());
 
     hsize_t available = 0, at = 0;
@@ -205,9 +220,9 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
 
             if (version.lt(1, 1, 0)) {
                 if (!ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, true)) {
-                    validate_sparse_indices<std::int64_t>(ihandle, indptrs, primary, secondary, csc);
+                    validate_sparse_indices<std::int64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
                 } else if (!ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
-                    validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc);
+                    validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
                 } else {
                     throw std::runtime_error("'indices' should be integer");
                 }
@@ -216,13 +231,13 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 if (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
                     throw std::runtime_error("datatype of 'indices' should fit into a 64-bit unsigned integer");
                 }
-                validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc);
+                validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
             }
         }
 
         // Validating dimnames.
         if (group.exists("dimnames")) {
-            validate_dimnames_internal(group, dims, version);
+            validate_dimnames_internal(group, dims, version, options.contiguous_chunk_size);
         }
     }
 

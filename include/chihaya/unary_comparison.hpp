@@ -69,7 +69,15 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                 vhandle.getSpace().getSimpleExtentDims(&extent);
                 check_unary_along(group, version, seed_details.dimensions, extent);
                 if (vhandle.getTypeClass() == H5T_STRING) {
-                    ritsuko::hdf5::validate_1d_strings(vhandle, extent);
+                    ritsuko::hdf5::validate_1d_strings(
+                        vhandle,
+                        extent, 
+                        [&]{
+                            ritsuko::hdf5::Validate1dStringsOptions opt;
+                            opt.contiguous_chunk_size = options.contiguous_chunk_size;
+                            return opt;
+                        }()
+                    );
                 }
 
             } else { 

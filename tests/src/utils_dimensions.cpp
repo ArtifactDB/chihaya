@@ -112,7 +112,7 @@ TEST_P(ValidateDimnamesInternalTest, None) {
     }
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    chihaya::validate_dimnames_internal(fhandle, dimensions, version);
+    chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000);
 }
 
 TEST_P(ValidateDimnamesInternalTest, Partial) {
@@ -128,7 +128,7 @@ TEST_P(ValidateDimnamesInternalTest, Partial) {
         }
 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::validate_dimnames_internal(fhandle, dimensions, version);
+        chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000);
     }
 }
 
@@ -145,7 +145,7 @@ TEST_P(ValidateDimnamesInternalTest, Full) {
     }
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    chihaya::validate_dimnames_internal(fhandle, dimensions, version);
+    chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000);
 }
 
 TEST_P(ValidateDimnamesInternalTest, Errors) {
@@ -162,7 +162,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "not a valid name");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "not a valid name");
     }
 
     {
@@ -171,7 +171,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "length of 'dimnames' list");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "length of 'dimnames' list");
     }
 
     {
@@ -181,7 +181,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "1-dimensional");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "1-dimensional");
     }
 
     {
@@ -191,7 +191,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "UTF-8 strings");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "UTF-8 strings");
     }
 
     {
@@ -201,7 +201,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "length equal to the extent");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "length equal to the extent");
     }
 
     {
@@ -211,7 +211,7 @@ TEST_P(ValidateDimnamesInternalTest, Errors) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version); }, "NULL");
+        expect_error([&]() -> void { chihaya::validate_dimnames_internal(fhandle, dimensions, version, 1000); }, "NULL");
     }
 }
 

@@ -22,7 +22,7 @@ TEST_P(ValidateSubsetIndexListTest, NoOp) {
     }
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 10, 20 }, version);
+    auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 10, 20 }, version, 1000);
     EXPECT_TRUE(collected.empty());
 }
 
@@ -38,7 +38,7 @@ TEST_P(ValidateSubsetIndexListTest, NonEmpty) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version);
+        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version, 1000);
         ASSERT_EQ(collected.size(), 1);
         EXPECT_EQ(collected[0], make_pair_z(2, 6));
     }
@@ -51,7 +51,7 @@ TEST_P(ValidateSubsetIndexListTest, NonEmpty) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version);
+        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version, 1000);
         ASSERT_EQ(collected.size(), 2);
         EXPECT_EQ(collected[0], make_pair_z(0, 7));
         EXPECT_EQ(collected[1], make_pair_z(2, 6));
@@ -65,7 +65,7 @@ TEST_P(ValidateSubsetIndexListTest, NonEmpty) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version);
+        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 20, 5, 10 }, version, 1000);
         ASSERT_EQ(collected.size(), 3);
         EXPECT_EQ(collected[0], make_pair_z(0, 7));
         EXPECT_EQ(collected[1], make_pair_z(1, 0));
@@ -85,7 +85,7 @@ TEST_P(ValidateSubsetIndexListTest, ListError) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "failed to load");
     }
 
@@ -96,7 +96,7 @@ TEST_P(ValidateSubsetIndexListTest, ListError) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10, 5 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10, 5 }, version, 1000);
         }, "equal to number of dimensions");
     }
 }
@@ -113,7 +113,7 @@ TEST_P(ValidateSubsetIndexListTest, IndexError) {
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "1-dimensional");
     }
 
@@ -125,12 +125,12 @@ TEST_P(ValidateSubsetIndexListTest, IndexError) {
     if (version.lt(1, 1, 0)) {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "expected an integer type");
     } else {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "64-bit unsigned integer");
     }
 
@@ -142,12 +142,12 @@ TEST_P(ValidateSubsetIndexListTest, IndexError) {
     if (version.lt(1, 1, 0)) {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "non-negative");
     } else {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
         }, "64-bit unsigned integer");
     }
 
@@ -158,7 +158,7 @@ TEST_P(ValidateSubsetIndexListTest, IndexError) {
     }
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
     expect_error([&]() -> void {
-        chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version);
+        chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
     }, "out of range");
 }
 
@@ -188,7 +188,7 @@ TEST_P(ValidateSubsetIndexListTest, IndexErrorChunked) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 3, extent }, version);
+        auto collected = chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 3, extent }, version, 1000);
         ASSERT_EQ(collected.size(), 1);
         EXPECT_EQ(collected[0], make_pair_z(2, subsets.size()));
     }
@@ -213,7 +213,7 @@ TEST_P(ValidateSubsetIndexListTest, IndexErrorChunked) {
 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
-            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 3, extent }, version);
+            chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 3, extent }, version, 1000);
         }, "out of range");
     }
 }
