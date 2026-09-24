@@ -97,7 +97,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p>Validation options.  
+<p><a class="el" href="structchihaya_1_1Options.html" title="Options for validate().">Options</a> for <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code>.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="utils__public_8hpp_source.html">utils_public.hpp</a>&gt;</code></p>
@@ -108,27 +108,26 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a675ba55ac4e1acfe61d4ab39a6829673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96d2e8926fca7d77353531e4d5449c82" id="r_a96d2e8926fca7d77353531e4d5449c82"><td class="memItemLeft" align="right" valign="top">hsize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a> = <a class="elRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#abd46ba64586c8de228897cc013def813">sanisizer::cap</a>&lt;hsize_t&gt;(10000)</td></tr>
 <tr class="separator:a96d2e8926fca7d77353531e4d5449c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a387149191b500eee4d3b231f3b0ca725" id="r_a387149191b500eee4d3b231f3b0ca725"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a387149191b500eee4d3b231f3b0ca725">array_validate_registry</a></td></tr>
-<tr class="separator:a387149191b500eee4d3b231f3b0ca725"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13322130551f66ec823fd0e1e57070fc" id="r_a13322130551f66ec823fd0e1e57070fc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13322130551f66ec823fd0e1e57070fc">operation_validate_registry</a></td></tr>
-<tr class="separator:a13322130551f66ec823fd0e1e57070fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c7779d7ff1aeba6fdadbf6ac3b065eb" id="r_a8c7779d7ff1aeba6fdadbf6ac3b065eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacechihaya.html#a097bf58beb458a4a4ec690c4914ca000">ValidateRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c7779d7ff1aeba6fdadbf6ac3b065eb">array_validate_registry</a></td></tr>
+<tr class="separator:a8c7779d7ff1aeba6fdadbf6ac3b065eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca17243f7223a35206bedb4c74b67af" id="r_acca17243f7223a35206bedb4c74b67af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacechihaya.html#a097bf58beb458a4a4ec690c4914ca000">ValidateRegistry</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acca17243f7223a35206bedb4c74b67af">operation_validate_registry</a></td></tr>
+<tr class="separator:acca17243f7223a35206bedb4c74b67af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Validation options. </p>
-<p>This is used to configure options for a single call to <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code>. It can be used to override validation functions without modifying the global validation registries, e.g., for parallelized applications. The options may also mutate throughout the duration of the call, allowing callers to collect statistics across the recursive invocations of <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on the same <code><a class="el" href="structchihaya_1_1Options.html" title="Validation options.">Options</a></code> object. </p>
+<div class="textblock"><p><a class="el" href="structchihaya_1_1Options.html" title="Options for validate().">Options</a> for <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code>. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a387149191b500eee4d3b231f3b0ca725" name="a387149191b500eee4d3b231f3b0ca725"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a387149191b500eee4d3b231f3b0ca725">&#9670;&#160;</a></span>array_validate_registry</h2>
+<a id="a8c7779d7ff1aeba6fdadbf6ac3b065eb" name="a8c7779d7ff1aeba6fdadbf6ac3b065eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c7779d7ff1aeba6fdadbf6ac3b065eb">&#9670;&#160;</a></span>array_validate_registry</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;std::string, std::function&lt;<a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group&amp;, const ritsuko::Version&amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a>&amp;)&gt; &gt; chihaya::Options::array_validate_registry</td>
+          <td class="memname"><a class="el" href="namespacechihaya.html#a097bf58beb458a4a4ec690c4914ca000">ValidateRegistry</a> chihaya::Options::array_validate_registry</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on arrays. If a custom function is provided for an array type, it is used instead of the default function . </p>
+<p>Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on arrays. If a custom function is provided for an existing array type in <b>chihaya</b>, it is used instead of the default function. </p>
 
 </div>
 </div>
@@ -162,18 +161,18 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a13322130551f66ec823fd0e1e57070fc" name="a13322130551f66ec823fd0e1e57070fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a13322130551f66ec823fd0e1e57070fc">&#9670;&#160;</a></span>operation_validate_registry</h2>
+<a id="acca17243f7223a35206bedb4c74b67af" name="acca17243f7223a35206bedb4c74b67af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca17243f7223a35206bedb4c74b67af">&#9670;&#160;</a></span>operation_validate_registry</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;std::string, std::function&lt;<a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group&amp;, const ritsuko::Version&amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a>&amp;)&gt; &gt; chihaya::Options::operation_validate_registry</td>
+          <td class="memname"><a class="el" href="namespacechihaya.html#a097bf58beb458a4a4ec690c4914ca000">ValidateRegistry</a> chihaya::Options::operation_validate_registry</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on operations. If a custom function is provided for an operation type, it is used instead of the default function . </p>
+<p>Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on operations. If a custom function is provided for an existing operation type in <b>chihaya</b>, it is used instead of the default function. </p>
 
 </div>
 </div>

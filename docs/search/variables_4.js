@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operation_5fvalidate_5fregistry_0',['operation_validate_registry',['../structchihaya_1_1Options.html#a13322130551f66ec823fd0e1e57070fc',1,'chihaya::Options']]]
+  ['operation_5fvalidate_5fregistry_0',['operation_validate_registry',['../structchihaya_1_1Options.html#acca17243f7223a35206bedb4c74b67af',1,'chihaya::Options']]]
 ];

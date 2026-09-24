@@ -88,6 +88,7 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">chihaya Namespace Reference</div></div>
@@ -103,8 +104,13 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Details about an array.  <a href="structchihaya_1_1ArrayDetails.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structchihaya_1_1Options.html">Options</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validation options.  <a href="structchihaya_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structchihaya_1_1Options.html" title="Options for validate().">Options</a> for <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code>.  <a href="structchihaya_1_1Options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a097bf58beb458a4a4ec690c4914ca000" id="r_a097bf58beb458a4a4ec690c4914ca000"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a097bf58beb458a4a4ec690c4914ca000">ValidateRegistry</a></td></tr>
+<tr class="separator:a097bf58beb458a4a4ec690c4914ca000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -168,7 +174,23 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Namespace for all <b>chihaya</b> functions. </p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a097bf58beb458a4a4ec690c4914ca000" name="a097bf58beb458a4a4ec690c4914ca000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a097bf58beb458a4a4ec690c4914ca000">&#9670;&#160;</a></span>ValidateRegistry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::unordered_map&lt;std::string, std::function&lt;<a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group&amp;, const ritsuko::Version&amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a>&amp;)&gt; &gt; <a class="el" href="#a097bf58beb458a4a4ec690c4914ca000">chihaya::ValidateRegistry</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Type of the registry of validation functions. Each key is the name of a delayed array/operation and each value is a validation function. See <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> for more details on the expected arguments and return type. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="aff4525846a37a56401501e2ffc5a61f2" name="aff4525846a37a56401501e2ffc5a61f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aff4525846a37a56401501e2ffc5a61f2">&#9670;&#160;</a></span>ArrayType</h2>
 
@@ -326,7 +348,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Overload of <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> that accepts a file path and group name, and uses the default <code><a class="el" href="structchihaya_1_1Options.html" title="Validation options.">Options</a></code>.</p>
+<p>Overload of <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> that accepts a file path and group name, and uses the default <code><a class="el" href="structchihaya_1_1Options.html" title="Options for validate().">Options</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">path</td><td>Path to a HDF5 file. </td></tr>
