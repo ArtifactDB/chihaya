@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operation_5fvalidate_5fregistry_0',['operation_validate_registry',['../structchihaya_1_1Options.html#a13322130551f66ec823fd0e1e57070fc',1,'chihaya::Options']]]
+  ['max_0',['max',['https://ltla.github.io/sanisizer/structsanisizer_1_1Attestation.html#a19587380bbe3e2da9fe21e6a368ae058',1,'sanisizer::Attestation']]]
 ];

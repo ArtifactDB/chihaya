@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['binary_5farithmetic_2ehpp_0',['binary_arithmetic.hpp',['../binary__arithmetic_8hpp.html',1,'']]],
-  ['binary_5fcomparison_2ehpp_1',['binary_comparison.hpp',['../binary__comparison_8hpp.html',1,'']]],
-  ['binary_5flogic_2ehpp_2',['binary_logic.hpp',['../binary__logic_8hpp.html',1,'']]]
+  ['arithmetic_2ehpp_0',['arithmetic.hpp',['https://ltla.github.io/sanisizer/arithmetic_8hpp.html',1,'']]],
+  ['attest_2ehpp_1',['attest.hpp',['https://ltla.github.io/sanisizer/attest_8hpp.html',1,'']]]
 ];

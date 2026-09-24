@@ -123,14 +123,14 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>) {</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    ritsuko::hdf5::Stream1dNumericDataset&lt;Index_&gt; stream(</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        &amp;ihandle,</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        sanisizer::cast&lt;hsize_t&gt;(indptrs.back()),</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#acde4a5b2077777f0c0d0b0761183b29b">sanisizer::cast&lt;hsize_t&gt;</a>(indptrs.back()),</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        [&amp;]{</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            ritsuko::hdf5::Stream1dNumericDatasetOptions opt;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            opt.contiguous_chunk_size = contiguous_chunk_size;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            return opt;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }()</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    );</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">auto</span> buffer = sanisizer::create&lt;std::vector&lt;Index_&gt; &gt;(stream.chunk_size());</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">auto</span> buffer = <a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7">sanisizer::create&lt;std::vector&lt;Index_&gt;</a> &gt;(stream.chunk_size());</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    hsize_t available = 0, at = 0;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> next = [&amp;]() -&gt; Index_ {</div>
@@ -166,7 +166,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            previous = i;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (sanisizer::is_greater_than_or_equal(previous, secondary)) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a6e29b2bd239d09d23bf296ffa9c9c8a5">sanisizer::is_greater_than_or_equal</a>(previous, secondary)) {</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;entries of &#39;indices&#39; should be less than the number of &quot;</span> + (csc ? std::string(<span class="stringliteral">&quot;row&quot;</span>) : std::string(<span class="stringliteral">&quot;column&quot;</span>)) + <span class="stringliteral">&quot;s&quot;</span>);</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
@@ -256,7 +256,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            hsize_t iplen;</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            ipspace.getSimpleExtentDims(&amp;iplen);</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keywordflow">if</span> (iplen == 0 || !sanisizer::is_equal(iplen - 1, primary)) { <span class="comment">// avoid risk of potential overflow with primary + 1.</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keywordflow">if</span> (iplen == 0 || !<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a48da56272ee357d828828ffd58eda482">sanisizer::is_equal</a>(iplen - 1, primary)) { <span class="comment">// avoid risk of potential overflow with primary + 1.</span></div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;indptr&#39; should have length equal to the number of &quot;</span> + (csc ? std::string(<span class="stringliteral">&quot;columns&quot;</span>) : std::string(<span class="stringliteral">&quot;rows&quot;</span>)) + <span class="stringliteral">&quot; plus 1&quot;</span>);</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            }</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
@@ -269,7 +269,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, <span class="keyword">false</span>)) {</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;datatype of &#39;indptr&#39; should fit into a 64-bit unsigned integer&quot;</span>);</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                }</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                sanisizer::resize(indptrs, iplen);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                <a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a3df6e5117dcf28cab0e705d4ac499f0d">sanisizer::resize</a>(indptrs, iplen);</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            }</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
@@ -277,7 +277,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            <span class="keywordflow">if</span> (indptrs[0] != 0) {</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;first entry of &#39;indptr&#39; should be 0&quot;</span>);</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            <span class="keywordflow">if</span> (!sanisizer::is_equal(indptrs.back(), nnz)) {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            <span class="keywordflow">if</span> (!<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a48da56272ee357d828828ffd58eda482">sanisizer::is_equal</a>(indptrs.back(), nnz)) {</div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;last entry of &#39;indptr&#39; should be equal to the length of &#39;data&#39;&quot;</span>);</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            }</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        }</div>
@@ -327,6 +327,11 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
 <div class="ttc" id="anamespacechihaya_html_a031ec8f84d840bf497f9ebbc843b1722"><div class="ttname"><a href="namespacechihaya.html#a031ec8f84d840bf497f9ebbc843b1722">chihaya::validate_sparse_matrix</a></div><div class="ttdeci">ArrayDetails validate_sparse_matrix(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> sparse_matrix.hpp:99</div></div>
 <div class="ttc" id="anamespacechihaya_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition</b> utils_public.hpp:29</div></div>
+<div class="ttc" id="anamespacesanisizer_html_a0c7c43499ff60d5185708c50b32a40d7"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7">sanisizer::create</a></div><div class="ttdeci">Container_ create(Value_ x, Args_ &amp;&amp;... args)</div></div>
+<div class="ttc" id="anamespacesanisizer_html_a3df6e5117dcf28cab0e705d4ac499f0d"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a3df6e5117dcf28cab0e705d4ac499f0d">sanisizer::resize</a></div><div class="ttdeci">void resize(Container_ &amp;container, Value_ x, Args_ &amp;&amp;... args)</div></div>
+<div class="ttc" id="anamespacesanisizer_html_a48da56272ee357d828828ffd58eda482"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a48da56272ee357d828828ffd58eda482">sanisizer::is_equal</a></div><div class="ttdeci">constexpr bool is_equal(Left_ left, Right_ right)</div></div>
+<div class="ttc" id="anamespacesanisizer_html_a6e29b2bd239d09d23bf296ffa9c9c8a5"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a6e29b2bd239d09d23bf296ffa9c9c8a5">sanisizer::is_greater_than_or_equal</a></div><div class="ttdeci">constexpr bool is_greater_than_or_equal(Left_ left, Right_ right)</div></div>
+<div class="ttc" id="anamespacesanisizer_html_acde4a5b2077777f0c0d0b0761183b29b"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#acde4a5b2077777f0c0d0b0761183b29b">sanisizer::cast</a></div><div class="ttdeci">constexpr Dest_ cast(Value_ x)</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:38</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:68</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html_a675ba55ac4e1acfe61d4ab39a6829673"><div class="ttname"><a href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">chihaya::Options::details_only</a></div><div class="ttdeci">bool details_only</div><div class="ttdef"><b>Definition</b> utils_public.hpp:73</div></div>

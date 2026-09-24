@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['chihaya_2ehpp_0',['chihaya.hpp',['../chihaya_8hpp.html',1,'']]],
-  ['combine_2ehpp_1',['combine.hpp',['../combine_8hpp.html',1,'']]],
-  ['constant_5farray_2ehpp_2',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
-  ['custom_5farray_2ehpp_3',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]]
+  ['binary_5farithmetic_2ehpp_0',['binary_arithmetic.hpp',['../binary__arithmetic_8hpp.html',1,'']]],
+  ['binary_5fcomparison_2ehpp_1',['binary_comparison.hpp',['../binary__comparison_8hpp.html',1,'']]],
+  ['binary_5flogic_2ehpp_2',['binary_logic.hpp',['../binary__logic_8hpp.html',1,'']]]
 ];

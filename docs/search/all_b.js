@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['unary_5farithmetic_2ehpp_0',['unary_arithmetic.hpp',['../unary__arithmetic_8hpp.html',1,'']]],
-  ['unary_5fcomparison_2ehpp_1',['unary_comparison.hpp',['../unary__comparison_8hpp.html',1,'']]],
-  ['unary_5flogic_2ehpp_2',['unary_logic.hpp',['../unary__logic_8hpp.html',1,'']]],
-  ['unary_5fmath_2ehpp_3',['unary_math.hpp',['../unary__math_8hpp.html',1,'']]],
-  ['unary_5fspecial_5fcheck_2ehpp_4',['unary_special_check.hpp',['../unary__special__check_8hpp.html',1,'']]],
-  ['utils_5fpublic_2ehpp_5',['utils_public.hpp',['../utils__public_8hpp.html',1,'']]]
+  ['operation_5fvalidate_5fregistry_0',['operation_validate_registry',['../structchihaya_1_1Options.html#a13322130551f66ec823fd0e1e57070fc',1,'chihaya::Options']]],
+  ['operations_20in_20hdf5_1',['Delayed operations in HDF5',['../index.html',1,'']]],
+  ['operator_20integer_5f_2',['operator Integer_',['https://ltla.github.io/sanisizer/classsanisizer_1_1Exact.html#ae46a64c0dbe62535e6d5ffe8e555bba5',1,'sanisizer::Exact']]],
+  ['operator_20output_5f_3',['operator Output_',['https://ltla.github.io/sanisizer/classsanisizer_1_1Cast.html#a22b477d41df49b122428deb6532e2307',1,'sanisizer::Cast::operator Output_()'],['https://ltla.github.io/sanisizer/classsanisizer_1_1Exact.html#a0f5204707227e757d6b1dd25ba60619c',1,'sanisizer::Exact::operator Output_()']]],
+  ['options_4',['Options',['../structchihaya_1_1Options.html',1,'chihaya']]]
 ];

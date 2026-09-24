@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['options_0',['Options',['../structchihaya_1_1Options.html',1,'chihaya']]]
+  ['cast_0',['Cast',['https://ltla.github.io/sanisizer/classsanisizer_1_1Cast.html',1,'sanisizer']]]
 ];
