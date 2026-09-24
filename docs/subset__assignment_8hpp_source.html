@@ -126,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        }</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">auto</span> ihandle = group.openGroup(<span class="stringliteral">&quot;index&quot;</span>);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">auto</span> collected = validate_subset_index_list(ihandle, seed_dims, version);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">auto</span> collected = validate_subset_index_list(ihandle, seed_dims, version, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a>);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">auto</span> expected_dims = seed_dims;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> p : collected) {</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            expected_dims[p.first] = p.second;</div>
@@ -151,6 +151,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:37</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:67</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html_a675ba55ac4e1acfe61d4ab39a6829673"><div class="ttname"><a href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">chihaya::Options::details_only</a></div><div class="ttdeci">bool details_only</div><div class="ttdef"><b>Definition</b> utils_public.hpp:72</div></div>
+<div class="ttc" id="astructchihaya_1_1Options_html_a96d2e8926fca7d77353531e4d5449c82"><div class="ttname"><a href="structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82">chihaya::Options::contiguous_chunk_size</a></div><div class="ttdeci">hsize_t contiguous_chunk_size</div><div class="ttdef"><b>Definition</b> utils_public.hpp:78</div></div>
 <div class="ttc" id="autils__public_8hpp_html"><div class="ttname"><a href="utils__public_8hpp.html">utils_public.hpp</a></div><div class="ttdoc">Various public utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

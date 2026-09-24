@@ -111,7 +111,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">auto</span>&amp; seed_dims = seed_details.dimensions;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span> ihandle = group.openGroup(<span class="stringliteral">&quot;index&quot;</span>);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span> collected = validate_subset_index_list(ihandle, seed_dims, version);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span> collected = validate_subset_index_list(ihandle, seed_dims, version, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a>);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> p : collected) {</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        seed_dims[p.first] = p.second;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
@@ -127,6 +127,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="anamespacechihaya_html_a16da5400972fb0129464486da32f0bd0"><div class="ttname"><a href="namespacechihaya.html#a16da5400972fb0129464486da32f0bd0">chihaya::validate_subset</a></div><div class="ttdeci">ArrayDetails validate_subset(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> subset.hpp:26</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:37</div></div>
 <div class="ttc" id="astructchihaya_1_1Options_html"><div class="ttname"><a href="structchihaya_1_1Options.html">chihaya::Options</a></div><div class="ttdoc">Validation options.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:67</div></div>
+<div class="ttc" id="astructchihaya_1_1Options_html_a96d2e8926fca7d77353531e4d5449c82"><div class="ttname"><a href="structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82">chihaya::Options::contiguous_chunk_size</a></div><div class="ttdeci">hsize_t contiguous_chunk_size</div><div class="ttdef"><b>Definition</b> utils_public.hpp:78</div></div>
 <div class="ttc" id="autils__public_8hpp_html"><div class="ttname"><a href="utils__public_8hpp.html">utils_public.hpp</a></div><div class="ttdoc">Various public utilities.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

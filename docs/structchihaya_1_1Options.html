@@ -106,6 +106,8 @@ $(function(){ initResizable(false); });
 Public Attributes</h2></td></tr>
 <tr class="memitem:a675ba55ac4e1acfe61d4ab39a6829673" id="r_a675ba55ac4e1acfe61d4ab39a6829673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a> = false</td></tr>
 <tr class="separator:a675ba55ac4e1acfe61d4ab39a6829673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96d2e8926fca7d77353531e4d5449c82" id="r_a96d2e8926fca7d77353531e4d5449c82"><td class="memItemLeft" align="right" valign="top">hsize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a> = 10000</td></tr>
+<tr class="separator:a96d2e8926fca7d77353531e4d5449c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a387149191b500eee4d3b231f3b0ca725" id="r_a387149191b500eee4d3b231f3b0ca725"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a387149191b500eee4d3b231f3b0ca725">array_validate_registry</a></td></tr>
 <tr class="separator:a387149191b500eee4d3b231f3b0ca725"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a13322130551f66ec823fd0e1e57070fc" id="r_a13322130551f66ec823fd0e1e57070fc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13322130551f66ec823fd0e1e57070fc">operation_validate_registry</a></td></tr>
@@ -127,6 +129,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Custom registry of functions to be used by <code><a class="el" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> on arrays. If a custom function is provided for an array type, it is used instead of the default function . </p>
+
+</div>
+</div>
+<a id="a96d2e8926fca7d77353531e4d5449c82" name="a96d2e8926fca7d77353531e4d5449c82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96d2e8926fca7d77353531e4d5449c82">&#9670;&#160;</a></span>contiguous_chunk_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hsize_t chihaya::Options::contiguous_chunk_size = 10000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Size of the streaming chunks (in terms of the number of elements) to use for contiguous HDF5 datasets. Ignored for chunked datasets where streaming chunk size is defined as the dataset's chunk size. </p>
 
 </div>
 </div>
