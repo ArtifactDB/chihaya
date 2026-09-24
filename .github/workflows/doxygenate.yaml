@@ -37,6 +37,9 @@ jobs:
     - name: Add Pretty CSS
       run: curl -L https://raw.githubusercontent.com/jothepro/doxygen-awesome-css/main/doxygen-awesome.css -o docs/doxygen-awesome.css 
 
+    - name: Get sanisizer tagfile
+      run: curl -L https://ltla.github.io/sanisizer/sanisizer.tag -o docs/sanisizer.tag
+
     - name: Doxygen Action
       uses: mattnotmitt/doxygen-action@v1
       with:
