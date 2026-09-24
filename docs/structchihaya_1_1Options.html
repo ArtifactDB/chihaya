@@ -106,7 +106,7 @@ $(function(){ initResizable(false); });
 Public Attributes</h2></td></tr>
 <tr class="memitem:a675ba55ac4e1acfe61d4ab39a6829673" id="r_a675ba55ac4e1acfe61d4ab39a6829673"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a> = false</td></tr>
 <tr class="separator:a675ba55ac4e1acfe61d4ab39a6829673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96d2e8926fca7d77353531e4d5449c82" id="r_a96d2e8926fca7d77353531e4d5449c82"><td class="memItemLeft" align="right" valign="top">hsize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a> = 10000</td></tr>
+<tr class="memitem:a96d2e8926fca7d77353531e4d5449c82" id="r_a96d2e8926fca7d77353531e4d5449c82"><td class="memItemLeft" align="right" valign="top">hsize_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a> = sanisizer::cap&lt;hsize_t&gt;(10000)</td></tr>
 <tr class="separator:a96d2e8926fca7d77353531e4d5449c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a387149191b500eee4d3b231f3b0ca725" id="r_a387149191b500eee4d3b231f3b0ca725"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::function&lt; <a class="el" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a>(const H5::Group &amp;, const ritsuko::Version &amp;, const <a class="el" href="structchihaya_1_1Options.html">Options</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a387149191b500eee4d3b231f3b0ca725">array_validate_registry</a></td></tr>
 <tr class="separator:a387149191b500eee4d3b231f3b0ca725"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -139,7 +139,7 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">hsize_t chihaya::Options::contiguous_chunk_size = 10000</td>
+          <td class="memname">hsize_t chihaya::Options::contiguous_chunk_size = sanisizer::cap&lt;hsize_t&gt;(10000)</td>
         </tr>
       </table>
 </div><div class="memdoc">
