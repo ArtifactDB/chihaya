@@ -59,11 +59,22 @@ struct ArrayDetails {
 };
 
 /**
- * @brief Validation options.
- *
- * This is used to configure options for a single call to `validate()`.
- * It can be used to override validation functions without modifying the global validation registries, e.g., for parallelized applications.
- * The options may also mutate throughout the duration of the call, allowing callers to collect statistics across the recursive invocations of `validate()` on the same `Options` object.
+ * @cond
+ */
+struct Options;
+/**
+ * @endcond
+ */
+
+/**
+ * Type of the registry of validation functions.
+ * Each key is the name of a delayed array/operation and each value is a validation function.
+ * See `validate()` for more details on the expected arguments and return type.
+ */
+typedef std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > ValidateRegistry;
+
+/**
+ * @brief Options for `validate()`.
  */
 struct Options {
     /**
@@ -80,15 +91,15 @@ struct Options {
 
     /**
      * Custom registry of functions to be used by `validate()` on arrays.
-     * If a custom function is provided for an array type, it is used instead of the default function .
+     * If a custom function is provided for an existing array type in **chihaya**, it is used instead of the default function.
      */
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > array_validate_registry;
+    ValidateRegistry array_validate_registry;
 
     /**
      * Custom registry of functions to be used by `validate()` on operations.
-     * If a custom function is provided for an operation type, it is used instead of the default function .
+     * If a custom function is provided for an existing operation type in **chihaya**, it is used instead of the default function.
      */
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > operation_validate_registry;
+    ValidateRegistry operation_validate_registry;
 };
 
 }

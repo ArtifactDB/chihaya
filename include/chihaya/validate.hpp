@@ -47,7 +47,7 @@ namespace chihaya {
  * @cond
  */
 inline auto default_operation_registry() {
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > registry;
+    ValidateRegistry registry;
     registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_subset(h, v, o); };
     registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_combine(h, v, o); };
     registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_transpose(h, v, o); };
@@ -66,7 +66,7 @@ inline auto default_operation_registry() {
 }
 
 inline auto default_array_registry() {
-    std::unordered_map<std::string, std::function<ArrayDetails(const H5::Group&, const ritsuko::Version&, const Options&)> > registry;
+    ValidateRegistry registry;
     registry["dense array"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_dense_array(h, v, o); };
     registry["sparse matrix"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_sparse_matrix(h, v, o); };
     registry["constant array"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_constant_array(h, v, o); };
