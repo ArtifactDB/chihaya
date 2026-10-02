@@ -155,20 +155,21 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                } <span class="keywordflow">else</span> { </div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be scalar or 1-dimensional&quot;</span>);</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;value&#39;; &quot;</span> + std::string(e.what()));</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            }</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    seed_details.type = BOOLEAN;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;value&#39;&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    seed_details.type = BOOLEAN;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
 </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
 <div class="ttc" id="anamespacechihaya_html_aca7d0b134143deec6803af84905aeeba"><div class="ttname"><a href="namespacechihaya.html#aca7d0b134143deec6803af84905aeeba">chihaya::validate_unary_logic</a></div><div class="ttdeci">ArrayDetails validate_unary_logic(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> unary_logic.hpp:31</div></div>
 <div class="ttc" id="anamespacechihaya_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition</b> utils_public.hpp:29</div></div>

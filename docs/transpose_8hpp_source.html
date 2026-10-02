@@ -114,7 +114,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Perm_&gt;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>std::vector&lt;std::size_t&gt; check_permutation(<span class="keyword">const</span> H5::DataSet&amp; phandle, hsize_t plen, <span class="keyword">const</span> std::vector&lt;std::size_t&gt;&amp; input_dimensions, <span class="keywordtype">bool</span> details_only) {</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a48da56272ee357d828828ffd58eda482">sanisizer::is_equal</a>(plen, input_dimensions.size())) {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;length of &#39;permutation&#39; should match dimensionality of &#39;seed&#39;&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;length should match dimensionality of &#39;seed&#39;&quot;</span>);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span> permutation = <a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7">sanisizer::create&lt;std::vector&lt;Perm_&gt;</a> &gt;(plen);</div>
@@ -124,10 +124,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">for</span> (I&lt;<span class="keyword">decltype</span>(plen)&gt; p = 0; p &lt; plen; ++p) {</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> <span class="keyword">auto</span> current = permutation[p];</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span> (current &lt; 0) {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;permutation&#39; should contain non-negative indices&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected non-negative indices&quot;</span>);</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        }</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a6e29b2bd239d09d23bf296ffa9c9c8a5">sanisizer::is_greater_than_or_equal</a>(current, plen)) {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;permutation&#39; contains out-of-bounds indices&quot;</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;detected out-of-bounds indices&quot;</span>);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        new_dimensions[p] = input_dimensions[permutation[p]];</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
@@ -136,7 +136,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        std::sort(permutation.begin(), permutation.end());</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">for</span> (I&lt;<span class="keyword">decltype</span>(plen)&gt; p = 0; p &lt; plen; ++p) {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">if</span> (!<a class="code hl_functionRef" href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a48da56272ee357d828828ffd58eda482">sanisizer::is_equal</a>(p, permutation[p])) {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;indices in &#39;permutation&#39; should be unique&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;indices should be unique&quot;</span>);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            }</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        }</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
@@ -155,29 +155,33 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    hsize_t plen;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    pspace.getSimpleExtentDims(&amp;plen);</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="comment">// Older versions didn&#39;t actually specify the integer type, so we just check we can load it into an &#39;int&#39; of any type.</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">if</span> (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">true</span>)) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            seed_details.dimensions = check_permutation&lt;std::int64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">false</span>)) {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            seed_details.dimensions = check_permutation&lt;std::uint64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">throw</span> create_integer_error_0_99(ritsuko::hdf5::get_name(phandle), phandle.getTypeClass());</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">false</span>)) {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;&#39;permutation&#39; should have a datatype that can be represented by a 64-bit unsigned integer&quot;</span>);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        seed_details.dimensions = check_permutation&lt;std::uint64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="comment">// Older versions didn&#39;t actually specify the integer type, so we just check we can load it into an &#39;int&#39; of any type.</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">true</span>)) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                seed_details.dimensions = check_permutation&lt;std::int64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                seed_details.dimensions = check_permutation&lt;std::uint64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="keywordflow">throw</span> create_integer_error_0_99(phandle.getTypeClass());</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">if</span> (ritsuko::hdf5::exceeds_integer_limit(phandle, 64, <span class="keyword">false</span>)) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;datatype should fit in a 64-bit unsigned integer&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            seed_details.dimensions = check_permutation&lt;std::uint64_t&gt;(phandle, plen, seed_details.dimensions, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;permutation&#39;&quot;</span>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
 </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
 <div class="ttc" id="anamespacechihaya_html_a28e488e3d65d1ebd175227b50c928917"><div class="ttname"><a href="namespacechihaya.html#a28e488e3d65d1ebd175227b50c928917">chihaya::validate_transpose</a></div><div class="ttdeci">ArrayDetails validate_transpose(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> transpose.hpp:71</div></div>
 <div class="ttc" id="anamespacesanisizer_html_a0c7c43499ff60d5185708c50b32a40d7"><div class="ttname"><a href="https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7">sanisizer::create</a></div><div class="ttdeci">Container_ create(Value_ x, Args_ &amp;&amp;... args)</div></div>

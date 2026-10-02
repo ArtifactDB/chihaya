@@ -167,8 +167,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be scalar or 1-dimensional&quot;</span>);</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            }</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;value&#39;; &quot;</span> + std::string(e.what()));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;value&#39;&quot;</span>);</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
