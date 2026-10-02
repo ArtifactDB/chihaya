@@ -14,11 +14,11 @@
 
 namespace chihaya {
 
-inline auto create_integer_error_0_99(const std::string& name, H5T_class_t type_class) {
+inline auto create_integer_error_0_99(H5T_class_t type_class) {
     if (type_class == H5T_INTEGER) {
-        return std::runtime_error("integer type for '" + name + "' is too large to read");
+        return std::runtime_error("integer type is too large to read");
     } else {
-        return std::runtime_error("expected an integer type for '" + name + "'");
+        return std::runtime_error("expected an integer type");
     }
 }
 
@@ -32,7 +32,7 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
         std::int64_t val;
         handle.read(&val, H5::PredType::NATIVE_INT64);
         if (val < 0) {
-            throw std::runtime_error("expected a non-negative integer in '" + ritsuko::hdf5::get_name(handle) + "'");
+            throw std::runtime_error("expected a non-negative integer");
         }
         return sanisizer::cast<Output_>(val);
 
@@ -42,7 +42,7 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::DataSet& handle) {
         return sanisizer::cast<Output_>(val);
 
     } else {
-        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(handle.getTypeClass());
         return 0;
     }
 }
@@ -55,7 +55,7 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
         std::int64_t val;
         handle.read(H5::PredType::NATIVE_INT64, &val);
         if (val < 0) {
-            throw std::runtime_error("expected a non-negative integer in '" + ritsuko::hdf5::get_name(handle) + "'");
+            throw std::runtime_error("expected a non-negative integer");
         }
         return sanisizer::cast<Output_>(val);
 
@@ -65,7 +65,7 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
         return sanisizer::cast<Output_>(val);
 
     } else {
-        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(handle.getTypeClass());
         return 0;
     }
 }
@@ -82,7 +82,7 @@ std::vector<Output_> load_non_negative_integer_vector_0_99(const H5::DataSet& ha
         handle.read(vals.data(), H5::PredType::NATIVE_INT64);
         for (auto val : vals) {
             if (val < 0) {
-                throw std::runtime_error("'" + ritsuko::hdf5::get_name(handle) + "' should contain non-negative values");
+                throw std::runtime_error("expected non-negative values");
             }
             output.push_back(sanisizer::cast<std::size_t>(val));
         }
@@ -95,7 +95,7 @@ std::vector<Output_> load_non_negative_integer_vector_0_99(const H5::DataSet& ha
         }
 
     } else {
-        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
+        throw create_integer_error_0_99(handle.getTypeClass());
     }
 
     return output;
@@ -113,8 +113,7 @@ inline bool load_boolean_scalar_0_99(const H5::DataSet& handle) {
         handle.read(&val, H5::PredType::NATIVE_UINT64);
         return val != 0;
     } else {
-        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
-        return false;
+        throw create_integer_error_0_99(handle.getTypeClass());
     }
 }
 
@@ -128,8 +127,7 @@ inline bool load_boolean_scalar_0_99(const H5::Attribute& handle) {
         handle.read(H5::PredType::NATIVE_UINT64, &val);
         return val != 0;
     } else {
-        throw create_integer_error_0_99(ritsuko::hdf5::get_name(handle), handle.getTypeClass());
-        return false;
+        throw create_integer_error_0_99(handle.getTypeClass());
     }
 }
 

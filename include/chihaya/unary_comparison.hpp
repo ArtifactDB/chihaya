@@ -84,8 +84,8 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                 throw std::runtime_error("dataset should be scalar or 1-dimensional");
             }
 
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'value'");
         }
     }
 

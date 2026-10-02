@@ -153,7 +153,7 @@ TEST_P(TransposeErrorTest, Permutation) {
         ghandle.unlink("permutation");
         add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error(path, "hello", "length of 'permutation'");
+    expect_error(path, "hello", "length should match dimensionality");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

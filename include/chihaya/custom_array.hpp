@@ -36,13 +36,17 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
     hsize_t len;
     dspace.getSimpleExtentDims(&len);
 
-    if (version.lt(1, 1, 0)) {
-        output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, len);
-    } else {
-        if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
-            throw std::runtime_error("datatype of 'dimensions' should fit in a 64-bit unsigned integer");
+    try {
+        if (version.lt(1, 1, 0)) {
+            output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, len);
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
+                throw std::runtime_error("datatype should fit in a 64-bit unsigned integer");
+            }
+            output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, len);
         }
-        output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, len);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'dimensions'");
     }
 
     auto type = load_scalar_string_dataset(group, "type");

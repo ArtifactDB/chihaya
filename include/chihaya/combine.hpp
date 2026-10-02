@@ -37,8 +37,8 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
     ListDetails list_params;
     try {
         list_params = validate_list(shandle, version);
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to load 'seeds' list; " + std::string(e.what()));
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to load 'seeds' list");
     }
     if (list_params.present.size() != list_params.length) {
         throw std::runtime_error("missing elements in the 'seeds' list");
@@ -53,8 +53,8 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
         ArrayDetails cur_seed;
         try {
             cur_seed = fetch_seed(shandle, p.second, version, options);
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate 'seeds/" + p.second + "'; " + std::string(e.what()));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'seeds/" + p.second + "'");
         }
 
         if (first) {

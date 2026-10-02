@@ -7,12 +7,12 @@
 
 TEST(CreateIntegerError_0_99, Basic) {
     {
-        auto err = chihaya::create_integer_error_0_99("foo", H5T_STRING);
+        auto err = chihaya::create_integer_error_0_99(H5T_STRING);
         EXPECT_TRUE(std::string(err.what()).find("expected an integer") != std::string::npos);
     }
 
     {
-        auto err = chihaya::create_integer_error_0_99("bar", H5T_INTEGER);
+        auto err = chihaya::create_integer_error_0_99(H5T_INTEGER);
         EXPECT_TRUE(std::string(err.what()).find("too large") != std::string::npos);
     }
 }

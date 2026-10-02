@@ -83,8 +83,8 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
                 }
             }
 
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'value'");
         }
     }
 

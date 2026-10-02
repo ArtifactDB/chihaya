@@ -112,15 +112,20 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
             throw std::runtime_error("'shape' dataset should have length 2");
         }
 
-        if (version.lt(1, 1, 0)) {
-            dims = load_non_negative_integer_vector_0_99<std::size_t>(shandle, 2);
-        } else {
-            if (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, false)) {
-                throw std::runtime_error("'shape' should have a datatype that can fit into a 64-bit unsigned integer");
+        try {
+            if (version.lt(1, 1, 0)) {
+                dims = load_non_negative_integer_vector_0_99<std::size_t>(shandle, 2);
+            } else {
+                if (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, false)) {
+                    throw std::runtime_error("'shape' should have a datatype that can fit into a 64-bit unsigned integer");
+                }
+                dims = load_dimensions_from_uint64_contents<std::size_t>(shandle, 2);
             }
-            dims = load_dimensions_from_uint64_contents<std::size_t>(shandle, 2);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'shape'");
         }
     }
+
 
     hsize_t nnz;
     {

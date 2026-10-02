@@ -35,10 +35,10 @@ void validate_subset_indices(const H5::DataSet& dhandle, hsize_t len, std::size_
         for (I<decltype(available)> i = 0; i < available; ++i) {
             const auto idx = buffer[i];
             if (idx < 0) {
-                throw std::runtime_error("indices should be non-negative in '" + ritsuko::hdf5::get_name(dhandle) + "'");
+                throw std::runtime_error("indices should be non-negative");
             }
             if (sanisizer::is_greater_than_or_equal(idx, extent)) {
-                throw std::runtime_error("indices out of range in '" + ritsuko::hdf5::get_name(dhandle) + "'");
+                throw std::runtime_error("detected out of range indices");
             }
         }
     }
@@ -50,15 +50,9 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
     const ritsuko::Version& version,
     const hsize_t contiguous_chunk_size
 ) {
-    ListDetails list_params;
-    try {
-        list_params = validate_list(ihandle, version);
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to load 'index' list; " + std::string(e.what()));
-    }
-
+    ListDetails list_params = validate_list(ihandle, version);
     if (list_params.length != seed_dims.size()) {
-        throw std::runtime_error("length of 'index' should be equal to number of dimensions in 'seed'");
+        throw std::runtime_error("length of index list should be equal to number of dimensions");
     }
 
     std::vector<std::pair<std::size_t, std::size_t> > collected;
@@ -80,7 +74,7 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
                 } else if (!ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
                     validate_subset_indices<std::uint64_t>(dhandle, len, seed_dims[p.first], contiguous_chunk_size);
                 } else {
-                    throw create_integer_error_0_99(ritsuko::hdf5::get_name(dhandle), dhandle.getTypeClass());
+                    throw create_integer_error_0_99(dhandle.getTypeClass());
                 }
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
@@ -90,8 +84,8 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
             }
 
             collected.emplace_back(p.first, len);
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate 'index/" + p.second + "'; " + std::string(e.what()));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate '" + p.second + "'");
         }
     }
 

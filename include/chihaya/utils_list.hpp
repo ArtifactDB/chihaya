@@ -69,7 +69,7 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
         }
 
         if (sofar >= output.length) {
-            throw std::runtime_error("'" + name + "' is out of range for a list"); 
+            throw std::runtime_error("dataset at position " + name + " is out of bounds for a list of length " + std::to_string(output.length));
         }
         output.present[sofar] = name;
     }

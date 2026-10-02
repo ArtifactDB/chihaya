@@ -22,6 +22,17 @@ ArrayDetails validate(const H5::Group&, const ritsuko::Version&, const Options&)
 template<typename Input_>
 using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
 
+[[noreturn]]
+inline void wrap_error(const std::exception_ptr& err, const std::string& context) {
+    try {
+        std::rethrow_exception(err);
+    } catch (std::exception& e) {
+        throw std::runtime_error(context + "; " + std::string(e.what()));
+    } catch (H5::Exception& e) {
+        throw std::runtime_error(context + "; " + e.getDetailMsg());
+    }
+}
+
 inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuko::Version& version) {
     if (version.lt(1, 0, 0)) {
         return;
@@ -41,7 +52,11 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
         if (ahandle.getTypeClass() != H5T_STRING) {
             throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to use a string datatype class");
         }
-        ritsuko::hdf5::validate_scalar_string(ahandle);
+        try {
+            ritsuko::hdf5::validate_scalar_string(ahandle);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate the '" + std::string(placeholder) + "' attribute");
+        }
     } else {
         if (version.lt(1, 1, 0)) {
             // Older versions only required the same type class.
@@ -57,14 +72,12 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
 }
 
 inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name, const ritsuko::Version& version, const Options& options) {
-    ArrayDetails output;
     auto shandle = handle.openGroup(name);
     try {
-        output = validate(shandle, version, options);
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to validate '" + name + "'; " + std::string(e.what()));
+        return validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate '" + name + "'");
     }
-    return output;
 }
 
 inline H5::DataSet safe_open_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
@@ -80,7 +93,11 @@ inline H5::DataSet safe_open_scalar_string_dataset(const H5::Group& handle, cons
 
 inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
     auto dhandle = safe_open_scalar_string_dataset(handle, name);
-    return ritsuko::hdf5::read_scalar_string(dhandle);
+    try {
+        return ritsuko::hdf5::read_scalar_string(dhandle);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to read the '" + name + "' dataset");
+    }
 }
 
 template<typename Handle_>
@@ -98,7 +115,11 @@ H5::Attribute safe_open_scalar_string_attribute(const Handle_& handle, const std
 template<typename Handle_>
 std::string load_scalar_string_attribute(const Handle_& handle, const std::string& name) {
     auto ahandle = safe_open_scalar_string_attribute(handle, name);
-    return ritsuko::hdf5::read_scalar_string(ahandle);
+    try {
+        return ritsuko::hdf5::read_scalar_string(ahandle);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to read the '" + name + "' attribute");
+    }
 }
 
 }

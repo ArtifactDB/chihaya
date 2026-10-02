@@ -44,13 +44,17 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
         throw std::runtime_error("'dimensions' dataset should have non-zero length");
     }
 
-    if (version.lt(1, 1, 0)) {
-        output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, size);
-    } else {
-        if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
-            throw std::runtime_error("datatype of 'dimensions' should fit inside a 64-bit unsigned integer");
+    try {
+        if (version.lt(1, 1, 0)) {
+            output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, size);
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(dhandle, 64, false)) {
+                throw std::runtime_error("datatype should fit inside a 64-bit unsigned integer");
+            }
+            output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, size);
         }
-        output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, size);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'dimensions'");
     }
 
     auto vhandle = group.openDataSet("value");
@@ -76,8 +80,8 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
             }
         }
 
-    } catch (std::exception& e) {
-        throw std::runtime_error("failed to validate 'value'; " + std::string(e.what()));
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'value'");
     }
 
     return output;

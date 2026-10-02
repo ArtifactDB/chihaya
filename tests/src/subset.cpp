@@ -158,16 +158,15 @@ TEST_P(SubsetErrorTest, Index) {
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_UINT16);
     }
-    expect_error(path, "hello", "out of range");
+    expect_error(path, "hello", "out of bounds");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("2"); // removing the above.
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER");
+        auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "1", { 1, 3, 0, 2, 1009 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error(path, "hello", "indices out of range");
+    expect_error(path, "hello", "out of range");
 }
 
 INSTANTIATE_TEST_SUITE_P(

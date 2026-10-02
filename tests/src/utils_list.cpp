@@ -223,7 +223,7 @@ TEST_P(ValidateListTest, NameError) {
     expect_error([&]() -> void { 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         chihaya::validate_list(fhandle.openGroup("foo"), version);
-    }, "out of range");
+    }, "out of bounds");
 }
 
 INSTANTIATE_TEST_SUITE_P(

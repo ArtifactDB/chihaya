@@ -273,7 +273,7 @@ TEST_P(SparseMatrixErrorTest, Shape) {
         add_numeric_vector<int>(ghandle, "shape", { -1, 10 }, H5::PredType::NATIVE_INT);
     }
     if (version.lt(1, 1, 0)) {
-        expect_error(path, "foobar", "should contain non-negative");
+        expect_error(path, "foobar", "non-negative");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
     }

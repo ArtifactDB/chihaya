@@ -92,8 +92,8 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
                 }
             }
 
-        } catch (std::exception& e) {
-            throw std::runtime_error("failed to validate 'data'; " + std::string(e.what()));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'data'");
         }
 
         transplant_dimensions(dims, output.dimensions);

@@ -77,6 +77,7 @@ TEST_P(ValidateSubsetIndexListTest, ListError) {
     auto path = define_test_path("utils_subset");
     auto version = GetParam();
 
+    // Confirm that validate_list() was actually called.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto lhandle = list_opener(fhandle, "index", 2, version);
@@ -86,7 +87,7 @@ TEST_P(ValidateSubsetIndexListTest, ListError) {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
             chihaya::validate_subset_index_list(fhandle.openGroup("index"), { 2, 10 }, version, 1000);
-        }, "failed to load");
+        }, "not a valid name");
     }
 
     {

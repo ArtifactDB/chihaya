@@ -193,7 +193,7 @@ TEST_P(SubsetAssignmentErrorTest, Index) {
         auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "2", { 1, 3, 0, 2, 9 }, H5::PredType::NATIVE_INT);
     }
-    expect_error(path, "hello", "out of range");
+    expect_error(path, "hello", "out of bounds");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

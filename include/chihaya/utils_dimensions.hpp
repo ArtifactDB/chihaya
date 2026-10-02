@@ -74,9 +74,14 @@ inline void validate_dimnames_internal(
     const std::vector<std::size_t>& dimensions,
     const ritsuko::Version& version,
     const hsize_t contiguous_chunk_size
-) try {
+) {
     auto ghandle = handle.openGroup("dimnames");
-    auto list_params = validate_list(ghandle, version);
+    ListDetails list_params;
+    try {
+        list_params = validate_list(ghandle, version);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+    }
 
     if (!sanisizer::is_equal(list_params.length, dimensions.size())) {
         throw std::runtime_error("length of 'dimnames' list should be equal to seed dimensionality");
@@ -98,18 +103,20 @@ inline void validate_dimnames_internal(
             throw std::runtime_error("each entry of 'dimnames' should have length equal to the extent of its corresponding dimension");
         }
 
-        ritsuko::hdf5::validate_1d_strings(
-            current,
-            len,
-            [&]{
-                ritsuko::hdf5::Validate1dStringsOptions opt;
-                opt.contiguous_chunk_size = contiguous_chunk_size;
-                return opt;
-            }()
-        );
+        try {
+            ritsuko::hdf5::validate_1d_strings(
+                current,
+                len,
+                [&]{
+                    ritsuko::hdf5::Validate1dStringsOptions opt;
+                    opt.contiguous_chunk_size = contiguous_chunk_size;
+                    return opt;
+                }()
+            );
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+        }
     }
-} catch (std::exception& e) {
-    throw std::runtime_error("failed to validate the 'dimnames'; " + std::string(e.what()));
 }
 
 }

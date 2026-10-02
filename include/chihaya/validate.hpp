@@ -99,8 +99,8 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
         if (cit != custom.end()) {
             try {
                 output = (cit->second)(group, version, options);
-            } catch (std::exception& e) {
-                throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
             }
 
         } else {
@@ -109,21 +109,24 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             if (git != global.end()) {
                 try {
                     output = (git->second)(group, version, options);
-                } catch (std::exception& e) {
-                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
                 }
+
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 try {
                     output = validate_custom_array(group, version, options);
-                } catch (std::exception& e) {
-                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
                 }
+
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
                 try {
                     output = validate_external_hdf5(group, version, options);
-                } catch (std::exception& e) {
-                    throw std::runtime_error("failed to validate delayed array of type '" + atype + "'; " + std::string(e.what()));
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
                 }
+
             } else {
                 throw std::runtime_error("unknown array type '" + atype + "'");
             }
@@ -137,8 +140,8 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
         if (cit != custom.end()) {
             try {
                 output = (cit->second)(group, version, options);
-            } catch (std::exception& e) {
-                throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate delayed operation of type '" + otype + "'");
             }
 
         } else {
@@ -147,9 +150,10 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             if (git != global.end()) {
                 try {
                     output = (git->second)(group, version, options);
-                } catch (std::exception& e) {
-                    throw std::runtime_error("failed to validate delayed operation of type '" + otype + "'; " + std::string(e.what()));
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate delayed operation of type '" + otype + "'");
                 }
+
             } else {
                 throw std::runtime_error("unknown operation type '" + otype + "'");
             }
