@@ -144,65 +144,64 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;side&#39;&quot;</span>);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            std::optional&lt;hsize_t&gt; extent_1d;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="comment">// Checking the value.</span></div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keyword">auto</span> vhandle = group.openDataSet(<span class="stringliteral">&quot;value&quot;</span>);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <a class="code hl_enumeration" href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> val_type;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    val_type = translate_type_0_99(vhandle.getTypeClass());</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                        <span class="keyword">auto</span> thandle = vhandle.openAttribute(<span class="stringliteral">&quot;type&quot;</span>);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                        <span class="keyword">auto</span> type = read_scalar_string_attribute(thandle);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                        val_type = translate_type_1_1(type);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                        check_type_1_1(vhandle, val_type);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate the &#39;type&#39; attribute&quot;</span>);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    }</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keywordflow">if</span> (val_type == STRING) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be integer, float or boolean&quot;</span>);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                validate_missing_placeholder(vhandle, version);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="keyword">auto</span> vspace = vhandle.getSpace();</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keyword">const</span> <span class="keyword">auto</span> ndims = vspace.getSimpleExtentNdims();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keywordflow">if</span> (ndims == 0) {</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                    <span class="comment">// scalar operation.</span></div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ndims == 1) {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    extent_1d.emplace();</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                    vspace.getSimpleExtentDims(&amp;(*extent_1d));</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                } <span class="keywordflow">else</span> { </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be scalar or 1-dimensional&quot;</span>);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                }</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;value&#39;&quot;</span>);</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">if</span> (extent_1d.has_value()) {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    <span class="keyword">auto</span> ahandle = group.openDataSet(<span class="stringliteral">&quot;along&quot;</span>);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    check_unary_along(ahandle, version, seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>, *extent_1d);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                    wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;along&#39;&quot;</span>);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            }</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        }</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = BOOLEAN;</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> seed_details;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keyword">enum</span> Failure { VALUE, ALONG };</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            Failure who_failed = VALUE;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <span class="keyword">auto</span> vhandle = group.openDataSet(<span class="stringliteral">&quot;value&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <a class="code hl_enumeration" href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">ArrayType</a> val_type;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keywordflow">if</span> (version.lt(1, 1, 0)) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    val_type = translate_type_0_99(vhandle.getTypeClass());</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                        <span class="keyword">auto</span> thandle = vhandle.openAttribute(<span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                        <span class="keyword">auto</span> type = read_scalar_string_attribute(thandle);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                        val_type = translate_type_1_1(type);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                        check_type_1_1(vhandle, val_type);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate the &#39;type&#39; attribute&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keywordflow">if</span> (val_type == STRING) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be integer, float or boolean&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                validate_missing_placeholder(vhandle, version);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keyword">auto</span> vspace = vhandle.getSpace();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <span class="keyword">const</span> <span class="keyword">auto</span> ndims = vspace.getSimpleExtentNdims();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keywordflow">if</span> (ndims == 0) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                    <span class="comment">// scalar operation.</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (ndims == 1) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    hsize_t extent;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    vspace.getSimpleExtentDims(&amp;extent);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                    who_failed = ALONG;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                    <span class="keyword">auto</span> ahandle = group.openDataSet(<span class="stringliteral">&quot;along&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                    check_unary_along(ahandle, version, seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>, extent);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    who_failed = VALUE;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                } <span class="keywordflow">else</span> { </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;dataset should be scalar or 1-dimensional&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                std::string desc;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keywordflow">switch</span> (who_failed) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    <span class="keywordflow">case</span> VALUE: desc = <span class="stringliteral">&quot;value&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    <span class="keywordflow">case</span> ALONG: desc = <span class="stringliteral">&quot;along&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;&quot;</span> + desc + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = BOOLEAN;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> seed_details;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
 </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:20</div></div>
 <div class="ttc" id="anamespacechihaya_html_aca7d0b134143deec6803af84905aeeba"><div class="ttname"><a href="namespacechihaya.html#aca7d0b134143deec6803af84905aeeba">chihaya::validate_unary_logic</a></div><div class="ttdeci">ArrayDetails validate_unary_logic(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> unary_logic.hpp:31</div></div>
 <div class="ttc" id="anamespacechihaya_html_aff4525846a37a56401501e2ffc5a61f2"><div class="ttname"><a href="namespacechihaya.html#aff4525846a37a56401501e2ffc5a61f2">chihaya::ArrayType</a></div><div class="ttdeci">ArrayType</div><div class="ttdef"><b>Definition</b> utils_public.hpp:29</div></div>
