@@ -43,83 +43,60 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
         return;
     }
 
-    auto ahandle = handle.openAttribute(placeholder);
-    if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-        throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to be a scalar");
-    }
-
-    if (handle.getTypeClass() == H5T_STRING) {
-        if (ahandle.getTypeClass() != H5T_STRING) {
-            throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to use a string datatype class");
-        }
-        try {
-            ritsuko::hdf5::validate_scalar_string(ahandle);
-        } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate the '" + std::string(placeholder) + "' attribute");
-        }
-    } else {
-        if (version.lt(1, 1, 0)) {
-            // Older versions only required the same type class.
-            if (ahandle.getTypeClass() != handle.getTypeClass()) {
-                throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to use the same datatype class as its dataset");
-            }
-        } else {
-            if (ahandle.getDataType() != handle.getDataType()) {
-                throw std::runtime_error("expected the '" + std::string(placeholder) + "' attribute to use the same datatype as its dataset");
-            }
-        }
-    }
-}
-
-inline ArrayDetails fetch_seed(const H5::Group& handle, const std::string& name, const ritsuko::Version& version, const Options& options) {
-    auto shandle = handle.openGroup(name);
     try {
-        return validate(shandle, version, options);
+        auto ahandle = handle.openAttribute(placeholder);
+        if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
+            throw std::runtime_error("expected a scalar attribute");
+        }
+
+        if (handle.getTypeClass() == H5T_STRING) {
+            if (ahandle.getTypeClass() != H5T_STRING) {
+                throw std::runtime_error("expected a string datatype");
+            }
+            ritsuko::hdf5::validate_scalar_string(ahandle);
+        } else {
+            if (version.lt(1, 1, 0)) {
+                // Older versions only required the same type class.
+                if (ahandle.getTypeClass() != handle.getTypeClass()) {
+                    throw std::runtime_error("expected the same datatype class as its parent dataset");
+                }
+            } else {
+                if (ahandle.getDataType() != handle.getDataType()) {
+                    throw std::runtime_error("expected the same datatype as its parent dataset");
+                }
+            }
+        }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate '" + name + "'");
+        wrap_error(std::current_exception(), "failed to validate the '" + std::string(placeholder) + "' attribute");
     }
 }
 
-inline H5::DataSet safe_open_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
-    auto dhandle = handle.openDataSet(name);
+inline void validate_scalar_string_dataset(const H5::DataSet& dhandle) {
     if (dhandle.getSpace().getSimpleExtentNdims() != 0) {
-        throw std::runtime_error("'" + name + "' dataset should be scalar");
+        throw std::runtime_error("expected a scalar dataset");
     }
     if (!ritsuko::hdf5::is_utf8_string(dhandle)) {
-        throw std::runtime_error("'" + name + "' dataset should use a datatype that can be represented by a UTF-8 encoded string");
-    }
-    return dhandle;
-}
-
-inline std::string load_scalar_string_dataset(const H5::Group& handle, const std::string& name) {
-    auto dhandle = safe_open_scalar_string_dataset(handle, name);
-    try {
-        return ritsuko::hdf5::read_scalar_string(dhandle);
-    } catch (...) {
-        wrap_error(std::current_exception(), "failed to read the '" + name + "' dataset");
+        throw std::runtime_error("expected a datatype that can be represented by a UTF-8 encoded string");
     }
 }
 
-template<typename Handle_>
-H5::Attribute safe_open_scalar_string_attribute(const Handle_& handle, const std::string& name) {
-    auto ahandle = handle.openAttribute(name);
+inline std::string read_scalar_string_dataset(const H5::DataSet& dhandle) {
+    validate_scalar_string_dataset(dhandle);
+    return ritsuko::hdf5::read_scalar_string(dhandle);
+}
+
+inline void validate_scalar_string_attribute(const H5::Attribute& ahandle) {
     if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-        throw std::runtime_error("'" + name + "' attribute should be scalar");
+        throw std::runtime_error("expected a scalar attribute");
     }
     if (!ritsuko::hdf5::is_utf8_string(ahandle)) {
-        throw std::runtime_error("'" + name + "' attribute should use a datatype that can be represented by a UTF-8 encoded string");
+        throw std::runtime_error("expected a datatype that can be represented by a UTF-8 encoded string");
     }
-    return ahandle;
 }
 
-template<typename Handle_>
-std::string load_scalar_string_attribute(const Handle_& handle, const std::string& name) {
-    auto ahandle = safe_open_scalar_string_attribute(handle, name);
-    try {
-        return ritsuko::hdf5::read_scalar_string(ahandle);
-    } catch (...) {
-        wrap_error(std::current_exception(), "failed to read the '" + name + "' attribute");
-    }
+inline std::string read_scalar_string_attribute(const H5::Attribute& ahandle) {
+    validate_scalar_string_attribute(ahandle);
+    return ritsuko::hdf5::read_scalar_string(ahandle);
 }
 
 }

@@ -28,39 +28,66 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_numeric_seed(group, "seed", version, options);
-
-    auto method = load_scalar_string_dataset(group, "method");
-    if (!options.details_only) {
-        if (!is_valid_arithmetic_operation(method)) {
-            throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
-        }
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate_numeric_seed(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
     }
 
-    auto side = load_scalar_string_dataset(group, "side");
-    if (!options.details_only) {
-        if (side == "none") {
-            if (method != "+" && method != "-") {
-                throw std::runtime_error("'side' cannot be 'none' for operation '" + method + "'");
-            } 
-        } else if (side != "left" && side != "right") {
-            throw std::runtime_error("'side' for operation '" + method + "' should be 'left' or 'right' (got '" + side + "')");
+    std::string method;
+    try {
+        auto mhandle = group.openDataSet("method");
+        method = read_scalar_string_dataset(mhandle);
+
+        if (!options.details_only) {
+            if (!is_valid_arithmetic_operation(method)) {
+                throw std::runtime_error("unrecognized operation '" + method + "'");
+            }
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'method'");
+    }
+
+    std::string side;
+    try {
+        auto shandle = group.openDataSet("side");
+        side = read_scalar_string_dataset(shandle);
+
+        if (!options.details_only) {
+            if (side == "none") {
+                if (method != "+" && method != "-") {
+                    throw std::runtime_error("cannot be 'none' for operation '" + method + "'");
+                } 
+            } else if (side != "left" && side != "right") {
+                throw std::runtime_error("expected 'left' or 'right' for operation '" + method + "'");
+            }
+        }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'side'");
     }
 
     // If side = none, we set it to INTEGER to promote BOOLEANs to integer (implicit multiplication by +/-1).
     ArrayType val_type = INTEGER;
 
     if (side != "none") {
-        auto vhandle = group.openDataSet("value");
-
+        enum Failure { VALUE, ALONG };
+        Failure who_failed = VALUE;
         try {
+            auto vhandle = group.openDataSet("value");
+
             if (version.lt(1, 1, 0)) {
                 val_type = translate_type_0_99(vhandle.getTypeClass());
             } else {
-                auto type = load_scalar_string_attribute(vhandle, "type");
-                val_type = translate_type_1_1(type);
-                check_type_1_1(vhandle, val_type);
+                try {
+                    auto thandle = vhandle.openAttribute("type");
+                    auto type = read_scalar_string_attribute(thandle);
+                    val_type = translate_type_1_1(type);
+                    check_type_1_1(vhandle, val_type);
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                }
             }
 
             if (val_type != INTEGER && val_type != BOOLEAN && val_type != FLOAT) {
@@ -71,20 +98,28 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
                 validate_missing_placeholder(vhandle, version);
         
                 auto vspace = vhandle.getSpace();
-                const auto ndims = vspace.getSimpleExtentNdims();
+                auto ndims = vspace.getSimpleExtentNdims();
                 if (ndims == 0) {
                     // scalar operation.
                 } else if (ndims == 1) {
                     hsize_t extent;
                     vspace.getSimpleExtentDims(&extent);
-                    check_unary_along(group, version, seed_details.dimensions, extent);
+                    who_failed = ALONG;
+                    auto ahandle = group.openDataSet("along");
+                    check_unary_along(ahandle, version, seed_details.dimensions, extent);
+                    who_failed = VALUE;
                 } else { 
                     throw std::runtime_error("dataset should be scalar or 1-dimensional");
                 }
             }
 
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'value'");
+            std::string desc;
+            switch (who_failed) {
+                case VALUE: desc = "value"; break;
+                case ALONG: desc = "along"; break;
+            }
+            wrap_error(std::current_exception(), "failed to validate '" + desc + "'");
         }
     }
 

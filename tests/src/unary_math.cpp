@@ -161,7 +161,7 @@ TEST_P(UnaryMathErrorTest, Base) {
         add_string_scalar(ghandle, "base", "foo");
     }
     if (version.lt(1, 1, 0)) {
-        expect_error(path, "hello", "'base' should be a float");
+        expect_error(path, "hello", "expected a float");
     } else {
         expect_error(path, "hello", "64-bit float");
     }
@@ -177,7 +177,7 @@ TEST_P(UnaryMathErrorTest, Digits) {
         add_numeric_scalar<double>(ghandle, "digits", 2, H5::PredType::NATIVE_DOUBLE);
     }
     if (version.lt(1, 1, 0)) {
-        expect_error(path, "hello", "'digits' should be an integer");
+        expect_error(path, "hello", "expected an integer");
     } else {
         expect_error(path, "hello", "32-bit signed integer");
     }

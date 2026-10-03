@@ -28,15 +28,15 @@ namespace chihaya {
 inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
-    auto dhandle = group.openDataSet("dimensions");
-    auto dspace = dhandle.getSpace();
-    if (dspace.getSimpleExtentNdims() != 1) {
-        throw std::runtime_error("'dimensions' dataset should be 1-dimensional");
-    }
-    hsize_t len;
-    dspace.getSimpleExtentDims(&len);
-
     try {
+        auto dhandle = group.openDataSet("dimensions");
+        auto dspace = dhandle.getSpace();
+        if (dspace.getSimpleExtentNdims() != 1) {
+            throw std::runtime_error("expected a 1-dimensional dataset");
+        }
+        hsize_t len;
+        dspace.getSimpleExtentDims(&len);
+
         if (version.lt(1, 1, 0)) {
             output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, len);
         } else {
@@ -49,17 +49,21 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
         wrap_error(std::current_exception(), "failed to validate 'dimensions'");
     }
 
-    auto type = load_scalar_string_dataset(group, "type");
-    if (type == "BOOLEAN") {
-        output.type = BOOLEAN;
-    } else if (type == "INTEGER") {
-        output.type = INTEGER;
-    } else if (type == "FLOAT") {
-        output.type = FLOAT;
-    } else if (type == "STRING") {
-        output.type = STRING;
-    } else {
-        throw std::runtime_error("unknown 'type' (" + type + ")");
+    try {
+        auto type = read_scalar_string_dataset(group.openDataSet("type"));
+        if (type == "BOOLEAN") {
+            output.type = BOOLEAN;
+        } else if (type == "INTEGER") {
+            output.type = INTEGER;
+        } else if (type == "FLOAT") {
+            output.type = FLOAT;
+        } else if (type == "STRING") {
+            output.type = STRING;
+        } else {
+            throw std::runtime_error("unknown type '" + type + "'");
+        }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'type'");
     }
 
     return output;

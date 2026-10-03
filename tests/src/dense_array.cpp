@@ -237,7 +237,7 @@ TEST_P(DenseArrayErrorTest, Data) {
         ghandle.unlink("data");
         add_numeric_scalar<int>(ghandle, "data", 50, H5::PredType::NATIVE_INT32);
     }
-    expect_error(path, "dense", "non-zero dimensions");
+    expect_error(path, "dense", "at least one dimension");
 
     if (version.ge(1, 1, 0)) {
         // Test that we actually check for a scalar 'type'.
@@ -311,7 +311,7 @@ TEST_P(DenseArrayErrorTest, Native) {
         ghandle.unlink("native");
         add_numeric_vector<int>(ghandle, "native", { 2 }, H5::PredType::NATIVE_INT8);
     }
-    expect_error(path, "dense", "should be a scalar");
+    expect_error(path, "dense", "scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

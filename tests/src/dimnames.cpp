@@ -59,13 +59,14 @@ TEST_P(DimnamesErrorTest, Dimnames) {
     auto path = define_test_path("dimnames");
     auto version = GetParam();
 
+    // Check that the validation function is actually called.
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = dimnames_opener(fhandle, "hello", { 0, 0 }, "INTEGER", version);
         ghandle.unlink("dimnames");
         list_opener(ghandle, "dimnames", 3, version);
     }
-    expect_error(path, "hello", "length of 'dimnames' list");
+    expect_error(path, "hello", "length of list");
 }
 
 INSTANTIATE_TEST_SUITE_P(

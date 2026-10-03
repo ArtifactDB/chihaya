@@ -149,7 +149,7 @@ TEST_P(BinaryComparisonErrorTest, Method) {
         mock_array_opener<int>(ghandle, "left", { 13, 19 }, version, "INTEGER");
         mock_array_opener<int>(ghandle, "right", { 13, 19 }, version, "INTEGER"); 
     }
-    expect_error(path, "hello", "unrecognized 'method'");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 INSTANTIATE_TEST_SUITE_P(

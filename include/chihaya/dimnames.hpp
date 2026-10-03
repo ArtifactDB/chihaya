@@ -25,10 +25,23 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_dimnames(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    ArrayDetails seed_details = fetch_seed(group, "seed", version, options);
-    if (!options.details_only) {
-        validate_dimnames_internal(group, seed_details.dimensions, version, options.contiguous_chunk_size);
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'"); 
     }
+
+    if (!options.details_only) {
+        try {
+            auto nhandle = group.openGroup("dimnames");
+            validate_dimnames_internal(nhandle, seed_details.dimensions, version, options.contiguous_chunk_size);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'dimnames'"); 
+        }
+    }
+
     return seed_details;
 }
 

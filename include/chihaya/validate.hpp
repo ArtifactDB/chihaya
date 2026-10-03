@@ -88,11 +88,23 @@ inline auto default_array_registry() {
  * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
  */
 inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto dtype = load_scalar_string_attribute(group, "delayed_type");
-    ArrayDetails output;
+    std::string dtype;
+    try {
+        auto ahandle = group.openAttribute("delayed_type");
+        dtype = read_scalar_string_attribute(ahandle);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate the 'delayed_type' attribute");
+    }
 
+    ArrayDetails output;
     if (dtype == "array") {
-        auto atype = load_scalar_string_attribute(group, "delayed_array");
+        std::string atype;
+        try {
+            auto ahandle = group.openAttribute("delayed_array");
+            atype = read_scalar_string_attribute(ahandle);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate the 'delayed_array' attribute");
+        }
 
         const auto& custom = options.array_validate_registry;
         auto cit = custom.find(atype);
@@ -133,7 +145,13 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
         }
 
     } else if (dtype == "operation") {
-        auto otype = load_scalar_string_attribute(group, "delayed_operation");
+        std::string otype;
+        try {
+            auto ohandle = group.openAttribute("delayed_operation");
+            otype = read_scalar_string_attribute(ohandle);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate the 'delayed_operation' attribute");
+        }
 
         const auto& custom = options.operation_validate_registry;
         auto cit = custom.find(otype);
@@ -179,11 +197,16 @@ inline ritsuko::Version extract_version(const H5::Group& group) {
     ritsuko::Version version;
 
     if (group.attrExists("delayed_version")) {
-        auto vstring = load_scalar_string_attribute(group, "delayed_version");
-        if (vstring == "1.0.0") {
-            version.major = 1;
-        } else {
-            version = ritsuko::parse_version_string(vstring.c_str(), vstring.size(), /* skip_patch = */ true);
+        try {
+            auto vhandle = group.openAttribute("delayed_version");
+            auto vstring = read_scalar_string_attribute(vhandle);
+            if (vstring == "1.0.0") {
+                version.major = 1;
+            } else {
+                version = ritsuko::parse_version_string(vstring.c_str(), vstring.size(), /* skip_patch = */ true);
+            }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate the 'delayed_version' attribute");
         }
     } else {
         version.minor = 99;
@@ -213,9 +236,13 @@ inline ArrayDetails validate(const H5::Group& group, const Options& options) {
  * @return Details of the array after all delayed operations have been applied.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name, const Options& options) {
-    H5::H5File handle(path, H5F_ACC_RDONLY);
-    auto ghandle = handle.openGroup(name);
-    return validate(ghandle, options);
+    try {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto ghandle = handle.openGroup(name);
+        return validate(ghandle, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate '" + name + "' in '" + path + "'");
+    }
 }
 
 /**
@@ -227,10 +254,7 @@ inline ArrayDetails validate(const std::string& path, const std::string& name, c
  * @return Details of the array after all delayed operations have been applied.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name) {
-    H5::H5File handle(path, H5F_ACC_RDONLY);
-    Options options;
-    auto ghandle = handle.openGroup(name);
-    return validate(ghandle, options);
+    return validate(path, name, {});
 }
 
 }

@@ -28,8 +28,16 @@ inline ArrayDetails validate_external_hdf5(const H5::Group& group, const ritsuko
     }
     auto deets = validate_minimal_array(group, version, options);
     if (!options.details_only) {
-        safe_open_scalar_string_dataset(group, "file");
-        safe_open_scalar_string_dataset(group, "name");
+        try {
+            validate_scalar_string_dataset(group.openDataSet("file"));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'file'");
+        }
+        try {
+            validate_scalar_string_dataset(group.openDataSet("name"));
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'name'");
+        }
     }    
     return deets;
 }

@@ -26,14 +26,24 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_unary_special_check(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_numeric_seed(group, "seed", version, options);
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate_numeric_seed(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
+    }
 
-    // Checking the method.
-    auto method = load_scalar_string_dataset(group, "method");
-    if (!options.details_only) {
-        if (!is_valid_special_check_operation(method)) {
-            throw std::runtime_error("unrecognized 'method' (" + method + ")");
+    try {
+        auto mhandle = group.openDataSet("method");
+        auto method = read_scalar_string_dataset(mhandle);
+        if (!options.details_only) {
+            if (!is_valid_special_check_operation(method)) {
+                throw std::runtime_error("unrecognized operation '" + method + "'");
+            }
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'method'");
     }
 
     seed_details.type = BOOLEAN;

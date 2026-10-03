@@ -348,7 +348,7 @@ TEST(IsBoolean_0_99, Error) {
         auto dhandle = handle.openDataSet("foobar");
         expect_error([&]() -> void {
             chihaya::is_boolean_0_99(dhandle);
-        }, "should be a scalar");
+        }, "scalar");
     }
 
     {

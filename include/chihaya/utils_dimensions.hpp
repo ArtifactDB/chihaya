@@ -52,16 +52,15 @@ std::vector<Output_> load_dimensions_from_uint64_contents(const H5::DataSet& han
     return output;
 }
 
-inline std::uint64_t load_along(const H5::Group& handle, const ritsuko::Version& version) {
-    auto ahandle = handle.openDataSet("along");
+inline std::uint64_t load_along(const H5::DataSet& ahandle, const ritsuko::Version& version) {
     if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-        throw std::runtime_error("'along' dataset should be scalar");
+        throw std::runtime_error("'expected a scalar dataset");
     }
     if (version.lt(1, 1, 0)) {
         return load_non_negative_integer_scalar_0_99<std::uint64_t>(ahandle);
     } else {
         if (ritsuko::hdf5::exceeds_integer_limit(ahandle, 64, false)) {
-            throw std::runtime_error("'along' dataset should use a datatype that fits in a 64-bit unsigned integer");
+            throw std::runtime_error("expected a datatype that fits in a 64-bit unsigned integer");
         }
         std::uint64_t val;
         ahandle.read(&val, H5::PredType::NATIVE_UINT64);
@@ -70,40 +69,33 @@ inline std::uint64_t load_along(const H5::Group& handle, const ritsuko::Version&
 }
 
 inline void validate_dimnames_internal(
-    const H5::Group& handle,
+    const H5::Group& ghandle,
     const std::vector<std::size_t>& dimensions,
     const ritsuko::Version& version,
     const hsize_t contiguous_chunk_size
 ) {
-    auto ghandle = handle.openGroup("dimnames");
-    ListDetails list_params;
-    try {
-        list_params = validate_list(ghandle, version);
-    } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'dimnames'");
-    }
-
+    ListDetails list_params = validate_list(ghandle, version);
     if (!sanisizer::is_equal(list_params.length, dimensions.size())) {
-        throw std::runtime_error("length of 'dimnames' list should be equal to seed dimensionality");
+        throw std::runtime_error("length of list should be equal to seed dimensionality");
     }
 
     for (const auto& p : list_params.present) {
-        auto current = ghandle.openDataSet(p.second);
-        auto cspace = current.getSpace();
-        if (cspace.getSimpleExtentNdims() != 1) {
-            throw std::runtime_error("each entry of 'dimnames' should be a 1-dimensional string dataset");
-        }
-        if (!ritsuko::hdf5::is_utf8_string(current)) {
-            throw std::runtime_error("each entry of 'dimnames' should use a datatype that can be represented by UTF-8 strings");
-        }
-
-        hsize_t len;
-        cspace.getSimpleExtentDims(&len);
-        if (!sanisizer::is_equal(len, dimensions[p.first])) {
-            throw std::runtime_error("each entry of 'dimnames' should have length equal to the extent of its corresponding dimension");
-        }
-
         try {
+            auto current = ghandle.openDataSet(p.second);
+            auto cspace = current.getSpace();
+            if (cspace.getSimpleExtentNdims() != 1) {
+                throw std::runtime_error("expected a 1-dimensional dataset");
+            }
+            if (!ritsuko::hdf5::is_utf8_string(current)) {
+                throw std::runtime_error("expected a datatype that can be represented by UTF-8 strings");
+            }
+
+            hsize_t len;
+            cspace.getSimpleExtentDims(&len);
+            if (!sanisizer::is_equal(len, dimensions[p.first])) {
+                throw std::runtime_error("dataset should have length equal to the extent of its corresponding dimension");
+            }
+
             ritsuko::hdf5::validate_1d_strings(
                 current,
                 len,
@@ -114,7 +106,7 @@ inline void validate_dimnames_internal(
                 }()
             );
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+            wrap_error(std::current_exception(), "failed to validate list entry " + p.second); 
         }
     }
 }

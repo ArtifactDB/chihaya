@@ -57,16 +57,13 @@ void validate_sparse_indices(
     for (std::size_t p = 0; p < primary; ++p) {
         const auto start = indptrs[p];
         const auto end = indptrs[p + 1];
-        if (start > end) {
-            throw std::runtime_error("entries of 'indptr' must be sorted");
-        }
         if (start == end) {
             continue;
         }
 
         Index_ previous = next();
         if (previous < 0) {
-            throw std::runtime_error("entries of 'indices' should be non-negative");
+            throw std::runtime_error("entries should be non-negative");
         }
 
         // If it's sorted in strictly increasing order, we only need to check the first entry for negative values.
@@ -74,13 +71,13 @@ void validate_sparse_indices(
         for (I<decltype(start)> x = start + 1; x < end; ++x) {
             const auto i = next();
             if (i <= previous) {
-                throw std::runtime_error("'indices' should be strictly increasing within each " + (csc ? std::string("column") : std::string("row")));
+                throw std::runtime_error("entries should be strictly increasing within each " + (csc ? std::string("column") : std::string("row")));
             }
             previous = i;
         }
 
         if (sanisizer::is_greater_than_or_equal(previous, secondary)) {
-            throw std::runtime_error("entries of 'indices' should be less than the number of " + (csc ? std::string("row") : std::string("column")) + "s");
+            throw std::runtime_error("entries should be less than the number of " + (csc ? std::string("row") : std::string("column")) + "s");
         }
     }
 }
@@ -100,39 +97,36 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
     std::vector<std::size_t> dims;
     ArrayType array_type;
 
-    {
+    try {
         auto shandle = group.openDataSet("shape");
         auto sspace = shandle.getSpace();
         if (sspace.getSimpleExtentNdims() != 1) {
-            throw std::runtime_error("'shape' dataset should be 1-dimensional");
+            throw std::runtime_error("expected a 1-dimensional dataset");
         }
         hsize_t len;
         sspace.getSimpleExtentDims(&len);
         if (len != 2) {
-            throw std::runtime_error("'shape' dataset should have length 2");
+            throw std::runtime_error("dataset should have length 2");
         }
 
-        try {
-            if (version.lt(1, 1, 0)) {
-                dims = load_non_negative_integer_vector_0_99<std::size_t>(shandle, 2);
-            } else {
-                if (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, false)) {
-                    throw std::runtime_error("'shape' should have a datatype that can fit into a 64-bit unsigned integer");
-                }
-                dims = load_dimensions_from_uint64_contents<std::size_t>(shandle, 2);
+        if (version.lt(1, 1, 0)) {
+            dims = load_non_negative_integer_vector_0_99<std::size_t>(shandle, 2);
+        } else {
+            if (ritsuko::hdf5::exceeds_integer_limit(shandle, 64, false)) {
+                throw std::runtime_error("expected a datatype that can fit into a 64-bit unsigned integer");
             }
-        } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'shape'");
+            dims = load_dimensions_from_uint64_contents<std::size_t>(shandle, 2);
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'shape'");
     }
 
-
     hsize_t nnz;
-    {
+    try {
         auto dhandle = group.openDataSet("data");
         auto dspace = dhandle.getSpace();
         if (dspace.getSimpleExtentNdims() != 1) {
-            throw std::runtime_error("'data' dataset should be 1-dimensional");
+            throw std::runtime_error("expected a 1-dimensional dataset");
         }
         dspace.getSimpleExtentDims(&nnz);
 
@@ -142,10 +136,15 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 array_type = BOOLEAN;
             }
         } else {
-            auto type = load_scalar_string_attribute(dhandle, "type");
-            array_type = translate_type_1_1(type);
-            if (!options.details_only) {
-                check_type_1_1(dhandle, array_type);
+            try {
+                auto thandle = dhandle.openAttribute("type");
+                auto type = read_scalar_string_attribute(thandle);
+                array_type = translate_type_1_1(type);
+                if (!options.details_only) {
+                    check_type_1_1(dhandle, array_type);
+                }
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
             }
         }
 
@@ -155,48 +154,54 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
             }
             validate_missing_placeholder(dhandle, version);
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'data'");
     }
 
     if (!options.details_only) {
         bool csc = true;
-        if (!version.lt(1, 1, 0)) {
-            auto bhandle = group.openDataSet("by_column");
-            if (bhandle.getSpace().getSimpleExtentNdims() != 0) {
-                throw std::runtime_error("'by_column' dataset should be scalar");
+        if (version.ge(1, 1, 0)) {
+            try {
+                auto bhandle = group.openDataSet("by_column");
+                if (bhandle.getSpace().getSimpleExtentNdims() != 0) {
+                    throw std::runtime_error("expected a scalar dataset");
+                }
+                if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
+                    throw std::runtime_error("expected a datatype that can fit into an 8-bit signed integer");
+                }
+                std::int8_t val;
+                bhandle.read(&val, H5::PredType::NATIVE_INT8);
+                csc = (val != 0);
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate 'by_column'");
             }
-            if (ritsuko::hdf5::exceeds_integer_limit(bhandle, 8, true)) {
-                throw std::runtime_error("datatype of the 'by_column' dataset should fit into an 8-bit signed integer");
-            }
-            std::int8_t val;
-            bhandle.read(&val, H5::PredType::NATIVE_INT8);
-            csc = (val != 0);
         }
 
         const auto primary = (csc ? dims[1] : dims[0]);
         const auto secondary = (csc ? dims[0] : dims[1]);
 
         std::vector<std::uint64_t> indptrs;
-        {
+        try {
             auto iphandle = group.openDataSet("indptr");
             auto ipspace = iphandle.getSpace();
             if (ipspace.getSimpleExtentNdims() != 1) {
-                throw std::runtime_error("'indptr' dataset should be 1-dimensional");
+                throw std::runtime_error("expected a 1-dimensional dataset");
             }
             hsize_t iplen;
             ipspace.getSimpleExtentDims(&iplen);
 
             if (iplen == 0 || !sanisizer::is_equal(iplen - 1, primary)) { // avoid risk of potential overflow with primary + 1.
-                throw std::runtime_error("'indptr' should have length equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
+                throw std::runtime_error("dataset length should be equal to the number of " + (csc ? std::string("columns") : std::string("rows")) + " plus 1");
             }
 
             if (version.lt(1, 1, 0)) {
                 if (iphandle.getTypeClass() != H5T_INTEGER) {
-                    throw std::runtime_error("'indptr' should be integer");
+                    throw std::runtime_error("expected an integer dataset");
                 }
                 indptrs = load_non_negative_integer_vector_0_99<std::uint64_t>(iphandle, iplen);
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(iphandle, 64, false)) {
-                    throw std::runtime_error("datatype of 'indptr' should fit into a 64-bit unsigned integer");
+                    throw std::runtime_error("expected a datatype that can fit into a 64-bit unsigned integer");
                 }
                 sanisizer::resize(indptrs, iplen);
                 iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);
@@ -204,23 +209,33 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
 
             iphandle.read(indptrs.data(), H5::PredType::NATIVE_UINT64);
             if (indptrs[0] != 0) {
-                throw std::runtime_error("first entry of 'indptr' should be 0");
+                throw std::runtime_error("first entry should be 0");
             }
             if (!sanisizer::is_equal(indptrs.back(), nnz)) {
-                throw std::runtime_error("last entry of 'indptr' should be equal to the length of 'data'");
+                throw std::runtime_error("last entry should be equal to the length of 'data'");
             }
+
+            for (std::size_t p = 0; p < primary; ++p) {
+                const auto start = indptrs[p];
+                const auto end = indptrs[p + 1];
+                if (start > end) {
+                    throw std::runtime_error("entries must be sorted in increasing order");
+                }
+            }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'indptr'");
         }
 
-        {
+        try {
             auto ihandle = group.openDataSet("indices");
             auto ispace = ihandle.getSpace();
             if (ispace.getSimpleExtentNdims() != 1) {
-                throw std::runtime_error("'indices' dataset should be 1-dimensional");
+                throw std::runtime_error("expected a 1-dimensional dataset");
             }
             hsize_t inum;
             ispace.getSimpleExtentDims(&inum);
             if (nnz != inum) {
-                throw std::runtime_error("'indices' and 'data' should have the same length");
+                throw std::runtime_error("dataset length should be the same as 'data'"); 
             }
 
             if (version.lt(1, 1, 0)) {
@@ -229,20 +244,26 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 } else if (!ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
                     validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
                 } else {
-                    throw std::runtime_error("'indices' should be integer");
+                    throw std::runtime_error("expected an integer dataset");
                 }
 
             } else {
                 if (ritsuko::hdf5::exceeds_integer_limit(ihandle, 64, false)) {
-                    throw std::runtime_error("datatype of 'indices' should fit into a 64-bit unsigned integer");
+                    throw std::runtime_error("expected a datatype that can fit into a 64-bit unsigned integer");
                 }
                 validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
             }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'indices'");
         }
 
-        // Validating dimnames.
         if (group.exists("dimnames")) {
-            validate_dimnames_internal(group, dims, version, options.contiguous_chunk_size);
+            try {
+                auto dnhandle = group.openGroup("dimnames");
+                validate_dimnames_internal(dnhandle, dims, version, options.contiguous_chunk_size);
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+            }
         }
     }
 

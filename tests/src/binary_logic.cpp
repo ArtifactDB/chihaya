@@ -81,7 +81,7 @@ TEST_P(BinaryLogicErrorTest, Seed) {
         auto ghandle = binary_logic_opener(fhandle, "hello", "||", version);
         mock_array_opener<int>(ghandle, "left", { 13, 19 }, version, "STRING");
     }
-    expect_error(path, "hello", "'left' should be integer, float or boolean");
+    expect_error(path, "hello", "'left'; type should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -89,7 +89,7 @@ TEST_P(BinaryLogicErrorTest, Seed) {
         mock_array_opener<int>(ghandle, "left", { 13, 19 }, version, "BOOLEAN");
         mock_array_opener<int>(ghandle, "right", { 13, 19 }, version, "STRING");
     }
-    expect_error(path, "hello", "'right' should be integer, float or boolean");
+    expect_error(path, "hello", "'right'; type should be integer, float or boolean");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -121,7 +121,7 @@ TEST_P(BinaryLogicErrorTest, Method) {
         mock_array_opener<int>(ghandle, "left", { 13, 19 }, version, "INTEGER");
         mock_array_opener<int>(ghandle, "right", { 13, 19 }, version, "INTEGER");
     }
-    expect_error(path, "hello", "unrecognized 'method'");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 INSTANTIATE_TEST_SUITE_P(

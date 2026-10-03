@@ -33,18 +33,18 @@ namespace chihaya {
 inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
-    auto dhandle = group.openDataSet("dimensions");
-    auto dspace = dhandle.getSpace();
-    if (dspace.getSimpleExtentNdims() != 1) {
-        throw std::runtime_error("'dimensions' dataset should be 1-dimensional");
-    }
-    hsize_t size;
-    dspace.getSimpleExtentDims(&size);
-    if (size == 0) {
-        throw std::runtime_error("'dimensions' dataset should have non-zero length");
-    }
-
     try {
+        auto dhandle = group.openDataSet("dimensions");
+        auto dspace = dhandle.getSpace();
+        if (dspace.getSimpleExtentNdims() != 1) {
+            throw std::runtime_error("'dimensions' dataset should be 1-dimensional");
+        }
+        hsize_t size;
+        dspace.getSimpleExtentDims(&size);
+        if (size == 0) {
+            throw std::runtime_error("'dimensions' dataset should have non-zero length");
+        }
+
         if (version.lt(1, 1, 0)) {
             output.dimensions = load_non_negative_integer_vector_0_99<std::size_t>(dhandle, size);
         } else {
@@ -57,19 +57,24 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
         wrap_error(std::current_exception(), "failed to validate 'dimensions'");
     }
 
-    auto vhandle = group.openDataSet("value");
-    if (vhandle.getSpace().getSimpleExtentNdims() != 0) {
-        throw std::runtime_error("'value' dataset should be a scalar");
-    }
-
     try {
+        auto vhandle = group.openDataSet("value");
+        if (vhandle.getSpace().getSimpleExtentNdims() != 0) {
+            throw std::runtime_error("'value' dataset should be a scalar");
+        }
+
         if (version.lt(1, 1, 0)) {
             output.type = translate_type_0_99(vhandle.getTypeClass());
         } else {
-            auto type = load_scalar_string_attribute(vhandle, "type");
-            output.type = translate_type_1_1(type);
-            if (!options.details_only) {
-                check_type_1_1(vhandle, output.type);
+            try {
+                auto thandle = vhandle.openAttribute("type");
+                auto type = read_scalar_string_attribute(thandle);
+                output.type = translate_type_1_1(type);
+                if (!options.details_only) {
+                    check_type_1_1(vhandle, output.type);
+                }
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
             }
         }
 
@@ -79,7 +84,6 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
                 ritsuko::hdf5::validate_scalar_string(vhandle);
             }
         }
-
     } catch (...) {
         wrap_error(std::current_exception(), "failed to validate 'value'");
     }

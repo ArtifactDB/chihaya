@@ -158,13 +158,13 @@ TEST_P(CustomArrayErrorTest, Type) {
         ghandle.unlink("type");
         add_string_vector(ghandle, "type", 10, /* strlen = */ 5);
     }
-    expect_error(path, "ext", "should be scalar");
+    expect_error(path, "ext", "scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = custom_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FOOBAR");
     }
-    expect_error(path, "ext", "(FOOBAR)");
+    expect_error(path, "ext", "FOOBAR");
 }
 
 INSTANTIATE_TEST_SUITE_P(

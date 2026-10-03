@@ -28,29 +28,54 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_unary_comparison(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_seed(group, "seed", version, options);
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
+    }
 
     if (!options.details_only) {
-        auto method = load_scalar_string_dataset(group, "method");
-        if (!is_valid_comparison_operation(method)) {
-            throw std::runtime_error("unrecognized operation in 'method' (got '" + method + "')");
-        }
-
-        auto side = load_scalar_string_dataset(group, "side");
-        if (side != "left" && side != "right") {
-            throw std::runtime_error("'side' should be either 'left' or 'right' (got '" + side + "')");
-        }
-
-        // Checking the value.
-        auto vhandle = group.openDataSet("value");
+        std::string method;
         try {
+            auto mhandle = group.openDataSet("method");
+            method = read_scalar_string_dataset(mhandle);
+            if (!is_valid_comparison_operation(method)) {
+                throw std::runtime_error("unrecognized operation '" + method + "'");
+            }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'method'");
+        }
+
+        std::string side;
+        try {
+            auto shandle = group.openDataSet("side");
+            auto side = read_scalar_string_dataset(shandle);
+            if (side != "left" && side != "right") {
+                throw std::runtime_error("expected either 'left' or 'right'");
+            }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'side'");
+        }
+
+        enum Failure { VALUE, ALONG };
+        Failure who_failed = VALUE;
+        try {
+            auto vhandle = group.openDataSet("value");
+
             ArrayType val_type;
             if (version.lt(1, 1, 0)) {
                 val_type = translate_type_0_99(vhandle.getTypeClass());
             } else {
-                auto type = load_scalar_string_attribute(vhandle, "type");
-                val_type = translate_type_1_1(type);
-                check_type_1_1(vhandle, val_type);
+                try {
+                    auto thandle = vhandle.openAttribute("type");
+                    auto type = read_scalar_string_attribute(thandle);
+                    val_type = translate_type_1_1(type);
+                    check_type_1_1(vhandle, val_type);
+                } catch (...) {
+                    wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                }
             }
             if ((val_type == STRING) != (seed_details.type == STRING)) {
                 throw std::runtime_error("both or neither of 'seed' and 'value' should contain strings");
@@ -58,7 +83,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
 
             validate_missing_placeholder(vhandle, version);
 
-            size_t ndims = vhandle.getSpace().getSimpleExtentNdims();
+            auto ndims = vhandle.getSpace().getSimpleExtentNdims();
             if (ndims == 0) { // scalar operation.
                 if (vhandle.getTypeClass() == H5T_STRING) {
                     ritsuko::hdf5::validate_scalar_string(vhandle);
@@ -67,7 +92,11 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
             } else if (ndims == 1) {
                 hsize_t extent;
                 vhandle.getSpace().getSimpleExtentDims(&extent);
-                check_unary_along(group, version, seed_details.dimensions, extent);
+                who_failed = ALONG;
+                auto ahandle = group.openDataSet("along");
+                check_unary_along(ahandle, version, seed_details.dimensions, extent);
+                who_failed = VALUE;
+
                 if (vhandle.getTypeClass() == H5T_STRING) {
                     ritsuko::hdf5::validate_1d_strings(
                         vhandle,
@@ -85,7 +114,12 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
             }
 
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'value'");
+            std::string desc;
+            switch (who_failed) {
+                case VALUE: desc = "value"; break;
+                case ALONG: desc = "along"; break;
+            }
+            wrap_error(std::current_exception(), "failed to validate '" + desc + "'");
         }
     }
 

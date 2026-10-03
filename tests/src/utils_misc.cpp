@@ -103,7 +103,7 @@ TEST_P(ValidateMissingPlaceholderTest, StringTypeError) {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
         expect_error([&]() -> void {
             chihaya::validate_missing_placeholder(fhandle.openDataSet("stringy"), version);
-        }, "string datatype class");
+        }, "string datatype");
     }
 
     // Check that we actually validate the string.
@@ -157,51 +157,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 /***************************************************/
 
-class FetchSeedTest : public ::testing::TestWithParam<ritsuko::Version> {};
-
-TEST_P(FetchSeedTest, Okay) {
-    auto version = GetParam();
-    const auto path = define_test_path("utils_misc");
-    chihaya::Options options;
-
-    std::vector<std::size_t> dims{ 13, 14 };
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        mock_array_opener(fhandle, "seed", dims, version, "INTEGER");
-    }
-
-    H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    auto deets = chihaya::fetch_seed(fhandle, "seed", version, options); 
-    EXPECT_EQ(deets.type, chihaya::INTEGER);
-    EXPECT_EQ(deets.dimensions, dims);
-}
-
-TEST_P(FetchSeedTest, Error) {
-    auto version = GetParam();
-    const auto path = define_test_path("utils_misc");
-    chihaya::Options options;
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        auto ghandle = fhandle.createGroup("seed");
-        add_string_attribute(ghandle, "delayed_type", "some_random_thing");
-    }
-
-    H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    expect_error([&]() -> void {
-        chihaya::fetch_seed(fhandle, "seed", version, options);
-    }, "failed to validate");
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    FetchSeed,
-    FetchSeedTest,
-    spawn_all_versions()
-);
-
-/***************************************************/
-
-TEST(LoadScalarStringDataset, Basic) {
+TEST(ReadScalarStringDataset, Basic) {
     const auto path = define_test_path("utils_misc");
 
     {
@@ -212,12 +168,12 @@ TEST(LoadScalarStringDataset, Basic) {
     }
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    EXPECT_EQ(chihaya::load_scalar_string_dataset(fhandle, "foo"), "bar");
-    expect_error([&]() -> void { chihaya::load_scalar_string_dataset(fhandle, "whee"); }, "scalar");
-    expect_error([&]() -> void { chihaya::load_scalar_string_dataset(fhandle, "stuff"); }, "string");
+    EXPECT_EQ(chihaya::read_scalar_string_dataset(fhandle.openDataSet("foo")), "bar");
+    expect_error([&]() -> void { chihaya::read_scalar_string_dataset(fhandle.openDataSet("whee")); }, "scalar");
+    expect_error([&]() -> void { chihaya::read_scalar_string_dataset(fhandle.openDataSet("stuff")); }, "string");
 }
 
-TEST(LoadScalarStringAttribute, Basic) {
+TEST(ReadScalarStringAttribute, Basic) {
     const auto path = define_test_path("utils_misc");
 
     {
@@ -231,7 +187,7 @@ TEST(LoadScalarStringAttribute, Basic) {
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);
     auto ghandle = fhandle.openGroup("blah");
-    EXPECT_EQ(chihaya::load_scalar_string_attribute(ghandle, "foo"), "bar");
-    expect_error([&]() -> void { chihaya::load_scalar_string_attribute(ghandle, "whee"); }, "scalar");
-    expect_error([&]() -> void { chihaya::load_scalar_string_attribute(ghandle, "stuff"); }, "string");
+    EXPECT_EQ(chihaya::read_scalar_string_attribute(ghandle.openAttribute("foo")), "bar");
+    expect_error([&]() -> void { chihaya::read_scalar_string_attribute(ghandle.openAttribute("whee")); }, "scalar");
+    expect_error([&]() -> void { chihaya::read_scalar_string_attribute(ghandle.openAttribute("stuff")); }, "string");
 }

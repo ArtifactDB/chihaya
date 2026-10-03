@@ -31,62 +31,67 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    const auto along = load_along(group, version);
-
-    const auto shandle = group.openGroup("seeds");
-    ListDetails list_params;
+    std::uint64_t along;
     try {
-        list_params = validate_list(shandle, version);
+        along = load_along(group.openDataSet("along"), version);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to load 'seeds' list");
-    }
-    if (list_params.present.size() != list_params.length) {
-        throw std::runtime_error("missing elements in the 'seeds' list");
+        wrap_error(std::current_exception(), "failed to validate 'along'");
     }
 
-    std::vector<std::size_t> dimensions;
     ArrayType type = BOOLEAN;
-    bool first = true;
-    I<decltype(list_params.length)> num_strings = 0;
+    std::vector<std::size_t> dimensions;
 
-    for (auto& p : list_params.present) {
-        ArrayDetails cur_seed;
-        try {
-            cur_seed = fetch_seed(shandle, p.second, version, options);
-        } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'seeds/" + p.second + "'");
+    try {
+        const auto shandle = group.openGroup("seeds");
+        auto list_params = validate_list(shandle, version);
+        if (list_params.present.size() != list_params.length) {
+            throw std::runtime_error("missing elements in the 'seeds' list");
         }
 
-        if (first) {
-            type = cur_seed.type;
-            dimensions = std::move(cur_seed.dimensions);
-            if (sanisizer::is_greater_than_or_equal(along, dimensions.size())) {
-                throw std::runtime_error("'along' should be less than the seed dimensionality");
-            }
-            first = false;
+        bool first = true;
+        I<decltype(list_params.length)> num_strings = 0;
 
-        } else {
-            if (type < cur_seed.type) {
-                type = cur_seed.type;
-            }
-            const auto ndims = dimensions.size();
-            if (ndims != cur_seed.dimensions.size()) {
-                throw std::runtime_error("dimensionality mismatch between seeds");
-            }
-            for (I<decltype(ndims)> d = 0; d < ndims; ++d) {
-                if (sanisizer::is_equal(d, along)) {
-                    dimensions[d] = sanisizer::sum<std::size_t>(dimensions[d], cur_seed.dimensions[d]);
-                } else if (dimensions[d] != cur_seed.dimensions[d]) {
-                    throw std::runtime_error("inconsistent dimension extents between seeds");
+        for (auto& p : list_params.present) {
+            try {
+                auto sdhandle = shandle.openGroup(p.second);
+                auto cur_seed = validate(sdhandle, version, options);
+
+                if (first) {
+                    type = cur_seed.type;
+                    dimensions = std::move(cur_seed.dimensions);
+                    if (sanisizer::is_greater_than_or_equal(along, dimensions.size())) {
+                        throw std::runtime_error("'along' should be less than the seed dimensionality");
+                    }
+                    first = false;
+
+                } else {
+                    if (type < cur_seed.type) {
+                        type = cur_seed.type;
+                    }
+                    const auto ndims = dimensions.size();
+                    if (ndims != cur_seed.dimensions.size()) {
+                        throw std::runtime_error("detected dimensionality mismatch between seeds");
+                    }
+                    for (I<decltype(ndims)> d = 0; d < ndims; ++d) {
+                        if (sanisizer::is_equal(d, along)) {
+                            dimensions[d] = sanisizer::sum<std::size_t>(dimensions[d], cur_seed.dimensions[d]);
+                        } else if (dimensions[d] != cur_seed.dimensions[d]) {
+                            throw std::runtime_error("inconsistent dimension extents between seeds");
+                        }
+                    }
                 }
+
+                num_strings += (cur_seed.type == STRING);
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate seed " + p.second);
             }
         }
 
-        num_strings += (cur_seed.type == STRING);
-    }
-
-    if (num_strings != 0 && num_strings != list_params.length) {
-        throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
+        if (num_strings != 0 && num_strings != list_params.length) {
+            throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
+        }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seeds'");
     }
 
     return ArrayDetails(type, std::move(dimensions));

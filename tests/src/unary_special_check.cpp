@@ -89,7 +89,7 @@ TEST_P(UnarySpecialCheckErrorTest, Method) {
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error(path, "hello", "unrecognized 'method'");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 INSTANTIATE_TEST_SUITE_P(

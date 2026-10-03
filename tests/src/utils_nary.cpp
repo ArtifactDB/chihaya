@@ -18,7 +18,10 @@ TEST_P(FetchNumericSeedTest, Okay) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         mock_array_opener(fhandle, "seed", dimensions, version, "FLOAT");
     }
-    auto deets = chihaya::fetch_numeric_seed(H5::H5File(path, H5F_ACC_RDONLY), "seed", version, options); 
+
+    H5::H5File handle(path, H5F_ACC_RDONLY);
+    auto shandle = handle.openGroup("seed");
+    auto deets = chihaya::validate_numeric_seed(shandle, version, options); 
     EXPECT_EQ(deets.type, chihaya::FLOAT);
     EXPECT_EQ(deets.dimensions, dimensions);
 }
@@ -32,9 +35,12 @@ TEST_P(FetchNumericSeedTest, Error) {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         mock_array_opener<int>(fhandle, "seed", { 42, 11 }, version, "STRING");
     }
+
+    H5::H5File handle(path, H5F_ACC_RDONLY);
+    auto shandle = handle.openGroup("seed");
     expect_error(
         [&]() -> void {
-            chihaya::fetch_numeric_seed(H5::H5File(path, H5F_ACC_RDONLY), "seed", version, options); 
+            chihaya::validate_numeric_seed(shandle, version, options); 
         },
         "should be integer, float or boolean"
     );
@@ -119,7 +125,8 @@ TEST_P(CheckUnaryAlongTest, Okay) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::check_unary_along(fhandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
+        auto ahandle = fhandle.openDataSet("along");
+        chihaya::check_unary_along(ahandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
     }
 
     // More dimensions.
@@ -129,7 +136,8 @@ TEST_P(CheckUnaryAlongTest, Okay) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
-        chihaya::check_unary_along(fhandle, version, std::vector<std::size_t>{ 10, 20, 30 }, 30);
+        auto ahandle = fhandle.openDataSet("along");
+        chihaya::check_unary_along(ahandle, version, std::vector<std::size_t>{ 10, 20, 30 }, 30);
     }
 }
 
@@ -144,8 +152,9 @@ TEST_P(CheckUnaryAlongTest, Error) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ahandle = fhandle.openDataSet("along");
         expect_error([&]() -> void {
-            chihaya::check_unary_along(fhandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
+            chihaya::check_unary_along(ahandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
         }, "scalar");
     }
 
@@ -155,8 +164,9 @@ TEST_P(CheckUnaryAlongTest, Error) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ahandle = fhandle.openDataSet("along");
         expect_error([&]() -> void {
-            chihaya::check_unary_along(fhandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
+            chihaya::check_unary_along(ahandle, version, std::vector<std::size_t>{ 10, 20 }, 10);
         }, "less than the seed dimensionality");
     }
 
@@ -166,8 +176,9 @@ TEST_P(CheckUnaryAlongTest, Error) {
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ahandle = fhandle.openDataSet("along");
         expect_error([&]() -> void {
-            chihaya::check_unary_along(fhandle, version, std::vector<std::size_t>{ 10, 20 }, 15);
+            chihaya::check_unary_along(ahandle, version, std::vector<std::size_t>{ 10, 20 }, 15);
         }, "equal to the dimension");
     }
 }

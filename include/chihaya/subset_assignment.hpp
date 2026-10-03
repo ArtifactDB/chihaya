@@ -30,21 +30,35 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_subset_assignment(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_seed(group, "seed", version, options);
-    const auto& seed_dims = seed_details.dimensions;
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
+    }
 
-    auto value_details = fetch_seed(group, "value", version, options);
+    ArrayDetails value_details;
+    try {
+        auto vhandle = group.openGroup("value");
+        value_details = validate(vhandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'value'");
+    }
+
     if (!options.details_only) {
         if ((value_details.type == STRING) != (seed_details.type == STRING)) {
             throw std::runtime_error("both or neither of the 'seed' and 'value' arrays should contain strings");
         }
+
+        const auto& seed_dims = seed_details.dimensions;
         if (seed_dims.size() != value_details.dimensions.size()) {
             throw std::runtime_error("'seed' and 'value' arrays should have the same dimensionality");
         }
 
-        auto ihandle = group.openGroup("index");
         std::vector<std::pair<std::size_t, std::size_t> > collected;
         try {
+            auto ihandle = group.openGroup("index");
             collected = validate_subset_index_list(ihandle, seed_dims, version, options.contiguous_chunk_size);
         } catch (...) {
             wrap_error(std::current_exception(), "failed to validate 'index'");

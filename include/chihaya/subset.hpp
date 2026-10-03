@@ -24,12 +24,18 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_subset(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_seed(group, "seed", version, options);
-    auto& seed_dims = seed_details.dimensions;
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
+    }
 
-    auto ihandle = group.openGroup("index");
+    auto& seed_dims = seed_details.dimensions;
     std::vector<std::pair<std::size_t, std::size_t> > collected;
     try {
+        auto ihandle = group.openGroup("index");
         collected = validate_subset_index_list(ihandle, seed_dims, version, options.contiguous_chunk_size);
     } catch (...) {
         wrap_error(std::current_exception(), "failed to validate 'index'");

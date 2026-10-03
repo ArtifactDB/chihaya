@@ -53,75 +53,84 @@ void transplant_dimensions(std::vector<hsize_t>& src, std::vector<Output_>& outp
 inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;
 
-    {
+    try {
         auto dhandle = group.openDataSet("data");
         auto dspace = dhandle.getSpace();
         const auto ndims = dspace.getSimpleExtentNdims();
         if (ndims == 0) {
-            throw std::runtime_error("'data' should have non-zero dimensions");
+            throw std::runtime_error("expected at least one dimension");
         }
         auto dims = sanisizer::create<std::vector<hsize_t> >(ndims);
         dspace.getSimpleExtentDims(dims.data());
 
-        try {
-            if (version.lt(1, 1, 0)) {
-                output.type = translate_type_0_99(dhandle.getTypeClass());
-                if (is_boolean_0_99(dhandle)) {
-                    output.type = BOOLEAN;
-                }
-            } else {
-                auto type = load_scalar_string_attribute(dhandle, "type");
+        if (version.lt(1, 1, 0)) {
+            output.type = translate_type_0_99(dhandle.getTypeClass());
+            if (is_boolean_0_99(dhandle)) {
+                output.type = BOOLEAN;
+            }
+        } else {
+            try {
+                auto thandle = dhandle.openAttribute("type");
+                auto type = read_scalar_string_attribute(thandle);
                 output.type = translate_type_1_1(type);
                 if (!options.details_only) {
                     check_type_1_1(dhandle, output.type);
                 }
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
             }
+        }
 
-            if (!options.details_only) {
-                validate_missing_placeholder(dhandle, version);
-                if (dhandle.getTypeClass() == H5T_STRING) {
-                    ritsuko::hdf5::validate_nd_strings(
-                        dhandle,
-                        dims,
-                        [&]{
-                            ritsuko::hdf5::ValidateNdStringsOptions opt;
-                            opt.contiguous_chunk_size = options.contiguous_chunk_size;
-                            return opt;
-                        }()
-                    );
-                }
+        if (!options.details_only) {
+            validate_missing_placeholder(dhandle, version);
+            if (dhandle.getTypeClass() == H5T_STRING) {
+                ritsuko::hdf5::validate_nd_strings(
+                    dhandle,
+                    dims,
+                    [&]{
+                        ritsuko::hdf5::ValidateNdStringsOptions opt;
+                        opt.contiguous_chunk_size = options.contiguous_chunk_size;
+                        return opt;
+                    }()
+                );
             }
-
-        } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'data'");
         }
 
         transplant_dimensions(dims, output.dimensions);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'data'");
     }
 
     bool native;
-    {
+    try {
         auto nhandle = group.openDataSet("native");
         if (nhandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("'native' attribute should be a scalar");
+            throw std::runtime_error("expected a scalar dataset");
         }
 
         if (version.lt(1, 1, 0)) {
             native = load_boolean_scalar_0_99(nhandle);
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(nhandle, 8, true)) {
-                throw std::runtime_error("'native' attribute should use a datatype that fits into an 8-bit signed integer");
+                throw std::runtime_error("expected a datatype that fits into an 8-bit signed integer");
             }
             std::int8_t tmp_native;
             nhandle.read(&tmp_native, H5::PredType::NATIVE_INT);
             native = tmp_native;
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'native'");
     }
 
     // Do this before applying the 'native' reversal.
     if (!options.details_only) {
         if (group.exists("dimnames")) {
-            validate_dimnames_internal(group, output.dimensions, version, options.contiguous_chunk_size);
+            try {
+                auto dnhandle = group.openGroup("dimnames");
+                validate_dimnames_internal(dnhandle, output.dimensions, version, options.contiguous_chunk_size);
+            } catch (...) {
+                wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+            }
         }
     }
 

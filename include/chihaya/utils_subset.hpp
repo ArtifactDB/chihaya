@@ -56,7 +56,6 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
     }
 
     std::vector<std::pair<std::size_t, std::size_t> > collected;
-
     for (const auto& p : list_params.present) {
         try {
             auto dhandle = ihandle.openDataSet(p.second);
@@ -85,7 +84,7 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
 
             collected.emplace_back(p.first, len);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate '" + p.second + "'");
+            wrap_error(std::current_exception(), "failed to validate indices for dimension " + p.second);
         }
     }
 

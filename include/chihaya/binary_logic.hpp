@@ -28,17 +28,35 @@ namespace chihaya {
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_binary_logic(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto left_details = fetch_numeric_seed(group, "left", version, options);
-    auto right_details = fetch_numeric_seed(group, "right", version, options);
+    ArrayDetails left_details;
+    try {
+        auto lhandle = group.openGroup("left");
+        left_details = validate_numeric_seed(lhandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'left'");
+    }
+
+    ArrayDetails right_details;
+    try {
+        auto rhandle = group.openGroup("right");
+        right_details = validate_numeric_seed(rhandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'right'");
+    }
 
     if (!options.details_only) {
         if (!are_dimensions_equal(left_details.dimensions, right_details.dimensions)) {
             throw std::runtime_error("'left' and 'right' should have the same dimensions");
         }
 
-        const auto method = load_scalar_string_dataset(group, "method");
-        if (!is_valid_logic_operation(method)) {
-            throw std::runtime_error("unrecognized 'method' (" + method + ")");
+        try {
+            auto mhandle = group.openDataSet("method");
+            auto method = read_scalar_string_dataset(mhandle);
+            if (!is_valid_logic_operation(method)) {
+                throw std::runtime_error("unrecognized operation '" + method + "'");
+            }
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate 'method'");
         }
     }
 

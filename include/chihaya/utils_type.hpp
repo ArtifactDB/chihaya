@@ -11,6 +11,7 @@
 #include <cstddef>
 
 #include "utils_public.hpp"
+#include "utils_misc.hpp"
 
 namespace chihaya {
 
@@ -66,7 +67,6 @@ Output_ load_non_negative_integer_scalar_0_99(const H5::Attribute& handle) {
 
     } else {
         throw create_integer_error_0_99(handle.getTypeClass());
-        return 0;
     }
 }
 
@@ -134,15 +134,20 @@ inline bool load_boolean_scalar_0_99(const H5::Attribute& handle) {
 inline bool is_boolean_0_99(const H5::DataSet& handle) {
     if (!handle.attrExists("is_boolean")) {
         return false;
-    } else {
-        if (handle.getDataType().getClass() != H5T_INTEGER) {
-            throw std::runtime_error("'is_boolean' attribute should only exist for integer datasets");
-        }
+    }
+
+    if (handle.getDataType().getClass() != H5T_INTEGER) {
+        throw std::runtime_error("'is_boolean' attribute should only exist for integer datasets");
+    }
+
+    try {
         auto ahandle = handle.openAttribute("is_boolean");
         if (ahandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("'is_boolean' attribute should be a scalar");
+            throw std::runtime_error("expected a scalar");
         }
         return load_boolean_scalar_0_99(ahandle);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate the 'is_boolean' attribute");
     }
 }
 

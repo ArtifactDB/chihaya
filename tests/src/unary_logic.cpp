@@ -182,7 +182,7 @@ TEST_P(UnaryLogicErrorTest, Method) {
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error(path, "hello", "unrecognized operation in 'method'");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 TEST_P(UnaryLogicErrorTest, Value) {

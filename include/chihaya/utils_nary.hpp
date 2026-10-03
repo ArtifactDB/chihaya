@@ -13,10 +13,10 @@
 
 namespace chihaya {
 
-inline ArrayDetails fetch_numeric_seed(const H5::Group& handle, const std::string& target, const ritsuko::Version& version, const Options& options) {
-    auto output = fetch_seed(handle, target, version, options);
+inline ArrayDetails validate_numeric_seed(const H5::Group& handle, const ritsuko::Version& version, const Options& options) {
+    auto output = validate(handle, version, options);
     if (output.type == STRING) {
-        throw std::runtime_error("type of '" + target + "' should be integer, float or boolean");
+        throw std::runtime_error("type should be integer, float or boolean");
     }
     return output;
 }
@@ -91,7 +91,7 @@ inline bool is_valid_special_check_operation(const std::string& method) {
         method == "is_infinite";
 }
 
-inline void check_unary_along(const H5::Group& handle, const ritsuko::Version& version, const std::vector<std::size_t>& seed_dimensions, hsize_t extent) {
+inline void check_unary_along(const H5::DataSet& handle, const ritsuko::Version& version, const std::vector<std::size_t>& seed_dimensions, hsize_t extent) {
     const auto along = load_along(handle, version);
 
     if (sanisizer::is_greater_than_or_equal(along, seed_dimensions.size())) {

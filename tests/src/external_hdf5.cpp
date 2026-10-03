@@ -62,28 +62,28 @@ TEST_P(ExternalHdf5ErrorTest, File) {
     const auto path = define_test_path("external_array");
     auto version = GetParam();
 
+    // Test that we validate the strings. 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("file");
         add_string_vector(ghandle, "file", 5, /* strlen = */ 2);
     }
-
-    expect_error(path, "ext", "should be scalar");
+    expect_error(path, "ext", "scalar");
 }
 
 TEST_P(ExternalHdf5ErrorTest, Name) {
     const auto path = define_test_path("external_array");
     auto version = GetParam();
 
+    // Test that we validate the strings. 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto ghandle = external_array_opener(fhandle, "ext", { 50, 5, 10 }, version, "FLOAT"); 
         ghandle.unlink("name");
         add_string_vector(ghandle, "name", 5, /* strlen = */ 2);
     }
-
-    expect_error(path, "ext", "should be scalar");
+    expect_error(path, "ext", "scalar");
 }
 
 INSTANTIATE_TEST_SUITE_P(

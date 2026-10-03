@@ -163,7 +163,7 @@ TEST_P(MatrixProductErrorTest, Orientation) {
         ghandle.unlink("left_orientation");
         add_string_scalar(ghandle, "left_orientation", "FOO");
     }
-    expect_error(path, "foos", "'left_orientation' should be either 'N' or 'T'");
+    expect_error(path, "foos", "either 'N' or 'T'");
 }
 
 TEST_P(MatrixProductErrorTest, Dimensions) {

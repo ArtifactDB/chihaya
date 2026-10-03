@@ -24,7 +24,13 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     ListDetails output;
 
     if (version.lt(1, 1, 0)) {
-        auto dtype = load_scalar_string_attribute(handle, "delayed_type");
+        std::string dtype;
+        try {
+            auto ahandle = handle.openAttribute("delayed_type");
+            dtype = read_scalar_string_attribute(ahandle);
+        } catch (...) {
+            wrap_error(std::current_exception(), "failed to validate the 'delayed_type' attribute");
+        }
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
         }
@@ -33,22 +39,25 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     const char* old_name = "delayed_length";
     const char* new_name = "length";
     const char* actual_name = (version.lt(1, 1, 0) ? old_name : new_name);
-    {
+
+    try {
         auto lhandle = handle.openAttribute(actual_name);
         if (lhandle.getSpace().getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("expected the '" + std::string(actual_name) + "' attribute to be a scalar");
+            throw std::runtime_error("expected attribute to be a scalar");
         } 
 
         if (version.lt(1, 1, 0)) {
             output.length = load_non_negative_integer_scalar_0_99<std::size_t>(lhandle);
         } else {
             if (ritsuko::hdf5::exceeds_integer_limit(lhandle, 64, false)) {
-                throw std::runtime_error("datatype of the '" + std::string(actual_name) + "' attribute should fit inside a 64-bit unsigned integer");
+                throw std::runtime_error("datatype should fit inside a 64-bit unsigned integer");
             }
             std::uint64_t l;
             lhandle.read(H5::PredType::NATIVE_UINT64, &l);
             output.length = sanisizer::cast<std::size_t>(l);
         }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate the '" + std::string(actual_name) + "' attribute");
     }
 
     const auto nobj = handle.getNumObjs();

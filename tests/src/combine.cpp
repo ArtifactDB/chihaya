@@ -143,7 +143,7 @@ TEST_P(CombineErrorTest, Along) {
         ghandle.unlink("along");
         add_numeric_vector<int>(ghandle, "along", { 1 }, H5::PredType::NATIVE_INT);
     }
-    expect_error(path, "hello", "should be scalar");
+    expect_error(path, "hello", "scalar");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -171,7 +171,7 @@ TEST_P(CombineErrorTest, Seed) {
             add_string_attribute(lhandle, "length", "FOO");
         }
     }
-    expect_error(path, "hello", "failed to load 'seeds' list");
+    expect_error(path, "hello", "failed to validate 'seeds'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -187,7 +187,7 @@ TEST_P(CombineErrorTest, Seed) {
         auto shandle = lhandle.createGroup("0");
         add_string_attribute(shandle, "delayed_type", "FOOBAR");
     }
-    expect_error(path, "hello", "failed to validate 'seeds/0'");
+    expect_error(path, "hello", "failed to validate seed 0");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);

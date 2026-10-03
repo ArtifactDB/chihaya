@@ -178,7 +178,7 @@ TEST_P(UnaryArithmeticErrorTest, Method) {
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
-    expect_error(path, "hello", "unrecognized operation in 'method' (got 'foo')");
+    expect_error(path, "hello", "unrecognized operation");
 }
 
 TEST_P(UnaryArithmeticErrorTest, Side) {
@@ -200,7 +200,7 @@ TEST_P(UnaryArithmeticErrorTest, Side) {
         ghandle.unlink("side");
         add_string_scalar(ghandle, "side", "foo");
     }
-    expect_error(path, "hello", "should be 'left' or 'right'");
+    expect_error(path, "hello", "expected 'left' or 'right'");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

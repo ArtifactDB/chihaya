@@ -252,7 +252,7 @@ TEST_P(SparseMatrixErrorTest, Shape) {
         add_version_string(ghandle, version);
         add_numeric_vector<int>(ghandle, "shape", { 10, 5, 2 }, H5::PredType::NATIVE_UINT8);
     }
-    expect_error(path, "foobar", "'shape' dataset should have length 2");
+    expect_error(path, "foobar", "dataset should have length 2");
 
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
@@ -288,7 +288,7 @@ TEST_P(SparseMatrixErrorTest, Data) {
         ghandle.unlink("data");
         ghandle.createDataSet("data", H5::PredType::NATIVE_INT, H5S_SCALAR);
     }
-    expect_error(path, "foobar", "should be 1-dimensional");
+    expect_error(path, "foobar", "1-dimensional");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);
@@ -398,7 +398,7 @@ TEST_P(SparseMatrixErrorTest, SimpleIndex) {
         add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_DOUBLE);
     }
     if (version.lt(1, 1, 0)) {
-        expect_error(path, "foobar", "'indices' should be integer");
+        expect_error(path, "foobar", "integer");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
     }
@@ -409,7 +409,7 @@ TEST_P(SparseMatrixErrorTest, SimpleIndex) {
         ghandle.unlink("indices");
         add_numeric_vector<int>(ghandle, "indices", { 1, 2 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error(path, "foobar", "same length");
+    expect_error(path, "foobar", "length should be the same");
 }
 
 TEST_P(SparseMatrixErrorTest, Indptr) {
@@ -430,7 +430,7 @@ TEST_P(SparseMatrixErrorTest, Indptr) {
         add_numeric_vector(ghandle, "indptr", indptr, H5::PredType::NATIVE_DOUBLE);
     }
     if (version.lt(1, 1, 0)) {
-        expect_error(path, "foobar", "'indptr' should be integer");
+        expect_error(path, "foobar", "integer");
     } else {
         expect_error(path, "foobar", "64-bit unsigned integer");
     }
@@ -441,7 +441,7 @@ TEST_P(SparseMatrixErrorTest, Indptr) {
         ghandle.unlink("indptr");
         add_numeric_vector<int>(ghandle, "indptr", { 0 }, H5::PredType::NATIVE_UINT32);
     }
-    expect_error(path, "foobar", "'indptr' should have length");
+    expect_error(path, "foobar", "length should be equal");
 
     {
         H5::H5File fhandle(path, H5F_ACC_RDWR);

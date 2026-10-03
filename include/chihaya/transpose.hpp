@@ -69,17 +69,23 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, hsize_t p
  * Otherwise, if the validation failed, an error is raised.
  */
 inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
-    auto seed_details = fetch_seed(group, "seed", version, options);
-
-    auto phandle = group.openDataSet("permutation");
-    auto pspace = phandle.getSpace();
-    if (pspace.getSimpleExtentNdims() != 1) {
-        throw std::runtime_error("'permutation' should be a 1-dimensional dataset");
+    ArrayDetails seed_details;
+    try {
+        auto shandle = group.openGroup("seed");
+        seed_details = validate(shandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate 'seed'");
     }
-    hsize_t plen;
-    pspace.getSimpleExtentDims(&plen);
 
     try {
+        auto phandle = group.openDataSet("permutation");
+        auto pspace = phandle.getSpace();
+        if (pspace.getSimpleExtentNdims() != 1) {
+            throw std::runtime_error("expected a 1-dimensional dataset");
+        }
+        hsize_t plen;
+        pspace.getSimpleExtentDims(&plen);
+
         if (version.lt(1, 1, 0)) {
             // Older versions didn't actually specify the integer type, so we just check we can load it into an 'int' of any type.
             if (!ritsuko::hdf5::exceeds_integer_limit(phandle, 64, true)) {

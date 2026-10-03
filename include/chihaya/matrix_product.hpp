@@ -28,14 +28,27 @@ inline std::pair<ArrayDetails, bool> fetch_matprod_seed(
     const ritsuko::Version& version,
     const Options& options
 ) {
-    auto seed_details = fetch_numeric_seed(group, target, version, options);
-    if (seed_details.dimensions.size() != 2) {
-        throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array for a matrix product");
+    ArrayDetails seed_details;
+    try {
+        auto thandle = group.openGroup(target);
+        seed_details = validate_numeric_seed(thandle, version, options);
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate '" + target + "'");
     }
-    
-    auto oristr = load_scalar_string_dataset(group, orientation);
-    if (oristr != "N" && oristr != "T") {
-        throw std::runtime_error("'" + orientation + "' should be either 'N' or 'T' for a matrix product");
+
+    if (seed_details.dimensions.size() != 2) {
+        throw std::runtime_error("expected '" + target + "' to be a 2-dimensional array");
+    }
+
+    std::string oristr;
+    try {
+        auto ohandle = group.openDataSet(orientation);
+        oristr = read_scalar_string_dataset(ohandle);
+        if (oristr != "N" && oristr != "T") {
+            throw std::runtime_error("expected either 'N' or 'T'");
+        }
+    } catch (...) {
+        wrap_error(std::current_exception(), "failed to validate '" + orientation + "'");
     }
 
     return std::pair<ArrayDetails, bool>(seed_details, oristr == "T");
