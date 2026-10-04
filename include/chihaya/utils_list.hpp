@@ -29,7 +29,7 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
             auto ahandle = handle.openAttribute("delayed_type");
             dtype = read_scalar_string_attribute(ahandle);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate the 'delayed_type' attribute");
+            std::throw_with_nested(std::runtime_error("failed to validate the 'delayed_type' attribute"));
         }
         if (dtype != "list") {
             throw std::runtime_error("expected 'delayed_type = \"list\"' for a list");
@@ -57,7 +57,7 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
             output.length = sanisizer::cast<std::size_t>(l);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate the '" + std::string(actual_name) + "' attribute");
+        std::throw_with_nested(std::runtime_error("failed to validate the '" + std::string(actual_name) + "' attribute"));
     }
 
     const auto nobj = handle.getNumObjs();

@@ -74,7 +74,7 @@ inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Ve
         auto shandle = group.openGroup("seed");
         seed_details = validate(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
 
     try {
@@ -102,7 +102,7 @@ inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Ve
             seed_details.dimensions = check_permutation<std::uint64_t>(phandle, plen, seed_details.dimensions, options.details_only);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'permutation'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'permutation'"));
     }
 
     return seed_details;

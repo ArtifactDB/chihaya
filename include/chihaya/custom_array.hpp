@@ -46,7 +46,7 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
             output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, len);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'dimensions'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'dimensions'"));
     }
 
     try {
@@ -63,7 +63,7 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
             throw std::runtime_error("unknown type '" + type + "'");
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'type'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'type'"));
     }
 
     return output;

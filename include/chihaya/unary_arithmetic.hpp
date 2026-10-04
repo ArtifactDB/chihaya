@@ -33,7 +33,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
         auto shandle = group.openGroup("seed");
         seed_details = validate_numeric_seed(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
 
     std::string method;
@@ -47,7 +47,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'method'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
     }
 
     std::string side;
@@ -65,7 +65,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'side'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'side'"));
     }
 
     // If side = none, we set it to INTEGER to promote BOOLEANs to integer (implicit multiplication by +/-1).
@@ -86,7 +86,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
                     val_type = translate_type_1_1(type);
                     check_type_1_1(vhandle, val_type);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                    std::throw_with_nested(std::runtime_error("failed to validate the 'type' attribute"));
                 }
             }
 
@@ -119,7 +119,7 @@ inline ArrayDetails validate_unary_arithmetic(const H5::Group& group, const rits
                 case VALUE: desc = "value"; break;
                 case ALONG: desc = "along"; break;
             }
-            wrap_error(std::current_exception(), "failed to validate '" + desc + "'");
+            std::throw_with_nested(std::runtime_error("failed to validate '" + desc + "'"));
         }
     }
 

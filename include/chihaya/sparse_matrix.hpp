@@ -118,7 +118,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
             dims = load_dimensions_from_uint64_contents<std::size_t>(shandle, 2);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'shape'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'shape'"));
     }
 
     hsize_t nnz;
@@ -144,7 +144,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                     check_type_1_1(dhandle, array_type);
                 }
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                std::throw_with_nested(std::runtime_error("failed to validate the 'type' attribute"));
             }
         }
 
@@ -155,7 +155,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
             validate_missing_placeholder(dhandle, version);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'data'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'data'"));
     }
 
     if (!options.details_only) {
@@ -173,7 +173,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 bhandle.read(&val, H5::PredType::NATIVE_INT8);
                 csc = (val != 0);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate 'by_column'");
+                std::throw_with_nested(std::runtime_error("failed to validate 'by_column'"));
             }
         }
 
@@ -223,7 +223,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 }
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'indptr'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'indptr'"));
         }
 
         try {
@@ -254,7 +254,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 validate_sparse_indices<std::uint64_t>(ihandle, indptrs, primary, secondary, csc, options.contiguous_chunk_size);
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'indices'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'indices'"));
         }
 
         if (group.exists("dimnames")) {
@@ -262,7 +262,7 @@ inline ArrayDetails validate_sparse_matrix(const H5::Group& group, const ritsuko
                 auto dnhandle = group.openGroup("dimnames");
                 validate_dimnames_internal(dnhandle, dims, version, options.contiguous_chunk_size);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+                std::throw_with_nested(std::runtime_error("failed to validate 'dimnames'"));
             }
         }
     }

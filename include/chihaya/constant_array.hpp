@@ -54,7 +54,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
             output.dimensions = load_dimensions_from_uint64_contents<std::size_t>(dhandle, size);
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'dimensions'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'dimensions'"));
     }
 
     try {
@@ -74,7 +74,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
                     check_type_1_1(vhandle, output.type);
                 }
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                std::throw_with_nested(std::runtime_error("failed to validate the 'type' attribute"));
             }
         }
 
@@ -85,7 +85,7 @@ inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuk
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'value'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'value'"));
     }
 
     return output;

@@ -33,7 +33,7 @@ inline ArrayDetails validate_binary_arithmetic(const H5::Group& group, const rit
         auto lhandle = group.openGroup("left");
         left_details = validate_numeric_seed(lhandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'left'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'left'"));
     }
 
     ArrayDetails right_details;
@@ -41,7 +41,7 @@ inline ArrayDetails validate_binary_arithmetic(const H5::Group& group, const rit
         auto rhandle = group.openGroup("right");
         right_details = validate_numeric_seed(rhandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'right'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'right'"));
     }
 
     if (!options.details_only) {
@@ -60,7 +60,7 @@ inline ArrayDetails validate_binary_arithmetic(const H5::Group& group, const rit
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'method'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
     }
 
     left_details.type = determine_arithmetic_output_type(left_details.type, right_details.type, method);

@@ -31,7 +31,7 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& group, const r
         auto shandle = group.openGroup("seed");
         seed_details = validate_numeric_seed(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
 
     try {
@@ -43,7 +43,7 @@ inline ArrayDetails validate_unary_special_check(const H5::Group& group, const r
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'method'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
     }
 
     seed_details.type = BOOLEAN;

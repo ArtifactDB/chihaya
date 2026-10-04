@@ -32,7 +32,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::V
         auto shandle = group.openGroup("seed");
         seed_details = validate(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
     if (seed_details.type == STRING) {
         throw std::runtime_error("type of 'seed' should be integer, float or boolean");
@@ -43,7 +43,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::V
         auto mhandle = group.openDataSet("method");
         method = read_scalar_string_dataset(mhandle);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'method'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
     }
 
     if (method == "sign") {
@@ -70,7 +70,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::V
                         }
                     }
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate 'base'");
+                    std::throw_with_nested(std::runtime_error("failed to validate 'base'"));
                 }
             }
         }
@@ -94,7 +94,7 @@ inline ArrayDetails validate_unary_math(const H5::Group& group, const ritsuko::V
                     }
                 }
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate 'digits'");
+                std::throw_with_nested(std::runtime_error("failed to validate 'digits'"));
             }
         }
         seed_details.type = FLOAT;

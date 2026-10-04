@@ -35,7 +35,7 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
     try {
         along = load_along(group.openDataSet("along"), version);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'along'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'along'"));
     }
 
     ArrayType type = BOOLEAN;
@@ -83,7 +83,7 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
 
                 num_strings += (cur_seed.type == STRING);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate seed " + p.second);
+                std::throw_with_nested(std::runtime_error("failed to validate seed " + p.second));
             }
         }
 
@@ -91,7 +91,7 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
             throw std::runtime_error("either none or all of the arrays to be combined should contain strings");
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seeds'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seeds'"));
     }
 
     return ArrayDetails(type, std::move(dimensions));

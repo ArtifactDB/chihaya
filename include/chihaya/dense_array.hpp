@@ -77,7 +77,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
                     check_type_1_1(dhandle, output.type);
                 }
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                std::throw_with_nested(std::runtime_error("failed to validate the 'type' attribute"));
             }
         }
 
@@ -98,7 +98,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
 
         transplant_dimensions(dims, output.dimensions);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'data'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'data'"));
     }
 
     bool native;
@@ -119,7 +119,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
             native = tmp_native;
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'native'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'native'"));
     }
 
     // Do this before applying the 'native' reversal.
@@ -129,7 +129,7 @@ inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::
                 auto dnhandle = group.openGroup("dimnames");
                 validate_dimnames_internal(dnhandle, output.dimensions, version, options.contiguous_chunk_size);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate 'dimnames'");
+                std::throw_with_nested(std::runtime_error("failed to validate 'dimnames'"));
             }
         }
     }

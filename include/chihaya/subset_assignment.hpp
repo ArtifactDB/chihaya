@@ -35,7 +35,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& group, const rit
         auto shandle = group.openGroup("seed");
         seed_details = validate(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
 
     ArrayDetails value_details;
@@ -43,7 +43,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& group, const rit
         auto vhandle = group.openGroup("value");
         value_details = validate(vhandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'value'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'value'"));
     }
 
     if (!options.details_only) {
@@ -61,7 +61,7 @@ inline ArrayDetails validate_subset_assignment(const H5::Group& group, const rit
             auto ihandle = group.openGroup("index");
             collected = validate_subset_index_list(ihandle, seed_dims, version, options.contiguous_chunk_size);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'index'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'index'"));
         }
 
         auto expected_dims = seed_dims;

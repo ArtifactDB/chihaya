@@ -147,7 +147,7 @@ inline bool is_boolean_0_99(const H5::DataSet& handle) {
         }
         return load_boolean_scalar_0_99(ahandle);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate the 'is_boolean' attribute");
+        std::throw_with_nested(std::runtime_error("failed to validate the 'is_boolean' attribute"));
     }
 }
 

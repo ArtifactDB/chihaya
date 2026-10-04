@@ -106,7 +106,7 @@ inline void validate_dimnames_internal(
                 }()
             );
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate list entry " + p.second); 
+            std::throw_with_nested(std::runtime_error("failed to validate list entry " + p.second));
         }
     }
 }

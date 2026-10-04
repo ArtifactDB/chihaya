@@ -93,7 +93,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
         auto ahandle = group.openAttribute("delayed_type");
         dtype = read_scalar_string_attribute(ahandle);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate the 'delayed_type' attribute");
+        std::throw_with_nested(std::runtime_error("failed to validate the 'delayed_type' attribute"));
     }
 
     ArrayDetails output;
@@ -103,7 +103,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             auto ahandle = group.openAttribute("delayed_array");
             atype = read_scalar_string_attribute(ahandle);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate the 'delayed_array' attribute");
+            std::throw_with_nested(std::runtime_error("failed to validate the 'delayed_array' attribute"));
         }
 
         const auto& custom = options.array_validate_registry;
@@ -112,7 +112,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             try {
                 output = (cit->second)(group, version, options);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
+                std::throw_with_nested(std::runtime_error("failed to validate delayed array of type '" + atype + "'"));
             }
 
         } else {
@@ -122,21 +122,21 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
                 try {
                     output = (git->second)(group, version, options);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
+                    std::throw_with_nested(std::runtime_error("failed to validate delayed array of type '" + atype + "'"));
                 }
 
             } else if (atype.rfind("custom ", 0) != std::string::npos) {
                 try {
                     output = validate_custom_array(group, version, options);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
+                    std::throw_with_nested(std::runtime_error("failed to validate delayed array of type '" + atype + "'"));
                 }
 
             } else if (atype.rfind("external hdf5 ", 0) != std::string::npos && version.lt(1, 1, 0)) {
                 try {
                     output = validate_external_hdf5(group, version, options);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate delayed array of type '" + atype + "'");
+                    std::throw_with_nested(std::runtime_error("failed to validate delayed array of type '" + atype + "'"));
                 }
 
             } else {
@@ -150,7 +150,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             auto ohandle = group.openAttribute("delayed_operation");
             otype = read_scalar_string_attribute(ohandle);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate the 'delayed_operation' attribute");
+            std::throw_with_nested(std::runtime_error("failed to validate the 'delayed_operation' attribute"));
         }
 
         const auto& custom = options.operation_validate_registry;
@@ -159,7 +159,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
             try {
                 output = (cit->second)(group, version, options);
             } catch (...) {
-                wrap_error(std::current_exception(), "failed to validate delayed operation of type '" + otype + "'");
+                std::throw_with_nested(std::runtime_error("failed to validate delayed operation of type '" + otype + "'"));
             }
 
         } else {
@@ -169,7 +169,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
                 try {
                     output = (git->second)(group, version, options);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate delayed operation of type '" + otype + "'");
+                    std::throw_with_nested(std::runtime_error("failed to validate delayed operation of type '" + otype + "'"));
                 }
 
             } else {
@@ -206,7 +206,7 @@ inline ritsuko::Version extract_version(const H5::Group& group) {
                 version = ritsuko::parse_version_string(vstring.c_str(), vstring.size(), /* skip_patch = */ true);
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate the 'delayed_version' attribute");
+            std::throw_with_nested(std::runtime_error("failed to validate the 'delayed_version' attribute"));
         }
     } else {
         version.minor = 99;
@@ -241,7 +241,7 @@ inline ArrayDetails validate(const std::string& path, const std::string& name, c
         auto ghandle = handle.openGroup(name);
         return validate(ghandle, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate '" + name + "' in '" + path + "'");
+        std::throw_with_nested(std::runtime_error("failed to validate '" + name + "' in '" + path + "'"));
     }
 }
 

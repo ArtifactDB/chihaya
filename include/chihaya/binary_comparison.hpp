@@ -32,7 +32,7 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& group, const rit
         auto lhandle = group.openGroup("left");
         left_details = validate(lhandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'left'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'left'"));
     }
 
     ArrayDetails right_details;
@@ -40,7 +40,7 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& group, const rit
         auto rhandle = group.openGroup("right");
         right_details = validate(rhandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'right'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'right'"));
     }
 
     if (!options.details_only) {
@@ -59,7 +59,7 @@ inline ArrayDetails validate_binary_comparison(const H5::Group& group, const rit
                 throw std::runtime_error("unrecognized operation '" + method + "'");
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'method'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
         }
     }
 

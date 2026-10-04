@@ -30,7 +30,7 @@ inline ArrayDetails validate_dimnames(const H5::Group& group, const ritsuko::Ver
         auto shandle = group.openGroup("seed");
         seed_details = validate(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'"); 
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'")); 
     }
 
     if (!options.details_only) {
@@ -38,7 +38,7 @@ inline ArrayDetails validate_dimnames(const H5::Group& group, const ritsuko::Ver
             auto nhandle = group.openGroup("dimnames");
             validate_dimnames_internal(nhandle, seed_details.dimensions, version, options.contiguous_chunk_size);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'dimnames'"); 
+            std::throw_with_nested(std::runtime_error("failed to validate 'dimnames'")); 
         }
     }
 

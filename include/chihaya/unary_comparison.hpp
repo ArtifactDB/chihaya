@@ -33,7 +33,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
         auto shandle = group.openGroup("seed");
         seed_details = validate(shandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate 'seed'");
+        std::throw_with_nested(std::runtime_error("failed to validate 'seed'"));
     }
 
     if (!options.details_only) {
@@ -45,7 +45,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                 throw std::runtime_error("unrecognized operation '" + method + "'");
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'method'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'method'"));
         }
 
         std::string side;
@@ -56,7 +56,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                 throw std::runtime_error("expected either 'left' or 'right'");
             }
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate 'side'");
+            std::throw_with_nested(std::runtime_error("failed to validate 'side'"));
         }
 
         enum Failure { VALUE, ALONG };
@@ -74,7 +74,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                     val_type = translate_type_1_1(type);
                     check_type_1_1(vhandle, val_type);
                 } catch (...) {
-                    wrap_error(std::current_exception(), "failed to validate the 'type' attribute");
+                    std::throw_with_nested(std::runtime_error("failed to validate the 'type' attribute"));
                 }
             }
             if ((val_type == STRING) != (seed_details.type == STRING)) {
@@ -119,7 +119,7 @@ inline ArrayDetails validate_unary_comparison(const H5::Group& group, const rits
                 case VALUE: desc = "value"; break;
                 case ALONG: desc = "along"; break;
             }
-            wrap_error(std::current_exception(), "failed to validate '" + desc + "'");
+            std::throw_with_nested(std::runtime_error("failed to validate '" + desc + "'"));
         }
     }
 

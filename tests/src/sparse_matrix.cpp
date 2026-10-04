@@ -654,7 +654,7 @@ TEST_P(SparseMatrixChunkTest, IndexIteration) {
         try {
             test_validate(path, "foobar", false); 
         } catch (std::exception& e) {
-            msg = e.what();
+            msg = get_message(e);
         }
         bool found = (msg.find("less than the number of rows") != std::string::npos) || (msg.find("strictly increasing") != std::string::npos);
         EXPECT_TRUE(found) << "wrong error message (got \"" << msg << "\")" << std::endl;

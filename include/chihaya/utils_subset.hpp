@@ -84,7 +84,7 @@ inline std::vector<std::pair<std::size_t, std::size_t> > validate_subset_index_l
 
             collected.emplace_back(p.first, len);
         } catch (...) {
-            wrap_error(std::current_exception(), "failed to validate indices for dimension " + p.second);
+            std::throw_with_nested(std::runtime_error("failed to validate indices for dimension " + p.second));
         }
     }
 

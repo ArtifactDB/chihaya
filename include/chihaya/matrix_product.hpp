@@ -33,7 +33,7 @@ inline std::pair<ArrayDetails, bool> fetch_matprod_seed(
         auto thandle = group.openGroup(target);
         seed_details = validate_numeric_seed(thandle, version, options);
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate '" + target + "'");
+        std::throw_with_nested(std::runtime_error("failed to validate '" + target + "'"));
     }
 
     if (seed_details.dimensions.size() != 2) {
@@ -48,7 +48,7 @@ inline std::pair<ArrayDetails, bool> fetch_matprod_seed(
             throw std::runtime_error("expected either 'N' or 'T'");
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate '" + orientation + "'");
+        std::throw_with_nested(std::runtime_error("failed to validate '" + orientation + "'"));
     }
 
     return std::pair<ArrayDetails, bool>(seed_details, oristr == "T");

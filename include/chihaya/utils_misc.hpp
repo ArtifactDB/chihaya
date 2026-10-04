@@ -22,17 +22,6 @@ ArrayDetails validate(const H5::Group&, const ritsuko::Version&, const Options&)
 template<typename Input_>
 using I = std::remove_cv_t<std::remove_reference_t<Input_> >;
 
-[[noreturn]]
-inline void wrap_error(const std::exception_ptr& err, const std::string& context) {
-    try {
-        std::rethrow_exception(err);
-    } catch (std::exception& e) {
-        throw std::runtime_error(context + "; " + std::string(e.what()));
-    } catch (H5::Exception& e) {
-        throw std::runtime_error(context + "; " + e.getDetailMsg());
-    }
-}
-
 inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuko::Version& version) {
     if (version.lt(1, 0, 0)) {
         return;
@@ -67,7 +56,7 @@ inline void validate_missing_placeholder(const H5::DataSet& handle, const ritsuk
             }
         }
     } catch (...) {
-        wrap_error(std::current_exception(), "failed to validate the '" + std::string(placeholder) + "' attribute");
+        std::throw_with_nested(std::runtime_error("failed to validate the '" + std::string(placeholder) + "' attribute"));
     }
 }
 

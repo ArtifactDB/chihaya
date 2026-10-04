@@ -119,14 +119,25 @@ inline auto spawn_all_versions() {
     return ::testing::Values(ritsuko::Version(0, 99, 0), ritsuko::Version(1, 0, 0), ritsuko::Version(1, 1, 0));
 }
 
+inline std::string get_message(const std::exception& e) {
+    std::string output = e.what();
+    try {
+        std::rethrow_if_nested(e);
+    } catch (const std::exception& e) {
+        output += "; " + get_message(e);
+    } catch (H5::Exception& e) {
+        output += "; " + std::string(e.getDetailMsg());
+    }
+    return output;
+}
+
 template<class Function_>
 void expect_error(Function_ op, std::string message) {
     std::string msg;
     try {
         op();
-        std::cerr << "expected \"" << message << "\" for non-failing test" << std::endl;
     } catch (std::exception& e) {
-        msg = e.what();
+        msg = get_message(e);
     }
     bool found = (msg.find(message) != std::string::npos);
     EXPECT_TRUE(found) << "expected \"" << message << "\" (got \"" << msg << "\")" << std::endl;
