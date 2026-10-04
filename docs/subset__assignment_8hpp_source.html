@@ -118,7 +118,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">auto</span> shandle = group.openGroup(<span class="stringliteral">&quot;seed&quot;</span>);</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        seed_details = <a class="code hl_function" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate</a>(shandle, version, options);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>));</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> value_details;</div>
@@ -126,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">auto</span> vhandle = group.openGroup(<span class="stringliteral">&quot;value&quot;</span>);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        value_details = <a class="code hl_function" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate</a>(vhandle, version, options);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;value&#39;&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;value&#39;&quot;</span>));</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
@@ -144,7 +144,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keyword">auto</span> ihandle = group.openGroup(<span class="stringliteral">&quot;index&quot;</span>);</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            collected = validate_subset_index_list(ihandle, seed_dims, version, options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82">contiguous_chunk_size</a>);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;index&#39;&quot;</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;index&#39;&quot;</span>));</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> expected_dims = seed_dims;</div>

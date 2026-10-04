@@ -114,7 +114,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">auto</span> shandle = group.openGroup(<span class="stringliteral">&quot;seed&quot;</span>);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        seed_details = validate_numeric_seed(shandle, version, options);</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>));</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">try</span> {</div>
@@ -126,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            }</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>));</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = BOOLEAN;</div>

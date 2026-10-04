@@ -132,7 +132,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            output.dimensions = load_dimensions_from_uint64_contents&lt;std::size_t&gt;(dhandle, len);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;dimensions&#39;&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;dimensions&#39;&quot;</span>));</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">try</span> {</div>
@@ -149,7 +149,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unknown type &#39;&quot;</span> + type + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;type&#39;&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;type&#39;&quot;</span>));</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> output;</div>

@@ -117,7 +117,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">auto</span> lhandle = group.openGroup(<span class="stringliteral">&quot;left&quot;</span>);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        left_details = validate_numeric_seed(lhandle, version, options);</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;left&#39;&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;left&#39;&quot;</span>));</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> right_details;</div>
@@ -125,7 +125,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">auto</span> rhandle = group.openGroup(<span class="stringliteral">&quot;right&quot;</span>);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        right_details = validate_numeric_seed(rhandle, version, options);</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;right&#39;&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;right&#39;&quot;</span>));</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
@@ -144,7 +144,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            }</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>));</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    left_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = determine_arithmetic_output_type(left_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a>, right_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a>, method);</div>

@@ -115,7 +115,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">auto</span> shandle = group.openGroup(<span class="stringliteral">&quot;seed&quot;</span>);</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        seed_details = <a class="code hl_function" href="namespacechihaya.html#a8d3d0003d24bf25847b399e8d62fea42">validate</a>(shandle, version, options);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;seed&#39;&quot;</span>));</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> == STRING) {</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;type of &#39;seed&#39; should be integer, float or boolean&quot;</span>);</div>
@@ -126,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">auto</span> mhandle = group.openDataSet(<span class="stringliteral">&quot;method&quot;</span>);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        method = read_scalar_string_dataset(mhandle);</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;method&#39;&quot;</span>));</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (method == <span class="stringliteral">&quot;sign&quot;</span>) {</div>
@@ -153,7 +153,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                        }</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                    }</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;base&#39;&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;base&#39;&quot;</span>));</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                }</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            }</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        }</div>
@@ -177,7 +177,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    }</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                }</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;digits&#39;&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;digits&#39;&quot;</span>));</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            }</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        seed_details.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = FLOAT;</div>

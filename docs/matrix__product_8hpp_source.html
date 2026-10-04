@@ -120,7 +120,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">auto</span> thandle = group.openGroup(target);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        seed_details = validate_numeric_seed(thandle, version, options);</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;&quot;</span> + target + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;&quot;</span> + target + <span class="stringliteral">&quot;&#39;&quot;</span>));</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (seed_details.dimensions.size() != 2) {</div>
@@ -135,7 +135,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;expected either &#39;N&#39; or &#39;T&#39;&quot;</span>);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        }</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    } <span class="keywordflow">catch</span> (...) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        wrap_error(std::current_exception(), <span class="stringliteral">&quot;failed to validate &#39;&quot;</span> + orientation + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        std::throw_with_nested(std::runtime_error(<span class="stringliteral">&quot;failed to validate &#39;&quot;</span> + orientation + <span class="stringliteral">&quot;&#39;&quot;</span>));</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> std::pair&lt;ArrayDetails, bool&gt;(seed_details, oristr == <span class="stringliteral">&quot;T&quot;</span>);</div>
