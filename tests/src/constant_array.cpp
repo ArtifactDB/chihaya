@@ -190,10 +190,9 @@ TEST_P(ConstantArrayErrorTest, Value) {
 
         // Test that we actually check the 'type' is consistent with the dataset's type.
         {
-            H5::H5File fhandle(path, H5F_ACC_RDWR);
-            auto ghandle = fhandle.openGroup("constant");
-            auto dhandle = ghandle.openDataSet("value");
-            dhandle.removeAttr("type");
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = constant_array_opener(fhandle, "constant", { 50, 10 }, version);
+            auto dhandle = add_numeric_scalar(ghandle, "value", 0.1, H5::PredType::NATIVE_DOUBLE);
             add_string_attribute(dhandle, "type", "INTEGER");
         }
         expect_error(path, "constant", "32-bit signed");

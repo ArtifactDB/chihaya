@@ -53,9 +53,11 @@ TEST_P(ValidateListTest, NonEmpty) {
 
     // Full occupancy.
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto lhandle = fhandle.openGroup("x52");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "x52", 4, version);
         lhandle.createGroup("1");
+        lhandle.createGroup("0");
+        lhandle.createGroup("3");
         lhandle.createGroup("2");
     }
     {

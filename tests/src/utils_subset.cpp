@@ -45,9 +45,10 @@ TEST_P(ValidateSubsetIndexListTest, NonEmpty) {
 
     // Two subsets.
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto lhandle = fhandle.openGroup("index");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "index", 3, version);
         add_numeric_vector<int>(lhandle, "0", { 11, 13, 10, 12, 19, 18, 14 }, H5::PredType::NATIVE_UINT16);
+        add_numeric_vector<int>(lhandle, "2", { 1, 1, 2, 3, 5, 8 }, H5::PredType::NATIVE_UINT8);
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
@@ -59,9 +60,11 @@ TEST_P(ValidateSubsetIndexListTest, NonEmpty) {
 
     // All subsets.
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto lhandle = fhandle.openGroup("index");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "index", 3, version);
         add_numeric_vector<int>(lhandle, "1", {}, H5::PredType::NATIVE_UINT32);
+        add_numeric_vector<int>(lhandle, "2", { 1, 1, 2, 3, 5, 8 }, H5::PredType::NATIVE_UINT8);
+        add_numeric_vector<int>(lhandle, "0", { 11, 13, 10, 12, 19, 18, 14 }, H5::PredType::NATIVE_UINT16);
     }
     {
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
@@ -176,6 +179,7 @@ TEST_P(ValidateSubsetIndexListTest, IndexErrorChunked) {
     H5::DataSpace dspace(1, &dim);
 
     // Here, the aim is to check that we iterate across the subset vector correctly.
+    // This requires the use of chunk sizes that are smaller than the subset vector's length.
     const hsize_t chunk_size = dim / 11;
     H5::DSetCreatPropList dcpl;
     dcpl.setChunk(1, &chunk_size);

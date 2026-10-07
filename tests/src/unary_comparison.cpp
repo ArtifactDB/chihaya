@@ -149,8 +149,8 @@ TEST_P(UnaryComparisonErrorTest, Method) {
     expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
@@ -171,8 +171,8 @@ TEST_P(UnaryComparisonErrorTest, Side) {
     expect_error(path, "hello", "can be represented by a UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", "==", "right", { 15, 12 }, version, "INTEGER");
         ghandle.unlink("side");
         add_string_scalar(ghandle, "side", "foo");
     }
@@ -215,9 +215,8 @@ TEST_P(UnaryComparisonErrorTest, Value) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("value");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", ">=", "right", { 15, 12 }, version, "INTEGER");
         hsize_t dims[2] = { 5, 5 };
         auto dhandle = ghandle.createDataSet("value", H5::PredType::NATIVE_INT32, H5::DataSpace(2, dims));
         if (version.ge(1, 1, 0)) {
@@ -274,9 +273,12 @@ TEST_P(UnaryComparisonErrorTest, Along) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("along");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_comparison_opener(fhandle, "hello", "<=", "right", { 21, 4 }, version, "FLOAT");
+        auto dhandle = add_numeric_vector<int>(ghandle, "value", { 1, 2, 3, 4 }, H5::PredType::NATIVE_UINT8);
+        if (version.ge(1, 1, 0)) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
         add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
     expect_error(path, "hello", "dimension specified in 'along'");

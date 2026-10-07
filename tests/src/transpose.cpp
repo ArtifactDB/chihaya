@@ -148,25 +148,22 @@ TEST_P(TransposeErrorTest, Permutation) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("permutation");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
         add_numeric_vector<int>(ghandle, "permutation", { 1, 2, 0 }, H5::PredType::NATIVE_UINT32);
     }
     expect_error(path, "hello", "length should match dimensionality");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("permutation");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
         add_numeric_vector<int>(ghandle, "permutation", { 1, 5 }, H5::PredType::NATIVE_UINT8);
     }
     expect_error(path, "hello", "out-of-bounds");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("permutation");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
         add_numeric_vector<int>(ghandle, "permutation", { -1, 0 }, H5::PredType::NATIVE_INT);
     }
     if (version.lt(1, 1, 0)) {
@@ -176,9 +173,8 @@ TEST_P(TransposeErrorTest, Permutation) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("permutation");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = transpose_opener(fhandle, "hello", { 13, 19 }, version, "INTEGER"); 
         add_numeric_vector<int>(ghandle, "permutation", { 0, 0 }, H5::PredType::NATIVE_UINT8);
     }
     expect_error(path, "hello", "unique");

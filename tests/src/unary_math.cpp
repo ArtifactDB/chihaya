@@ -143,8 +143,8 @@ TEST_P(UnaryMathErrorTest, Method) {
     expect_error(path, "hello", "UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_math_opener(fhandle, "hello", "sin", { 5, 12 }, version, "FLOAT");
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }

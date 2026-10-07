@@ -196,10 +196,10 @@ TEST_P(SubsetAssignmentErrorTest, Index) {
     expect_error(path, "hello", "out of bounds");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        auto lhandle = ghandle.openGroup("index");
-        lhandle.unlink("2"); // removing the above.
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = subset_assignment_opener(fhandle, "hello", { 13, 19 }, version, "BOOLEAN");
+        mock_array_opener<int>(ghandle, "value", { 5, 19 }, version, "INTEGER"); 
+        auto lhandle = list_opener(ghandle, "index", 2, version);
         add_numeric_vector<int>(lhandle, "0", { 1, 3, 0, 2, 1, 9, 5 }, H5::PredType::NATIVE_UINT16);
     }
     expect_error(path, "hello", "dimension extents are not consistent");

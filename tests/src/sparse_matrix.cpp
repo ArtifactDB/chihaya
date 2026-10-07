@@ -291,23 +291,10 @@ TEST_P(SparseMatrixErrorTest, Data) {
     expect_error(path, "foobar", "1-dimensional");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("data");
-
         auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 5);
-        if (version.ge(1, 1, 0)) {
-            add_string_attribute(dhandle, "type", "STRING");
-        }
-    }
-    expect_error(path, "foobar", "integer, float or boolean");
-
-    {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
-        ghandle.unlink("data");
-
-        auto dhandle = add_string_vector(ghandle, "data", 20, /* strlen = */ 23);
         if (version.ge(1, 1, 0)) {
             add_string_attribute(dhandle, "type", "STRING");
         }
@@ -328,8 +315,8 @@ TEST_P(SparseMatrixErrorTest, Data) {
 
         // Test that we actually check the 'type' is consistent with the dataset's type.
         {
-            H5::H5File fhandle(path, H5F_ACC_RDWR);
-            auto ghandle = fhandle.openGroup("foobar");
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = sparse_matrix_opener(fhandle, version);
             auto dhandle = ghandle.openDataSet("data");
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "BOOLEAN");
@@ -392,8 +379,8 @@ TEST_P(SparseMatrixErrorTest, SimpleIndex) {
     expect_error(path, "foobar", "1-dimensional");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indices");
         add_numeric_vector(ghandle, "indices", indices, H5::PredType::NATIVE_DOUBLE);
     }
@@ -404,8 +391,8 @@ TEST_P(SparseMatrixErrorTest, SimpleIndex) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indices");
         add_numeric_vector<int>(ghandle, "indices", { 1, 2 }, H5::PredType::NATIVE_UINT32);
     }
@@ -436,16 +423,16 @@ TEST_P(SparseMatrixErrorTest, Indptr) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indptr");
         add_numeric_vector<int>(ghandle, "indptr", { 0 }, H5::PredType::NATIVE_UINT32);
     }
     expect_error(path, "foobar", "length should be equal");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indptr");
         auto copy = indptr;
         copy[0] = 1;
@@ -454,8 +441,8 @@ TEST_P(SparseMatrixErrorTest, Indptr) {
     expect_error(path, "foobar", "first entry");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indptr");
         auto copy = indptr;
         copy.back() = 1;
@@ -464,8 +451,8 @@ TEST_P(SparseMatrixErrorTest, Indptr) {
     expect_error(path, "foobar", "last entry");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indptr");
         auto copy = indptr;
         copy[2] = copy[1] - 1;
@@ -489,8 +476,8 @@ TEST_P(SparseMatrixErrorTest, ComplicatedIndex) {
 
     if (version.lt(1, 1, 0)) {
         {
-            H5::H5File fhandle(path, H5F_ACC_RDWR);
-            auto ghandle = fhandle.openGroup("foobar");
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = sparse_matrix_opener(fhandle, version);
             ghandle.unlink("indices");
             auto copy = indices;
             copy[0] = -1;
@@ -500,8 +487,8 @@ TEST_P(SparseMatrixErrorTest, ComplicatedIndex) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener(fhandle, version);
         ghandle.unlink("indices");
         std::vector<int> copy(indices.size());
         add_numeric_vector<int>(ghandle, "indices", copy, H5::PredType::NATIVE_UINT16);
@@ -515,15 +502,10 @@ TEST_P(SparseMatrixErrorTest, CsrIndex) {
         return;
     }
 
-    {
-        H5::H5File fhandle(path, H5F_ACC_TRUNC);
-        sparse_matrix_opener_csr(fhandle, version);
-    }
-
     // Just getting coverage for the altered text in the error messages. 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener_csr(fhandle, version);
         ghandle.unlink("indices");
         auto copy = indices;
         copy[0] = dims[0];
@@ -532,8 +514,8 @@ TEST_P(SparseMatrixErrorTest, CsrIndex) {
     expect_error(path, "foobar", "strictly increasing within each row");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("foobar");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = sparse_matrix_opener_csr(fhandle, version);
         ghandle.unlink("indices");
         auto copy = indices;
         copy.back() = dims[0];
@@ -640,14 +622,14 @@ TEST_P(SparseMatrixChunkTest, IndexIteration) {
     const int nsteps = 10;
     for (int step = 0; step < nsteps; ++step) {
         std::size_t loc = static_cast<double>(indices.size() - 1) * static_cast<double>(step) / static_cast<double>(nsteps - 1);
-        auto previous = indices[loc];
-        indices[loc] = dims[0];
+        auto copy = indices;
+        copy[loc] = dims[0];
 
         {
             H5::H5File fhandle(path, H5F_ACC_RDWR);
             auto ghandle = fhandle.openGroup("foobar");
             auto ihandle = ghandle.openDataSet("indices");
-            ihandle.write(indices.data(), H5::PredType::NATIVE_INT);
+            ihandle.write(copy.data(), H5::PredType::NATIVE_INT);
         }
 
         std::string msg;
@@ -658,8 +640,6 @@ TEST_P(SparseMatrixChunkTest, IndexIteration) {
         }
         bool found = (msg.find("less than the number of rows") != std::string::npos) || (msg.find("strictly increasing") != std::string::npos);
         EXPECT_TRUE(found) << "wrong error message (got \"" << msg << "\")" << std::endl;
-
-        indices[loc] = previous;
     }
 }
 

@@ -295,8 +295,8 @@ TEST(IsBoolean_0_99, Okay) {
     }
 
     {
-        H5::H5File handle(path, H5F_ACC_RDWR);
-        auto dhandle = handle.openDataSet("foobar");
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        auto dhandle = handle.createDataSet("foobar", H5::PredType::NATIVE_INT, H5S_SCALAR);
         auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT8, H5S_SCALAR);
         const int val = 0;
         ahandle.write(H5::PredType::NATIVE_INT, &val);
@@ -307,9 +307,9 @@ TEST(IsBoolean_0_99, Okay) {
     }
 
     {
-        H5::H5File handle(path, H5F_ACC_RDWR);
-        auto dhandle = handle.openDataSet("foobar");
-        auto ahandle = dhandle.openAttribute("is_boolean");
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        auto dhandle = handle.createDataSet("foobar", H5::PredType::NATIVE_INT, H5S_SCALAR);
+        auto ahandle = dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT8, H5S_SCALAR);
         const int val = 1000;
         ahandle.write(H5::PredType::NATIVE_INT, &val);
     }
@@ -337,9 +337,8 @@ TEST(IsBoolean_0_99, Error) {
     }
 
     {
-        H5::H5File handle(path, H5F_ACC_RDWR);
-        auto dhandle = handle.openDataSet("foobar");
-        dhandle.removeAttr("is_boolean");
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        auto dhandle = handle.createDataSet("foobar", H5::PredType::NATIVE_INT, H5S_SCALAR);
         hsize_t dims = 9;
         dhandle.createAttribute("is_boolean", H5::PredType::NATIVE_INT32, H5::DataSpace(1, &dims));
     }

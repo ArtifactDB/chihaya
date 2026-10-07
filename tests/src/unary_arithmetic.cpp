@@ -195,16 +195,16 @@ TEST_P(UnaryArithmeticErrorTest, Side) {
     expect_error(path, "hello", "UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         ghandle.unlink("side");
         add_string_scalar(ghandle, "side", "foo");
     }
     expect_error(path, "hello", "expected 'left' or 'right'");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         ghandle.unlink("side");
         add_string_scalar(ghandle, "side", "none");
     }
@@ -247,9 +247,8 @@ TEST_P(UnaryArithmeticErrorTest, Value) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("value");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_arithmetic_opener(fhandle, "hello", "*", "right", { 10, 7 }, version, "FLOAT");
         hsize_t dims[2] = { 5, 5 };
         auto dhandle = ghandle.createDataSet("value", H5::PredType::NATIVE_INT, H5::DataSpace(2, dims));
         if (version.ge(1, 1, 0)) {

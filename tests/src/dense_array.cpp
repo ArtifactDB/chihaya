@@ -169,10 +169,11 @@ TEST_P(DenseArrayPassTest, Dimnames) {
 
     // Works correctly in native mode with shuffling of dimensions.
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("dense");
-        ghandle.unlink("native");
-        add_numeric_scalar(ghandle, "native", 0, H5::PredType::NATIVE_INT8); 
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = dense_array_opener(fhandle, "dense", dims, H5::PredType::NATIVE_INT32, version, /* native = */ false); 
+        auto lhandle = list_opener(ghandle, "dimnames", 2, version);
+        add_string_vector(lhandle, "0", dims[0], /* strlen = */ 2);
+        add_string_vector(lhandle, "1", dims[1], /* strlen = */ 2);
     }
     {
         auto output = test_validate(path, "dense", deets); 
@@ -253,8 +254,8 @@ TEST_P(DenseArrayErrorTest, Data) {
 
         // Test that we actually check the 'type' is consistent with the dataset's type.
         {
-            H5::H5File fhandle(path, H5F_ACC_RDWR);
-            auto ghandle = fhandle.openGroup("dense");
+            H5::H5File fhandle(path, H5F_ACC_TRUNC);
+            auto ghandle = dense_array_opener(fhandle, "dense", { 20, 17 }, H5::PredType::NATIVE_FLOAT, version, /* native = */ true);
             auto dhandle = ghandle.openDataSet("data");
             dhandle.removeAttr("type");
             add_string_attribute(dhandle, "type", "INTEGER");

@@ -155,9 +155,8 @@ TEST_P(UnaryLogicErrorTest, Side) {
     expect_error(path, "hello", "UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("side");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_logic_opener(fhandle, "hello", "&&", { 10, 7 }, version, "BOOLEAN");
         add_string_scalar(ghandle, "side", "foo");
     }
     expect_error(path, "hello", "'left' or 'right'");
@@ -177,8 +176,8 @@ TEST_P(UnaryLogicErrorTest, Method) {
     expect_error(path, "hello", "UTF-8 encoded string");
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_logic_opener(fhandle, "hello", "||", { 13, 19 }, version, "INTEGER");
         ghandle.unlink("method");
         add_string_scalar(ghandle, "method", "foo");
     }
@@ -224,9 +223,9 @@ TEST_P(UnaryLogicErrorTest, Value) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("value");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_logic_opener(fhandle, "hello", "&&", { 10, 7 }, version, "FLOAT");
+        add_string_scalar(ghandle, "side", "left");
         hsize_t dims[2] = { 5, 5 };
         auto dhandle = ghandle.createDataSet("value", H5::PredType::NATIVE_INT16, H5::DataSpace(2, dims));
         if (version.ge(1, 1, 0)) {
@@ -257,9 +256,13 @@ TEST_P(UnaryLogicErrorTest, Along) {
     }
 
     {
-        H5::H5File fhandle(path, H5F_ACC_RDWR);
-        auto ghandle = fhandle.openGroup("hello");
-        ghandle.unlink("along");
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto ghandle = unary_logic_opener(fhandle, "hello", "&&", { 19, 4 }, version, "FLOAT");
+        add_string_scalar(ghandle, "side", "left");
+        auto dhandle = add_numeric_vector<int>(ghandle, "value", { 1, 2, 3, 4 }, H5::PredType::NATIVE_INT32);
+        if (version.ge(1, 1, 0)) {
+            add_string_attribute(dhandle, "type", "INTEGER");
+        }
         add_numeric_scalar<int>(ghandle, "along", 0, H5::PredType::NATIVE_UINT8);
     }
     expect_error(path, "hello", "dimension specified in 'along'");
