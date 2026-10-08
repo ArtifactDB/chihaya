@@ -53,7 +53,7 @@ inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Vers
         bool first = true;
         I<decltype(list_params.length)> num_strings = 0;
 
-        for (auto& p : list_params.present) {
+        for (const auto& p : list_params.present) {
             try {
                 auto sdhandle = shandle.openGroup(p.second);
                 auto cur_seed = validate(sdhandle, version, options);

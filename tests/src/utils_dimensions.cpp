@@ -145,8 +145,8 @@ TEST_P(ValidateDimnamesInternalTest, Full) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto lhandle = list_opener(fhandle, "dimnames", dimensions.size(), version);
-        add_string_vector(lhandle, "0", 12, /* strlen = */ 5);
         add_string_vector(lhandle, "1", 20, /* strlen = */ 2);
+        add_string_vector(lhandle, "0", 12, /* strlen = */ 5);
     }
 
     H5::H5File fhandle(path, H5F_ACC_RDONLY);

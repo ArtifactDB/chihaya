@@ -1,7 +1,7 @@
 #ifndef CHIHAYA_UTILS_LIST_HPP
 #define CHIHAYA_UTILS_LIST_HPP
 
-#include <map>
+#include <vector>
 #include <string>
 #include <stdexcept>
 #include <exception>
@@ -18,7 +18,7 @@ namespace chihaya {
 
 struct ListDetails {
     std::size_t length;
-    std::map<std::size_t, std::string> present;
+    std::vector<std::pair<std::size_t, std::string> > present; // NOTE: not guaranteed to be sorted!
 };
 
 inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version& version) {
@@ -65,23 +65,33 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
     if (sanisizer::is_greater_than(nobj, output.length)) {
         throw std::runtime_error("more objects in the list than are specified by '" + std::string(actual_name) + "'");
     }
+
+    const std::size_t mult_limit = output.length / 10;
+    const std::size_t add_limit = output.length % 10;
+
     for (I<decltype(nobj)> i = 0; i < nobj; ++i) {
         std::string name = handle.getObjnameByIdx(i);
 
-        // Aaron's cheap and dirty atoi!
+        if (name.size() > 1 && name[0] == '0') {
+            throw std::runtime_error("dataset name '" + name + "' should not contain leading zeros");
+        }
+
+        // Homebrewed atoi with in-built checks that the result doesn't exceed 'output.length'.
+        // We do the checks inside the loop to additionally protect against overflow of size_t.
         std::size_t sofar = 0;
         for (auto c : name) {
             if (c < '0' || c > '9') {
                 throw std::runtime_error("'" + name + "' is not a valid name for a list index");
             }
+            const auto diff = c - '0';
+            if (sofar > mult_limit || (sofar == mult_limit && sanisizer::is_greater_than_or_equal(diff, add_limit))) {
+                throw std::runtime_error("dataset '" + name + "' is out of bounds for a list of length " + std::to_string(output.length));
+            }
             sofar *= 10;
-            sofar += (c - '0'); 
+            sofar += diff;
         }
 
-        if (sofar >= output.length) {
-            throw std::runtime_error("dataset at position " + name + " is out of bounds for a list of length " + std::to_string(output.length));
-        }
-        output.present[sofar] = name;
+        output.present.emplace_back(sofar, name);
     }
 
     return output;

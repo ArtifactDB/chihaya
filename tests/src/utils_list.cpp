@@ -45,10 +45,9 @@ TEST_P(ValidateListTest, NonEmpty) {
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 2);
 
-        ASSERT_TRUE(deets.present.find(0) != deets.present.end());
-        EXPECT_EQ(deets.present[0], "0");
-        ASSERT_TRUE(deets.present.find(3) != deets.present.end());
-        EXPECT_EQ(deets.present[3], "3");
+        std::sort(deets.present.begin(), deets.present.end());
+        EXPECT_EQ(deets.present[0], (std::pair<std::size_t, std::string>(0, "0")));
+        EXPECT_EQ(deets.present[1], (std::pair<std::size_t, std::string>(3, "3")));
     }
 
     // Full occupancy.
@@ -67,14 +66,14 @@ TEST_P(ValidateListTest, NonEmpty) {
         EXPECT_EQ(deets.length, 4);
         EXPECT_EQ(deets.present.size(), 4);
 
+        std::sort(deets.present.begin(), deets.present.end());
         for (size_t i = 0; i < 4; ++i) {
-            EXPECT_TRUE(deets.present.find(i) != deets.present.end());
-            EXPECT_EQ(deets.present[i], std::to_string(i));
+            EXPECT_EQ(deets.present[i], (std::pair<std::size_t, std::string>(i, std::to_string(i))));
         }
     }
 }
 
-TEST_P(ValidateListTest, DoubleDigits) {
+TEST_P(ValidateListTest, ManyDigits) {
     auto path = define_test_path("utils_list");
     auto version = GetParam();
 
@@ -85,19 +84,41 @@ TEST_P(ValidateListTest, DoubleDigits) {
         lhandle.createGroup("11");
         lhandle.createGroup("164");
     }
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ghandle = fhandle.openGroup("x52");
+        auto deets = chihaya::validate_list(ghandle, version);
+        EXPECT_EQ(deets.length, 200);
+        EXPECT_EQ(deets.present.size(), 3);
 
-    H5::H5File fhandle(path, H5F_ACC_RDONLY);
-    auto ghandle = fhandle.openGroup("x52");
-    auto deets = chihaya::validate_list(ghandle, version);
-    EXPECT_EQ(deets.length, 200);
-    EXPECT_EQ(deets.present.size(), 3);
+        std::sort(deets.present.begin(), deets.present.end());
+        EXPECT_EQ(deets.present[0], (std::pair<std::size_t, std::string>(9, "9")));
+        EXPECT_EQ(deets.present[1], (std::pair<std::size_t, std::string>(11, "11")));
+        EXPECT_EQ(deets.present[2], (std::pair<std::size_t, std::string>(164, "164")));
+    }
 
-    ASSERT_TRUE(deets.present.find(9) != deets.present.end());
-    EXPECT_EQ(deets.present[9], "9");
-    ASSERT_TRUE(deets.present.find(11) != deets.present.end());
-    EXPECT_EQ(deets.present[11], "11");
-    ASSERT_TRUE(deets.present.find(164) != deets.present.end());
-    EXPECT_EQ(deets.present[164], "164");
+    // As Kylo says, more.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "x52", 2345, version);
+        lhandle.createGroup("2344");
+        lhandle.createGroup("987");
+        lhandle.createGroup("1357");
+        lhandle.createGroup("0");
+    }
+    {
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        auto ghandle = fhandle.openGroup("x52");
+        auto deets = chihaya::validate_list(ghandle, version);
+        EXPECT_EQ(deets.length, 2345);
+        EXPECT_EQ(deets.present.size(), 4);
+
+        std::sort(deets.present.begin(), deets.present.end());
+        EXPECT_EQ(deets.present[0], (std::pair<std::size_t, std::string>(0, "0")));
+        EXPECT_EQ(deets.present[1], (std::pair<std::size_t, std::string>(987, "987")));
+        EXPECT_EQ(deets.present[2], (std::pair<std::size_t, std::string>(1357, "1357")));
+        EXPECT_EQ(deets.present[3], (std::pair<std::size_t, std::string>(2344, "2344")));
+    }
 }
 
 TEST_P(ValidateListTest, TypeError) {
@@ -220,7 +241,38 @@ TEST_P(ValidateListTest, NameError) {
     {
         H5::H5File fhandle(path, H5F_ACC_TRUNC);
         auto lhandle = list_opener(fhandle, "foo", 1, version);
+        lhandle.createGroup("0001");
+    }
+    expect_error([&]() -> void { 
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
+    }, "leading zeros");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "foo", 1, version);
         lhandle.createGroup("2");
+    }
+    expect_error([&]() -> void { 
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
+    }, "out of bounds");
+
+    // Multi-digit out of bounds.
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "foo", 1989, version);
+        lhandle.createGroup("1989");
+    }
+    expect_error([&]() -> void { 
+        H5::H5File fhandle(path, H5F_ACC_RDONLY);
+        chihaya::validate_list(fhandle.openGroup("foo"), version);
+    }, "out of bounds");
+
+    {
+        H5::H5File fhandle(path, H5F_ACC_TRUNC);
+        auto lhandle = list_opener(fhandle, "foo", 1989, version);
+        lhandle.createGroup("2000");
     }
     expect_error([&]() -> void { 
         H5::H5File fhandle(path, H5F_ACC_RDONLY);
