@@ -141,54 +141,54 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> std::pair&lt;ArrayDetails, bool&gt;(seed_details, oristr == <span class="stringliteral">&quot;T&quot;</span>);</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
-<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">   70</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">validate_matrix_product</a>(<span class="keyword">const</span> H5::Group&amp; group, <span class="keyword">const</span> ritsuko::Version&amp; version, <span class="keyword">const</span> <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">auto</span> left_details = fetch_matprod_seed(group, <span class="stringliteral">&quot;left_seed&quot;</span>, <span class="stringliteral">&quot;left_orientation&quot;</span>, version, options);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">auto</span> right_details = fetch_matprod_seed(group, <span class="stringliteral">&quot;right_seed&quot;</span>, <span class="stringliteral">&quot;right_orientation&quot;</span>, version, options);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> output;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>.resize(2);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span>&amp; nrow = output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>[0];</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">auto</span>&amp; ncol = output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>[1];</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    I&lt;<span class="keyword">decltype</span>(nrow)&gt; common, common2;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (left_details.second) {</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        nrow = left_details.first.dimensions[1];</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        common = left_details.first.dimensions[0];</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        nrow = left_details.first.dimensions[0];</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        common = left_details.first.dimensions[1];</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (right_details.second) {</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        ncol = right_details.first.dimensions[0];</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        common2 = right_details.first.dimensions[1];</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        ncol = right_details.first.dimensions[1];</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        common2 = right_details.first.dimensions[0];</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">if</span> (common != common2) {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;inconsistent common dimensions (&quot;</span> + std::to_string(common) + <span class="stringliteral">&quot; vs &quot;</span> + std::to_string(common2) + <span class="stringliteral">&quot;)&quot;</span>);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (left_details.first.type == FLOAT || right_details.first.type == FLOAT) {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = FLOAT;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = INTEGER;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">   71</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> <a class="code hl_function" href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">validate_matrix_product</a>(<span class="keyword">const</span> H5::Group&amp; group, <span class="keyword">const</span> ritsuko::Version&amp; version, <span class="keyword">const</span> <a class="code hl_struct" href="structchihaya_1_1Options.html">Options</a>&amp; options) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">auto</span> left_details = fetch_matprod_seed(group, <span class="stringliteral">&quot;left_seed&quot;</span>, <span class="stringliteral">&quot;left_orientation&quot;</span>, version, options);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">auto</span> right_details = fetch_matprod_seed(group, <span class="stringliteral">&quot;right_seed&quot;</span>, <span class="stringliteral">&quot;right_orientation&quot;</span>, version, options);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_struct" href="structchihaya_1_1ArrayDetails.html">ArrayDetails</a> output;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>.resize(2);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">auto</span>&amp; nrow = output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>[0];</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">auto</span>&amp; ncol = output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">dimensions</a>[1];</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    I&lt;<span class="keyword">decltype</span>(nrow)&gt; common, common2;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">if</span> (left_details.second) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        nrow = left_details.first.dimensions[1];</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        common = left_details.first.dimensions[0];</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        nrow = left_details.first.dimensions[0];</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        common = left_details.first.dimensions[1];</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (right_details.second) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        ncol = right_details.first.dimensions[0];</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        common2 = right_details.first.dimensions[1];</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        ncol = right_details.first.dimensions[1];</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        common2 = right_details.first.dimensions[0];</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structchihaya_1_1Options.html#a675ba55ac4e1acfe61d4ab39a6829673">details_only</a>) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">if</span> (common != common2) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;inconsistent common dimensions (&quot;</span> + std::to_string(common) + <span class="stringliteral">&quot; vs &quot;</span> + std::to_string(common2) + <span class="stringliteral">&quot;)&quot;</span>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (left_details.first.type == FLOAT || right_details.first.type == FLOAT) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = FLOAT;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        output.<a class="code hl_variable" href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">type</a> = INTEGER;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
 </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacechihaya_html"><div class="ttname"><a href="namespacechihaya.html">chihaya</a></div><div class="ttdoc">Namespace for all chihaya functions.</div><div class="ttdef"><b>Definition</b> binary_arithmetic.hpp:21</div></div>
-<div class="ttc" id="anamespacechihaya_html_a4769708c11766f8780a929de0071a69f"><div class="ttname"><a href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">chihaya::validate_matrix_product</a></div><div class="ttdeci">ArrayDetails validate_matrix_product(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> matrix_product.hpp:70</div></div>
+<div class="ttc" id="anamespacechihaya_html_a4769708c11766f8780a929de0071a69f"><div class="ttname"><a href="namespacechihaya.html#a4769708c11766f8780a929de0071a69f">chihaya::validate_matrix_product</a></div><div class="ttdeci">ArrayDetails validate_matrix_product(const H5::Group &amp;group, const ritsuko::Version &amp;version, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> matrix_product.hpp:71</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html">chihaya::ArrayDetails</a></div><div class="ttdoc">Details about an array.</div><div class="ttdef"><b>Definition</b> utils_public.hpp:38</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html_aae3f97fb1bd0c25cf5cc9134f7936225"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#aae3f97fb1bd0c25cf5cc9134f7936225">chihaya::ArrayDetails::dimensions</a></div><div class="ttdeci">std::vector&lt; std::size_t &gt; dimensions</div><div class="ttdef"><b>Definition</b> utils_public.hpp:58</div></div>
 <div class="ttc" id="astructchihaya_1_1ArrayDetails_html_ad73104cbd51217fc0b79efe8a88b349a"><div class="ttname"><a href="structchihaya_1_1ArrayDetails.html#ad73104cbd51217fc0b79efe8a88b349a">chihaya::ArrayDetails::type</a></div><div class="ttdeci">ArrayType type</div><div class="ttdef"><b>Definition</b> utils_public.hpp:52</div></div>
