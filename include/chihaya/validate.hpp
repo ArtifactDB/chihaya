@@ -79,16 +79,19 @@ inline auto default_array_registry() {
 
 /**
  * Validate a HDF5 group representing a delayed oepration or array.
- * For operations, this function will first search `options.custom_operation_validate_registry` for an available validation function.
- * For arrays, this function will first search `options.custom_array_validate_registry` for an available validation function.
+ * For operations, this function will first search `Options::operation_validate_registry` for an available validation function.
+ * For arrays, this function will first search `Options::array_validate_registry` for an available validation function.
  *
  * @param group HDF5 group representing a delayed operation or array.
  * @param version Version of the **chihaya** specification.
  * @param options Validation options, possibly containing custom validation functions.
  *
  * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
- * Otherwise, if the validation failed, an exception is thrown.
- * This exception may be nested.
+ *
+ * @throw H5::Exception Thrown upon HDF5 library error.
+ * This may be wrapped in a `std::nested_exception`.
+ * @throw std::exception Thrown upon validation failure.
+ * This may be a `std::nested_exception`, in which case the nested exceptions should be extracted to obtain an informative error message.
  */
 inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     std::string dtype;
@@ -226,8 +229,11 @@ inline ritsuko::Version extract_version(const H5::Group& group) {
  * @param options Validation options, see `validate()` for details.
  *
  * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
- * Otherwise, if the validation failed, an exception is thrown.
- * This exception may be nested.
+ *
+ * @throw H5::Exception Thrown upon HDF5 library error.
+ * This may be wrapped in a `std::nested_exception`.
+ * @throw std::exception Thrown upon validation failure.
+ * This may be a `std::nested_exception`, in which case the nested exceptions should be extracted to obtain an informative error message.
  */
 inline ArrayDetails validate(const H5::Group& group, const Options& options) {
     return validate(group, extract_version(group), options);
@@ -241,8 +247,11 @@ inline ArrayDetails validate(const H5::Group& group, const Options& options) {
  * @param options Validation options, see `validate()` for details.
  *
  * @return Details of the array after all delayed operations have been applied.
- * Otherwise, if the validation failed, an exception is thrown.
- * This exception may be nested.
+ *
+ * @throw H5::Exception Thrown upon HDF5 library error.
+ * This may be wrapped in a `std::nested_exception`.
+ * @throw std::exception Thrown upon validation failure.
+ * This may be a `std::nested_exception`, in which case the nested exceptions should be extracted to obtain an informative error message.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name, const Options& options) {
     try {
@@ -261,8 +270,11 @@ inline ArrayDetails validate(const std::string& path, const std::string& name, c
  * @param name Name of the HDF5 group inside the file representing a delayed operation or array.
  *
  * @return Details of the array after all delayed operations have been applied.
- * Otherwise, if the validation failed, an exception is thrown.
- * This exception may be nested.
+ *
+ * @throw H5::Exception Thrown upon HDF5 library error.
+ * This may be wrapped in a `std::nested_exception`.
+ * @throw std::exception Thrown upon validation failure.
+ * This may be a `std::nested_exception`, in which case the nested exceptions should be extracted to obtain an informative error message.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name) {
     return validate(path, name, {});

@@ -67,8 +67,11 @@ std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, hsize_t p
  * @param options Validation options.
  *
  * @return Details of the transposed object.
- * Otherwise, if the validation failed, an exception is thrown.
- * This exception may be nested.
+ *
+ * @throw H5::Exception Thrown upon HDF5 library error.
+ * This may be wrapped in a `std::nested_exception`.
+ * @throw std::exception Thrown upon validation failure.
+ * This may be a `std::nested_exception`, in which case the nested exceptions should be extracted to obtain an informative error message.
  */
 inline ArrayDetails validate_transpose(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     ArrayDetails seed_details;
