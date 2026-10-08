@@ -33,6 +33,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <exception>
 #include <unordered_map>
 #include <functional>
 
@@ -86,6 +87,8 @@ inline auto default_array_registry() {
  * @param options Validation options, possibly containing custom validation functions.
  *
  * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     std::string dtype;
@@ -191,6 +194,7 @@ inline ArrayDetails validate(const H5::Group& group, const ritsuko::Version& ver
  * and if `delayed_version` is missing, it defaults to `0.99`.
  *
  * @param group HDF5 group corresponding to a delayed operation or array.
+ *
  * @return Version of the **chihaya** specification.
  */
 inline ritsuko::Version extract_version(const H5::Group& group) {
@@ -220,7 +224,10 @@ inline ritsuko::Version extract_version(const H5::Group& group) {
  * 
  * @param group HDF5 group representing a delayed operation or array.
  * @param options Validation options, see `validate()` for details.
+ *
  * @return Details of the array after all delayed operations in `group` (and its children) have been applied.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate(const H5::Group& group, const Options& options) {
     return validate(group, extract_version(group), options);
@@ -234,6 +241,8 @@ inline ArrayDetails validate(const H5::Group& group, const Options& options) {
  * @param options Validation options, see `validate()` for details.
  *
  * @return Details of the array after all delayed operations have been applied.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name, const Options& options) {
     try {
@@ -252,6 +261,8 @@ inline ArrayDetails validate(const std::string& path, const std::string& name, c
  * @param name Name of the HDF5 group inside the file representing a delayed operation or array.
  *
  * @return Details of the array after all delayed operations have been applied.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate(const std::string& path, const std::string& name) {
     return validate(path, name, {});

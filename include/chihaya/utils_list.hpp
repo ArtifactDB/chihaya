@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <stdexcept>
+#include <exception>
 #include <limits>
 
 #include "H5Cpp.h"

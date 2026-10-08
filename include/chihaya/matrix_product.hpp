@@ -5,6 +5,7 @@
 #include "ritsuko/ritsuko.hpp"
 
 #include <stdexcept>
+#include <exception>
 #include <string>
 
 #include "utils_public.hpp"
@@ -63,7 +64,8 @@ inline std::pair<ArrayDetails, bool> fetch_matprod_seed(
  * @param options Validation options.
  *
  * @return Details of the matrix product.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_matrix_product(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     auto left_details = fetch_matprod_seed(group, "left_seed", "left_orientation", version, options);

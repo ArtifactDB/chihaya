@@ -8,6 +8,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <exception>
 #include <type_traits>
 #include <cstddef>
 #include <cstdint>

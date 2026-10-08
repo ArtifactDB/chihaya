@@ -4,6 +4,9 @@
 #include "H5Cpp.h"
 #include "ritsuko/ritsuko.hpp"
 
+#include <exception>
+#include <stdexcept>
+
 #include "custom_array.hpp"
 #include "utils_misc.hpp"
 
@@ -20,7 +23,8 @@ namespace chihaya {
  * @param options Validation options.
  *
  * @return Details of the external HDF5 array.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_external_hdf5(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     if (version.ge(1, 1, 0)) {

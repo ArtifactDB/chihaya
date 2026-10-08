@@ -5,6 +5,7 @@
 #include "ritsuko/ritsuko.hpp"
 
 #include <stdexcept>
+#include <exception>
 #include <string>
 
 #include "utils_public.hpp"
@@ -25,7 +26,8 @@ namespace chihaya {
  * @param options Validation options.
  *
  * @return Details of the object after applying the comparison operation.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_unary_comparison(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     ArrayDetails seed_details;

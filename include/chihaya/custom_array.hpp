@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <exception>
 #include <cstdint>
 #include <algorithm>
 
@@ -78,7 +79,8 @@ inline ArrayDetails validate_minimal_array(const H5::Group& group, const ritsuko
  * @param options Validation options.
  *
  * @return Details of the custom array.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_custom_array(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     return validate_minimal_array(group, version, options);

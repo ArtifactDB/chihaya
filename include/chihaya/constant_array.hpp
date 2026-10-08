@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <exception>
 #include <string>
 #include <cstdint>
 #include <cstddef>
@@ -28,7 +29,8 @@ namespace chihaya {
  * @param options Validation options.
  *
  * @return Details of the constant array.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_constant_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;

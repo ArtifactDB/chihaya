@@ -6,6 +6,7 @@
 #include "sanisizer/sanisizer.hpp"
 
 #include <stdexcept>
+#include <exception>
 #include <vector>
 #include <string>
 #include <cstddef>
@@ -28,7 +29,8 @@ namespace chihaya {
  * @param options Validation options.
  * 
  * @return Details of the combined object.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_combine(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     std::uint64_t along;

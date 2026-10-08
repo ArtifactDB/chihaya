@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
+#include <exception>
 #include <cstddef>
 
 #include "utils_public.hpp"
@@ -48,7 +49,8 @@ void transplant_dimensions(std::vector<hsize_t>& src, std::vector<Output_>& outp
  * @param options Validation options.
  *
  * @return Details of the dense array.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_dense_array(const H5::Group& group, const ritsuko::Version& version, [[maybe_unused]] const Options& options) {
     ArrayDetails output;

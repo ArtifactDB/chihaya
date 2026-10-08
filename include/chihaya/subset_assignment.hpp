@@ -5,6 +5,7 @@
 #include "ritsuko/ritsuko.hpp"
 
 #include <stdexcept>
+#include <exception>
 #include <vector>
 #include <algorithm>
 
@@ -27,7 +28,8 @@ namespace chihaya {
  * @param options Validation options.
  *
  * @return Details of the object after subset assignment.
- * Otherwise, if the validation failed, an error is raised.
+ * Otherwise, if the validation failed, an exception is thrown.
+ * This exception may be nested.
  */
 inline ArrayDetails validate_subset_assignment(const H5::Group& group, const ritsuko::Version& version, const Options& options) {
     ArrayDetails seed_details;
