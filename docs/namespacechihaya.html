@@ -232,7 +232,7 @@ Functions</h2></td></tr>
 <p>The version is taken from the <code>delayed_version</code> attribute of the <code>group</code>. This should be a version string of the form <code>&lt;MAJOR&gt;.&lt;MINOR&gt;</code>. For back-compatibility purposes, the string <code>"1.0.0"</code> is also allowed, corresponding to version 1.0; and if <code>delayed_version</code> is missing, it defaults to <code>0.99</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">group</td><td>HDF5 group corresponding to a delayed operation or array. </td></tr>
+    <tr><td class="paramname">group</td><td>HDF5 group corresponding to a delayed operation or array.</td></tr>
   </table>
   </dd>
 </dl>
@@ -270,11 +270,11 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">group</td><td>HDF5 group representing a delayed operation or array. </td></tr>
-    <tr><td class="paramname">options</td><td>Validation options, see <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> for details. </td></tr>
+    <tr><td class="paramname">options</td><td>Validation options, see <code><a class="el" href="#a8d3d0003d24bf25847b399e8d62fea42">validate()</a></code> for details.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -318,7 +318,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -356,7 +356,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -400,7 +400,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -443,7 +443,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -486,7 +486,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -529,7 +529,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -572,7 +572,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the combined object. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the combined object. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -615,7 +615,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the constant array. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the constant array. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -658,7 +658,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the custom array. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the custom array. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -701,7 +701,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the dense array. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the dense array. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -744,7 +744,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after assigning dimnames. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after assigning dimnames. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -787,7 +787,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the external HDF5 array. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the external HDF5 array. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -830,7 +830,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the matrix product. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the matrix product. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -873,7 +873,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the sparse matrix. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the sparse matrix. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -916,7 +916,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the subsetted object. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the subsetted object. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -959,7 +959,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after subset assignment. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after subset assignment. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1002,7 +1002,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the transposed object. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the transposed object. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1045,7 +1045,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1088,7 +1088,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1131,7 +1131,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1174,7 +1174,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the mathal operation. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the math operation. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
@@ -1217,7 +1217,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the special check. Otherwise, if the validation failed, an error is raised. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the special check. Otherwise, if the validation failed, an exception is thrown. This exception may be nested. </dd></dl>
 
 </div>
 </div>
