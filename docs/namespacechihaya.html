@@ -277,7 +277,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -315,7 +316,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Validate a HDF5 group representing a delayed oepration or array. For operations, this function will first search <code>options.custom_operation_validate_registry</code> for an available validation function. For arrays, this function will first search <code>options.custom_array_validate_registry</code> for an available validation function.</p>
+<p>Validate a HDF5 group representing a delayed oepration or array. For operations, this function will first search <code><a class="el" href="structchihaya_1_1Options.html#acca17243f7223a35206bedb4c74b67af">Options::operation_validate_registry</a></code> for an available validation function. For arrays, this function will first search <code><a class="el" href="structchihaya_1_1Options.html#a8c7779d7ff1aeba6fdadbf6ac3b065eb">Options::array_validate_registry</a></code> for an available validation function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">group</td><td>HDF5 group representing a delayed operation or array. </td></tr>
@@ -327,7 +328,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations in <code>group</code> (and its children) have been applied.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -371,7 +373,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -421,7 +424,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the array after all delayed operations have been applied.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -470,7 +474,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -519,7 +524,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -568,7 +574,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -617,7 +624,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the combined object.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -666,7 +674,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the constant array.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -715,7 +724,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the custom array.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -764,7 +774,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the dense array.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -813,7 +824,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after assigning dimnames.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -862,7 +874,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the external HDF5 array.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -911,7 +924,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the matrix product.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -960,7 +974,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the sparse matrix.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1009,7 +1024,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the subsetted object.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1058,7 +1074,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after subset assignment.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1107,7 +1124,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the transposed object.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1156,7 +1174,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the arithmetic operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1205,7 +1224,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the comparison operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1254,7 +1274,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the logical operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1303,7 +1324,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the math operation.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1352,7 +1374,8 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Details of the object after applying the special check.</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::exception</td><td>Thrown on validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
+    <tr><td class="paramname">H5::Exception</td><td>Thrown upon HDF5 library error. This may be wrapped in a <code>std::nested_exception</code>. </td></tr>
+    <tr><td class="paramname">std::exception</td><td>Thrown upon validation failure. This may be a <code>std::nested_exception</code>, in which case the nested exceptions should be extracted to obtain an informative error message. </td></tr>
   </table>
   </dd>
 </dl>
