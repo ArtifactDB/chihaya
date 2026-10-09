@@ -49,28 +49,28 @@ namespace chihaya {
  */
 inline auto default_operation_registry() {
     ValidateRegistry registry;
-    registry["subset"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_subset(h, v, o); };
-    registry["combine"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_combine(h, v, o); };
-    registry["transpose"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_transpose(h, v, o); };
-    registry["dimnames"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_dimnames(h, v, o); };
-    registry["subset assignment"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_subset_assignment(h, v, o); };
-    registry["unary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_unary_arithmetic(h, v, o); };
-    registry["unary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_unary_comparison(h, v, o); };
-    registry["unary logic"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_unary_logic(h, v, o); };
-    registry["unary math"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_unary_math(h, v, o); };
-    registry["unary special check"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_unary_special_check(h, v, o); };
-    registry["binary arithmetic"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_binary_arithmetic(h, v, o); };
-    registry["binary comparison"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_binary_comparison(h, v, o); };
-    registry["binary logic"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_binary_logic(h, v, o); };
-    registry["matrix product"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_matrix_product(h, v, o); };
+    registry["subset"] = validate_subset;
+    registry["combine"] = validate_combine;
+    registry["transpose"] = validate_transpose;
+    registry["dimnames"] = validate_dimnames;
+    registry["subset assignment"] = validate_subset_assignment;
+    registry["unary arithmetic"] = validate_unary_arithmetic;
+    registry["unary comparison"] = validate_unary_comparison;
+    registry["unary logic"] = validate_unary_logic;
+    registry["unary math"] = validate_unary_math;
+    registry["unary special check"] = validate_unary_special_check;
+    registry["binary arithmetic"] = validate_binary_arithmetic;
+    registry["binary comparison"] = validate_binary_comparison;
+    registry["binary logic"] = validate_binary_logic;
+    registry["matrix product"] = validate_matrix_product;
     return registry;
 }
 
 inline auto default_array_registry() {
     ValidateRegistry registry;
-    registry["dense array"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_dense_array(h, v, o); };
-    registry["sparse matrix"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_sparse_matrix(h, v, o); };
-    registry["constant array"] = [](const H5::Group& h, const ritsuko::Version& v, const Options& o) -> ArrayDetails { return validate_constant_array(h, v, o); };
+    registry["dense array"] = validate_dense_array;
+    registry["sparse matrix"] = validate_sparse_matrix;
+    registry["constant array"] = validate_constant_array;
     return registry;
 }
 /**
