@@ -12,9 +12,11 @@ var searchData=
   ['class_2ehpp_9',['class.hpp',['https://ltla.github.io/sanisizer/class_8hpp.html',1,'']]],
   ['combine_2ehpp_10',['combine.hpp',['../combine_8hpp.html',1,'']]],
   ['comparisons_2ehpp_11',['comparisons.hpp',['https://ltla.github.io/sanisizer/comparisons_8hpp.html',1,'']]],
-  ['constant_5farray_2ehpp_12',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
-  ['contiguous_5fchunk_5fsize_13',['contiguous_chunk_size',['../structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82',1,'chihaya::Options']]],
-  ['create_14',['create',['https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7',1,'sanisizer']]],
-  ['create_2ehpp_15',['create.hpp',['https://ltla.github.io/sanisizer/create_8hpp.html',1,'']]],
-  ['custom_5farray_2ehpp_16',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]]
+  ['constant_12',['Constant',['https://ltla.github.io/sanisizer/structsanisizer_1_1Constant.html',1,'sanisizer']]],
+  ['constant_2ehpp_13',['Constant.hpp',['https://ltla.github.io/sanisizer/Constant_8hpp.html',1,'']]],
+  ['constant_5farray_2ehpp_14',['constant_array.hpp',['../constant__array_8hpp.html',1,'']]],
+  ['contiguous_5fchunk_5fsize_15',['contiguous_chunk_size',['../structchihaya_1_1Options.html#a96d2e8926fca7d77353531e4d5449c82',1,'chihaya::Options']]],
+  ['create_16',['create',['https://ltla.github.io/sanisizer/namespacesanisizer.html#a0c7c43499ff60d5185708c50b32a40d7',1,'sanisizer']]],
+  ['create_2ehpp_17',['create.hpp',['https://ltla.github.io/sanisizer/create_8hpp.html',1,'']]],
+  ['custom_5farray_2ehpp_18',['custom_array.hpp',['../custom__array_8hpp.html',1,'']]]
 ];

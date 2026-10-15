@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cast_0',['Cast',['https://ltla.github.io/sanisizer/classsanisizer_1_1Cast.html',1,'sanisizer']]]
+  ['bounded_0',['Bounded',['https://ltla.github.io/sanisizer/structsanisizer_1_1Bounded.html',1,'sanisizer']]]
 ];
