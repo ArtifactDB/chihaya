@@ -98,7 +98,7 @@ inline ArrayDetails validate_matrix_product(const H5::Group& group, const ritsuk
 
     if (!options.details_only) {
         if (common != common2) {
-            throw std::runtime_error("inconsistent common dimensions (" + std::to_string(common) + " vs " + std::to_string(common2) + ")");
+            throw std::runtime_error("inconsistent common dimensions (" + ritsuko::itoa(common) + " vs " + ritsuko::itoa(common2) + ")");
         }
     }
 

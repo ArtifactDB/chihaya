@@ -85,7 +85,7 @@ inline ListDetails validate_list(const H5::Group& handle, const ritsuko::Version
             }
             const auto diff = c - '0';
             if (sofar > mult_limit || (sofar == mult_limit && sanisizer::is_greater_than_or_equal(diff, add_limit))) {
-                throw std::runtime_error("dataset '" + name + "' is out of bounds for a list of length " + std::to_string(output.length));
+                throw std::runtime_error("dataset '" + name + "' is out of bounds for a list of length " + ritsuko::itoa(output.length));
             }
             sofar *= 10;
             sofar += diff;
