@@ -99,7 +99,7 @@ This casting is done in the usual way, i.e., non-zero values are truthy and zero
 
 
 
-## Missing placeholders
+## Missing placeholder attributes
 
 Some objects support missing values in their HDF5 datasets.
 This is represented by a `missing_placeholder` attribute on the dataset.
@@ -128,3 +128,8 @@ Some specifications will include a "list", which is represented as a HDF5 group 
 Children of this group represent the list elements and are named by their positional index.
 List elements may be absent, e.g., a group with `delayed_length` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
 The intepretation of the absence of an element is context-dependent.
+
+## Further notes
+
+Unless explicitly mentioned here or in any of the array/operation specifications, the parametrization of HDF5 properties is left to the implementation.
+This includes dataset properties like chunking and compression, or file properties like page size and fill time and value. 
