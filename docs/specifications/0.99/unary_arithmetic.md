@@ -44,10 +44,9 @@ If `value` is 1-dimensional, we also expect:
   The length of `value` should be equal to the extent of the dimension specified in `along`.
 
 `value` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the exact same datatype as `value`.
-The value of this dataset is the missing placeholder used for all missing elements,
-i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
-Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
+This should be a scalar attribute of the exact same datatype as `value`. 
+The value of this attribute is the missing placeholder used for all missing elements,
+i.e., any elements in ` value ` with the same value as the placeholder should be treated as missing.
 
 The value type of the output object depends on the operation, the value type of `seed` and the value type of `value`:
 

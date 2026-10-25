@@ -98,6 +98,24 @@ This casting is done in the usual way, i.e., non-zero values are truthy and zero
 
 
 
+
+## Missing placeholders
+
+Some objects support missing values in their HDF5 datasets.
+This is represented by a `missing_placeholder` attribute on the dataset.
+Dataset entries equal to the placeholder value are considered to be missing.
+This approach avoids the need to store a separate mask dataset and is more flexible than a fixed sentinel that might conflict with the dataset contents. 
+
+The `missing_placeholder` attribute should be a scalar of the same datatype class as the dataset.
+If the datatypes are not exactly the same, care should be taken to avoid loss of precision, wrap-around, etc. upon casting to the same type for the comparison.
+
+For floating-point datasets, the placeholder value may be a NaN with a particular payload.
+Different payloads are considered to represent different floating-point values.
+Thus, a byte-wise comparison should be used when comparing the placeholder to each dataset entry, in order to respect the contents of the NaN payload.
+
+If a dataset does not have a placeholder attribute, it can be assumed that there are no missing values.
+If the specification does not explicitly mention that a placeholder attribute might be present, the dataset should never contain missing values. 
+
 ## Lists
 
 Some specifications will include a "list", which is represented as a HDF5 group with the following attributes:

@@ -49,10 +49,9 @@ The group may also contain:
   The datatype of each dataset should be representable by a UTF-8 encoded string.
 
 `data` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the exact same datatype as `data`.
-The value of this dataset is the missing placeholder used for all missing elements,
-i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
-Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
+This should be a scalar attribute of the exact same datatype as `data`. 
+The value of this attribute is the missing placeholder used for all missing elements,
+i.e., any elements in ` data ` with the same value as the placeholder should be treated as missing.
 
 The value type of the sparse matrix is set to the `type` attribute of `data`.
 

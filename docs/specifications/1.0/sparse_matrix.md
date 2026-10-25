@@ -45,9 +45,8 @@ The group may also contain:
   The datatype of each dataset should be representable by a UTF-8 encoded string.
 
 `data` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the same datatype class as `data`, specifying the placeholder value used for all missing elements,
-i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
-(Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
+This should be a scalar attribute of the same datatype class as ` data `, specifying the placeholder value used for all missing elements,
+i.e., any elements in ` data ` with the same value as the placeholder should be treated as missing.
 
 The value type of the sparse matrix is inferred from the datatype of `data`: integer, float or string.
 Boolean matrices are identified as those with integer `data` and a truthy `is_boolean` flag.

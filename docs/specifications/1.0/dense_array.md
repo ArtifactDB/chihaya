@@ -40,9 +40,8 @@ By setting `native = 0`, we avoid the need to reorganize the data when reading/w
 however, this means that the dimensions reported by HDF5 need to be reversed to obtain the dimensions of the delayed object.
 
 `data` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the same datatype class as `data`, specifying the placeholder value used for all missing elements,
-i.e., any elements in `data` with the same value as the placeholder should be treated as missing.
-(Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
+This should be a scalar attribute of the same datatype class as ` data `, specifying the placeholder value used for all missing elements,
+i.e., any elements in ` data ` with the same value as the placeholder should be treated as missing.
 
 The group may also contain:
 

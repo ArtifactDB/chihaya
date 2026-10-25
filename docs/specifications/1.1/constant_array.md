@@ -29,9 +29,8 @@ Inside the group, we expect:
   - `"STRING"`, in which case `data` should have a datatype that can be represented by a UTF-8 encoded string.
 
 `value` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the exact same datatype as `value` (except for a string ` value `, in which case only the same datatype class is required).
-The value of this dataset is the missing placeholder used for all missing elements,
-i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
-Check out the [HDF5 policy draft (v0.1.0)](https://github.com/ArtifactDB/Bioc-HDF5-policy/tree/v0.1.0) for more details.
+This should be a scalar attribute of the exact same datatype as `value` (except for a string ` value `, in which case only any string datatype may be used). 
+The value of this attribute is the missing placeholder used for all missing elements,
+i.e., any elements in ` value ` with the same value as the placeholder should be treated as missing.
 
 The value type of the constant array is set to the `type` attribute of `value`.

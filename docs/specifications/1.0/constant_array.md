@@ -25,8 +25,7 @@ Inside the group, we expect:
   This can be either boolean, integer, float or string; the exact type is left to the implementation.
 
 `value` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the same datatype class as `value`, specifying the placeholder value used for all missing elements,
-i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
-(Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
+This should be a scalar attribute of the same datatype class as ` value `, specifying the placeholder value used for all missing elements,
+i.e., any elements in ` value ` with the same value as the placeholder should be treated as missing.
 
 The value type of the constant array is inferred from the datatype of `value`: integer, float or string.

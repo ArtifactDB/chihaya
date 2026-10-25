@@ -44,9 +44,8 @@ If `value` is 1-dimensional, we also expect:
   The length of `value` should be equal to the extent of the dimension specified in `along`.
 
 `value` may contain a `missing_placeholder` attribute.
-This should be a scalar dataset of the same datatype class as `value`, specifying the placeholder value used for all missing elements,
-i.e., any elements in `value` with the same value as the placeholder should be treated as missing.
-(Note that, for floating-point datasets, the placeholder itself may be NaN, so byte-wise comparison should be used when checking for missingness.)
+This should be a scalar attribute of the same datatype class as ` value `, specifying the placeholder value used for all missing elements,
+i.e., any elements in ` value ` with the same value as the placeholder should be treated as missing.
 
 The value type of the output object depends on the operation, the value type of `seed` and the value type of `value`:
 
