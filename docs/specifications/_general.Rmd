@@ -143,7 +143,7 @@ If a dataset/attribute contains strings, any string datatype may be used subject
 ```{r, echo=FALSE, results="asis"}
 if (.version >= package_version("1.0")) {
     cat("
-## Missing placeholders
+## Missing placeholder attributes
 
 Some objects support missing values in their HDF5 datasets.
 This is represented by a `missing_placeholder` attribute on the dataset.
@@ -204,3 +204,8 @@ len_txt <- paste0("`", len_txt, "`")
 Children of this group represent the list elements and are named by their positional index.
 List elements may be absent, e.g., a group with `r len_txt` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
 The intepretation of the absence of an element is context-dependent.
+
+## Further notes
+
+Unless explicitly mentioned here or in any of the array/operation specifications, the parametrization of HDF5 properties is left to the implementation.
+This includes dataset properties like chunking and compression, or file properties like page size and fill time and value. 
