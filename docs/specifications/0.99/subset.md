@@ -4,26 +4,37 @@
 
 ## Overview
 
-A delayed subset involves applying a slice to zero, one or more dimensions of a delayed object.
-If slices are applied to multiple dimensions, the subset is defined as the outer product of all slices.
+A delayed subset operation subsets the delayed object on zero, one or more dimensions.
 
-## Specification
+## Contents 
 
-A delayed subset is represented as a HDF5 group with the following attributes:
+A delayed subset operation is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"operation"`.
-- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"subset"`.
+- `delayed_type` should be a scalar string dataset that contains `"operation"`.
+- `delayed_operation` should be a scalar string dataset that contains `"subset"`.
 
-Inside the group, we expect:
+Inside the operation's group, we expect:
 
 - A `seed` group, containing the delayed object to be subsetted. 
   This can be of any value type - boolean, integer, float or string.
-- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed`.
-  Each child entry is named after a dimension of `seed` and contains the indices of interest along that dimension.
-  Each entry should be a 1-dimensional integer dataset containing 0-based indices that are less than the extent of its dimension.
+- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed` delayed object.
+  If a child object is present at `index/{i}`, it should be a 1-dimensional integer dataset that corresponds to the $i$-dimension of `seed`.
+  This dataset may be of any length and contains the indices of the $i$-th dimension of `seed` that are to be retained in the subset.
+  Each entry of `index/{i}` should be a non-negative integer that is less than the extent of the $i$-th dimension of `seed`.
   The exact integer representation is left to the implementation.
-  The absence of an entry for a dimension indicates that no subsetting is to be performed, i.e., the full extent of that dimension is present in the result object.
+  If no child object is present at `index/{i}`, the full extent of the $i$-th dimension is to be retained, i.e., no subsetting is performed on that dimension.
 
-The value type of the output object is the same as that of the `seed`; only the dimensions are changed.
+To be more precise: let $s_i$ be an index into the $i$-th dimension of the `seed` delayed object.
+Let $o_i$ be an index into the $i$-th dimension of the delayed subset operation's output object.
+Given a dimensionality $D$, the output coordinates $(o_0, o_1, ..., o_D)$ is set to the value at the `seed` coordinates $(s_0, s_1, ..., s_D)$, 
+where $s_i$ is set to the $o_i$-th element of the `index/{i}` dataset (if it exists) or to $o_i$ itself (otherwise).
+
+## Shape
+
+The shape of the delayed subset assignment operation's output object is defined from the datasets in `index`.
+If the `index/{i}` dataset is present, the extent of the $i$-th dimension of the output object is defined as the length of this dataset.
+Otherwise, the extent of a dimension of the output object is the same as the corresponding dimension of the `seed` delayed object.
+
+## Type
+
+The value type of the delayed subset operation's output object is the same as that of the `seed`; only the dimensions are changed.

@@ -4,27 +4,30 @@
 
 ## Overview
 
-A unary special check operation involves checking whether each element of a delayed object is an IEEE special value.
+An unary special check operation involves checking whether each element of a delayed object is an IEEE special value.
 
-## Specification
+## Contents 
 
-A delayed special check is represented as a HDF5 group with the following attributes:
+An unary special check operation is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"operation"`.
-- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"unary special check"`.
+- `delayed_type` should be a scalar string dataset that contains `"operation"`.
+- `delayed_operation` should be a scalar string dataset that contains `"unary special check"`.
 
-Inside the group, we expect:
+Inside the operation's group, we expect:
 
 - A `seed` group, containing a delayed object on which the special check is to be applied.
   The value type of this object is expected to be float but boolean and integers will be implicitly promoted as necessary.
   Note that this check is a no-op for boolean and integer seeds as neither will be promoted to a special value.
 - A `method` string scalar dataset, specifying the mathematical operation to perform.
-  The datatype of the dataset should be representable by a UTF-8 encoded string.
   The value of the string can be any one of:
   - `is_nan`, is each value of the `seed` object `NaN`?
   - `is_finite`, is each value of the `seed` object finite?
   - `is_infinite`, is each value of the `seed` object infinite?
 
-The value type of the output object is always boolean.
+## Shape
+
+The shape of the unary special check operation's output object is the same as that of the `seed` delayed object.
+
+## Type
+
+The value type of the unary special check operation's output object is always boolean.

@@ -39,7 +39,8 @@ The same approach is used for arbitrarily complex "trees" of delayed operations,
             └─ ATTRIBUTE: type = "INTEGER"
 ```
 
-The outermost HDF5 group may have a `delayed_version` attribute to indicate the version of the **chihaya** specification being used.
+The top-level delayed object is that which is not nested within any other delayed object.
+The HDF5 group corresponding to the top-level delayed object may have a `delayed_version` attribute to indicate the version of the **chihaya** specification in use.
 This document describes version 0.99 of the specification.
 If missing, the version is assumed to be 0.99.
 
@@ -69,7 +70,7 @@ Note that the value type and dimensions of the post-operation object need not be
 
 ## Array types
 
-Each operation is represented by a HDF5 group with the `delayed_type` attribute set to `"array"`.
+Each array is represented by a HDF5 group with the `delayed_type` attribute set to `"array"`.
 This requires an additional `delayed_array` string attribute to specify the type of array.
 Several array types are supported:
 
@@ -102,18 +103,25 @@ This casting is done in the usual way, i.e., non-zero values are truthy and zero
 
 ## Lists
 
-Some specifications will include a "list", which is represented as a HDF5 group with the following attributes:
+Some specifications will describe a "list", which is represented as a HDF5 group with the following attributes:
 
 - `delayed_type`, a scalar string dataset with a datatype that can be represented by a UTF-8 encoded string.
   This should contain the value `"list"`.
 - `delayed_length`, a scalar integer dataset specifying the list length.
   Any integer datatype may be used here.
 
-Children of this group represent the list elements and are named by their positional index.
-List elements may be absent, e.g., a group with `delayed_length` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
-The intepretation of the absence of an element is context-dependent.
+Children of this group represent the list elements and are named by their positional zero-based index,
+i.e., for a list named `foo`, the child object at `foo/0` corresponds to the first list element.
+Depending on the context, list elements may be absent, e.g., a group with `delayed_length` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
+The intepretation of the absence of an list element is context-dependent.
 
 ## Further notes
 
 Unless explicitly mentioned here or in any of the array/operation specifications, the parametrization of HDF5 properties is left to the implementation.
 This includes dataset properties like chunking and compression, or file properties like page size and fill time and value. 
+
+All references to indices are zero-based.
+For example, when considering the $i$-th element of a list, the first element would occur at $i = 0$.
+
+The `{i}` notation is used as a placeholder for the variable $i$ in code chunks.
+For example, `foo/{i}` would resolve to `foo/0` for $i = 0$.

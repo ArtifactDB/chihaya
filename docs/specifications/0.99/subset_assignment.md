@@ -4,29 +4,39 @@
 
 ## Overview
 
-A delayed subset assignment involves replacing a subarray of a delayed object.
-The subarray itself is defined as the outer product of the per-dimension indices.
+A delayed subset assignment operation replaces a subarray of a delayed object with the contents of another delayed object.
 
-## Specification
+## Contents 
 
-A delayed subset assignment is represented as a HDF5 group with the following attributes:
+A delayed subset assignment operation is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"operation"`.
-- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"subset assignment"`.
+- `delayed_type` should be a scalar string dataset that contains `"operation"`.
+- `delayed_operation` should be a scalar string dataset that contains `"subset assignment"`.
 
-Inside the group, we expect:
+Inside the operation's group, we expect:
 
 - A `seed` group, containing the delayed object to be subsetted. 
   This can be of any value type - boolean, integer, float or string.
 - A `value` group, containing the object supplying the replacement values for subset assignment.
   This can be of any type - boolean, integer, float or string.
-- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed`.
-  Each child entry is named after a dimension of `seed` and contains the indices to be replaced along that dimension.
-  Each entry should be a 1-dimensional integer dataset containing 0-based indices less than the extent of the corresponding dimension of `seed`;
-  the length of this dataset should be equal to the extent of the corresponding dimension of `value`.
+  This should have the same dimensionality as `seed`.
+- An `index` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the `seed` and `value` objects.
+  If a child object is present at `index/{i}`, it should be a 1-dimensional integer dataset of length equal to the $i$-th dimension of `value`.
+  This dataset contains the indices of the dimension elements of `seed` that are to be replaced by `value`.
+  Each entry of `index/{i}` should be a non-negative integer that is less than the extent of the $i$-th dimension of `seed`.
   The exact integer representation is left to the implementation.
-  The absence of an entry for a dimension indicates that the full extent of that dimension is to be replaced.
+  If no child object is present at `index/{i}`, the full extent of the $i$-th dimension is to be replaced,
+  meaning that `value` and `seed` should have the same extent for this dimension.
 
-The value type of the object is defined as the more advanced type of `seed` and `value`.
+To be more precise: let $s_i$ and $v_i$ be an index into the $i$-th dimension of the `seed` and `value` delayed object, respectively.
+Given a dimensionality $D$, the value at the `value` coordinates $(v_0, v_1, ..., v_D)$ is assigned to the `seed` coordinates $(s_0, s_1, ..., s_D)$, 
+where $s_i$ is set to the $v_i$-th element of the `index/{i}` dataset (if it exists) or to $v_i$ itself (otherwise).
+If multiple $v_i$ elements have the same $s_i$ in `index/{i}`, the last occurrence should be used.
+
+## Shape
+
+The shape of the delayed subset assignment operation's output object is defined as that of the `seed` delayed object.
+
+## Type
+
+The value type of the delayed subset assignment operation's output object is defined as the more advanced type of `seed` and `value`.

@@ -4,23 +4,20 @@
 
 ## Overview
 
-A unary logic operation involves applying an element-wise mathematical operation to a delayed object.
+A unary math operation applies an element-wise mathematical operation to a delayed object.
 
-## Specification
+## Contents
 
-A delayed unary math operation is represented as a HDF5 group with the following attributes:
+A unary math operation is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"operation"`.
-- `delayed_operation` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"unary math"`.
+- `delayed_type` should be a scalar string dataset that contains `"operation"`.
+- `delayed_operation` should be a scalar string dataset that contains `"unary math"`.
 
-Inside the group, we expect:
+Inside the operation's group, we expect:
 
 - A `seed` group, containing a delayed object for which the mathematical operation is to be applied.
   The value type of this object can be boolean (coerced to integer), integer or float.
 - A `method` string scalar dataset, specifying the mathematical operation to perform.
-  The datatype of the dataset should be representable by a UTF-8 encoded string.
   The value of the string can be any one of:
   - `abs`, absolute value.
   - `log1p`, log-transformation after adding 1.
@@ -37,17 +34,23 @@ Inside the group, we expect:
   - `round`, rounding to a certain number of decimal places.
   - `signif`, rounding to a certain number of significant digits.
 
-If `method = "log"`, the group may additionally contain:
+Optionally, if `method = "log"`, the operation's group may contain:
 
-- `base`, a scalar float dataset containing the base of the log-transformation.
+- `base`, a scalar dataset containing the base of the log-transformation.
   If this is absent, it is assumed that the natural base will be used.
   The exact float representation is left to the implementation.
 
-If `method = "round"` or `"signif"`, we expect:
+If `method = "round"` or `"signif"`, the operation's group should contain:
 
 - `digits`, a scalar integer dataset specifying the number of digits to report.
   The exact integer representation is left to the implementation.
 
-The value type of the output object is usually float.
+## Shape
+
+The shape of the unary math operation's output object is the same as that of the `seed` delayed object.
+
+## Type
+
+The value type of the unary math operation's output object is usually float.
 The only exceptions are for `abs`, where the value type is either integer or float depending on the input (booleans are promoted to integer);
 and `sign`, where the value type is always integer.

@@ -39,7 +39,8 @@ The same approach is used for arbitrarily complex "trees" of delayed operations,
             └─ ATTRIBUTE: type = "INTEGER"
 ```
 
-The outermost HDF5 group may have a `delayed_version` attribute to indicate the version of the **chihaya** specification being used.
+The top-level delayed object is that which is not nested within any other delayed object.
+The HDF5 group corresponding to the top-level delayed object may have a `delayed_version` attribute to indicate the version of the **chihaya** specification in use.
 This document describes version 1.1 of the specification.
 If missing, the version is assumed to be 0.99.
 
@@ -69,7 +70,7 @@ Note that the value type and dimensions of the post-operation object need not be
 
 ## Array types
 
-Each operation is represented by a HDF5 group with the `delayed_type` attribute set to `"array"`.
+Each array is represented by a HDF5 group with the `delayed_type` attribute set to `"array"`.
 This requires an additional `delayed_array` string attribute to specify the type of array.
 Several array types are supported:
 
@@ -134,7 +135,7 @@ This approach avoids the need to store a separate mask dataset and is more flexi
 
 The `missing_placeholder` attribute should be a scalar of the same exact datatype as the dataset.
 This avoids the risk of changing values upon casting between types prior to the equality comparison.
-The only exception is when `**/data` is a string, in which case the placeholder may be of any string datatype that can be represented by a UTF-8-encoded C-style string. 
+The only exception is when dataset is of a string datatype, in which case the placeholder may be of any string datatype that can be represented by a UTF-8-encoded C-style string. 
 All strings in the dataset with the same sequence of bytes (as defined by, e.g., `strcmp`) as the placeholder value should be treated as missing.
 
 Floating-point missingness should be identified by comparing the placeholder and data values at the same or higher precision as its storage datatype.
@@ -148,16 +149,23 @@ If the specification does not explicitly mention that a placeholder attribute mi
 
 ## Lists
 
-Some specifications will include a "list", which is represented as a HDF5 group with the following attributes:
+Some specifications will describe a "list", which is represented as a HDF5 group with the following attributes:
 
 - `length`, a scalar integer dataset with a datatype that can fit into a 64-bit unsigned integer.
   This should contain the length of the list.
 
-Children of this group represent the list elements and are named by their positional index.
-List elements may be absent, e.g., a group with `length` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
-The intepretation of the absence of an element is context-dependent.
+Children of this group represent the list elements and are named by their positional zero-based index,
+i.e., for a list named `foo`, the child object at `foo/0` corresponds to the first list element.
+Depending on the context, list elements may be absent, e.g., a group with `length` set to 3 and the children `0` and `2` represents a list that is missing an element at index 1.
+The intepretation of the absence of an list element is context-dependent.
 
 ## Further notes
 
 Unless explicitly mentioned here or in any of the array/operation specifications, the parametrization of HDF5 properties is left to the implementation.
 This includes dataset properties like chunking and compression, or file properties like page size and fill time and value. 
+
+All references to indices are zero-based.
+For example, when considering the $i$-th element of a list, the first element would occur at $i = 0$.
+
+The `{i}` notation is used as a placeholder for the variable $i$ in code chunks.
+For example, `foo/{i}` would resolve to `foo/0` for $i = 0$.

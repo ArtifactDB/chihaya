@@ -1,10 +1,4 @@
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"array"`.
-- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"constant array"`.
-
-
 
 # Dense array (1.0)
 
@@ -12,22 +6,20 @@
 
 A dense array is a... dense array.
 
-## Specification
+## Contents 
 
 A dense array is represented as a HDF5 group with the following attributes:
 
-- `delayed_type` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"array"`.
-- `delayed_array` should be a scalar string dataset, of any datatype that can be represented by a UTF-8 encoded string.
-  It should contain the value `"dense array"`.
+- `delayed_type` should be a scalar string dataset that contains `"array"`.
+- `delayed_array` should be a scalar string dataset that contains `"dense array"`.
 
-Inside the group, we expect:
+Inside the array's group, we expect:
 
 - A `data` dataset, containing the array data.
   This should have a non-zero number of dimensions (i.e., not scalar).
   This can be integer or float; the exact datatype is left to the implementation.
-If `data` is an integer dataset, it may additionally contain an `is_boolean` attribute.
-This should be an integer scalar; if non-zero, it indicates that the contents of `data` should be treated as booleans where zeros are falsey and non-zeros are truthy.
+  Optionally, if `data` is an integer dataset, it may contain an `is_boolean` scalar integer attribute,
+  where a truthy value indicates that the contents of `data` should be treated as boolean.
 - A `native` scalar dataset, to be interpreted as a boolean.
   This should be of any integer datatype, where non-zero values are treated as truthy.
   The value specifies whether the dimensions of the dense array are sorted from slowest-changing (first) to fastest-changing (last).
@@ -43,16 +35,23 @@ however, this means that the dimensions reported by HDF5 need to be reversed to 
 This should be a scalar attribute of the same datatype class as ` data `, specifying the placeholder value used for all missing elements,
 i.e., any elements in ` data ` with the same value as the placeholder should be treated as missing.
 
-The group may also contain:
+Optionally, the array's group may contain:
 
-- A `dimnames` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in the dense array.
-  Each child entry corresponds to a dimension of the dense array and contains the names along that dimension.
-  (Note that the ordering of `dimnames` is unrelated to the setting of `native`.
-  For example, entry 0 always corresponds to the first dimension of the "user-visible" dense array, regardless of how it is saved in `data`;
-  so if `native = 0`, entry 0 will correspond to the last dimension of `data`.)
-  The absence of a child entry indicates that no names are attached to the corresponding dimension.
-  Each (non-absent) entry should be a 1-dimensional string dataset of length equal to the extent of its dimension.
-  The datatype of each dataset should be representable by a UTF-8 encoded string.
+- A `dimnames` group, representing a [list](_general.md#lists) of length equal to the number of dimensions in `data`.
+  If a child object exists at `dimnames/{i}`, it should be a 1-dimensional string dataset of length equal to the extent of the $i$-th dimension of `data`. 
+  e.g., `dimnames/0` contains the names for the first dimension.
+  Each entry of `dimnames/{i}` contains a name of the corresponding element of the $i$-th dimension of `seed`.
+  If no child object is present at `dimnames/{i}`, the $i$-th dimension is unnamed.
+
+Note that the names of the datasets inside `dimnames` refer to the dimensions of `data`, not of the dense array.
+This distinction is important with `native = 0`, e.g., readers should only perform the transposition after applying the names to each dimension of `data`.
+
+## Shape
+
+If `native` is truthy, the shape of the dense array is defined as the dimensions of the `data` dataset.
+Otherwise, the shape of the dense array is defined by reversing the dimensions of `data`.
+
+## Type
 
 The value type of the dense array is inferred from the datatype of `data`: integer, float or string.
 Boolean arrays are identified as those with integer `data` and a truthy `is_boolean` flag.
