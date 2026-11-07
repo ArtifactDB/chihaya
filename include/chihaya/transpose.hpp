@@ -6,7 +6,6 @@
 
 #include <stdexcept>
 #include <exception>
-#include <algorithm>
 #include <vector>
 #include <cstdint>
 #include <cstddef>
@@ -27,31 +26,34 @@ namespace chihaya {
  */
 template<typename Perm_>
 std::vector<std::size_t> check_permutation(const H5::DataSet& phandle, hsize_t plen, const std::vector<std::size_t>& input_dimensions, bool details_only) {
-    if (!sanisizer::is_equal(plen, input_dimensions.size())) {
-        throw std::runtime_error("length should match dimensionality of 'seed'");
-    }
-
     auto permutation = sanisizer::create<std::vector<Perm_> >(plen);
     phandle.read(permutation.data(), ritsuko::hdf5::as_numeric_datatype<Perm_>());
 
     auto new_dimensions = sanisizer::create<std::vector<std::size_t> >(plen);
-    for (I<decltype(plen)> p = 0; p < plen; ++p) {
-        const auto current = permutation[p];
-        if (current < 0) {
-            throw std::runtime_error("expected non-negative indices");
-        }
-        if (sanisizer::is_greater_than_or_equal(current, plen)) {
-            throw std::runtime_error("detected out-of-bounds indices");
-        }
-        new_dimensions[p] = input_dimensions[permutation[p]];
-    }
-
     if (!details_only) {
-        std::sort(permutation.begin(), permutation.end());
+        if (!sanisizer::is_equal(plen, input_dimensions.size())) {
+            throw std::runtime_error("length should match dimensionality of 'seed'");
+        }
+
+        auto present = sanisizer::create<std::vector<char> >(plen);
         for (I<decltype(plen)> p = 0; p < plen; ++p) {
-            if (!sanisizer::is_equal(p, permutation[p])) {
+            const auto current = permutation[p];
+            if (current < 0) {
+                throw std::runtime_error("expected non-negative indices");
+            }
+            if (sanisizer::is_greater_than_or_equal(current, plen)) {
+                throw std::runtime_error("detected out-of-bounds indices");
+            }
+            new_dimensions[p] = input_dimensions[current];
+            if (present[current]) {
                 throw std::runtime_error("indices should be unique");
             }
+            present[current] = 1;
+        }
+
+    } else {
+        for (I<decltype(plen)> p = 0; p < plen; ++p) {
+            new_dimensions[p] = input_dimensions[permutation[p]];
         }
     }
 
